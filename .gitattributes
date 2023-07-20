@@ -1,0 +1,18 @@
+*.bsl eol=crlf
+*.bat eol=crlf
+*.sh eol=lf
+*.json eol=crlf
+*.xml eol=crlf
+*.os eol=crlf
+*.md eol=crlf
+*.png filter=lfs diff=lfs merge=lfs -text
+*.cf filter=lfs diff=lfs merge=lfs -text
+*.dt filter=lfs diff=lfs merge=lfs -text
+*.bak filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.epf filter=lfs diff=lfs merge=lfs -text
+*.erf filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.pdf filter=lfs diff=lfs merge=lfs -text
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
