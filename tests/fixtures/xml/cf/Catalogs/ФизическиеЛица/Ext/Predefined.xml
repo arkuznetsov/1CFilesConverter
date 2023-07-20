@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<PredefinedData xmlns="http://v8.1c.ru/8.3/xcf/predef" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CatalogPredefinedItems" version="2.13">
+	<Item id="6b8a99ed-a196-4949-8060-9f6f08a63269">
+		<Name>Бельдыев</Name>
+		<Code>Бельдыев</Code>
+		<Description>Бельдыев</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="ffc8140b-1a0e-445c-a7c7-fd18492b5436">
+		<Name>Васина</Name>
+		<Code>Васина</Code>
+		<Description>Васина</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="556e86a6-f7af-4740-8b22-01c5076fd41c">
+		<Name>Головлев</Name>
+		<Code>Головлев</Code>
+		<Description>Головлев</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="1738669f-715d-420c-9a55-6a8b3fbbdc9d">
+		<Name>Жупиков</Name>
+		<Code>Жупиков</Code>
+		<Description>Жупиков</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="205cf355-c949-4519-9588-47ce8dc1ce6f">
+		<Name>Залкинд</Name>
+		<Code>Залкинд</Code>
+		<Description>Залкинд</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="08e27333-7311-47d6-a393-3275f6c38cf3">
+		<Name>Иванов</Name>
+		<Code>Иванов</Code>
+		<Description>Иванов</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="c8ab270a-844d-4db0-ab2e-6bfb5c129e83">
+		<Name>Коган</Name>
+		<Code>Коган</Code>
+		<Description>Коган</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="7c73a5d5-4cd8-413a-a4c5-8b15a60bbc3c">
+		<Name>Кротов</Name>
+		<Code>Кротов</Code>
+		<Description>Кротов</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="29b9406b-092b-48a7-9931-aa1d64c8807e">
+		<Name>Кротова</Name>
+		<Code>Кротова</Code>
+		<Description>Кротова</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="d315c38e-3ee2-4973-9cc8-afe193650d50">
+		<Name>Лоханкина</Name>
+		<Code>Лоханкина</Code>
+		<Description>Лоханкина</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="e319145d-71b5-452a-8a4d-f6b51daf0f50">
+		<Name>Мансуров</Name>
+		<Code>Мансуров</Code>
+		<Description>Мансуров</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="12f8b886-8f19-4408-9c77-b805a8f691ff">
+		<Name>Мишин</Name>
+		<Code>Мишин</Code>
+		<Description>Мишин</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="c1ab16a1-c50e-4eb8-baff-aa7e032af7db">
+		<Name>Мишина</Name>
+		<Code>Мишина</Code>
+		<Description>Мишина</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="57bbf4d7-4ef2-4434-b0b1-361445eac2f7">
+		<Name>Онопко</Name>
+		<Code>Онопко</Code>
+		<Description>Онопко</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="a8e63bdd-c11c-48e7-b8f1-6c4607c111be">
+		<Name>Петренко</Name>
+		<Code>Петренко</Code>
+		<Description>Петренко</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="c211de45-0657-413b-8bdd-2efb9c4cb0c4">
+		<Name>Петров</Name>
+		<Code>Петров</Code>
+		<Description>Петров</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="f4f32e65-5267-436a-9aa5-7824cc53edb5">
+		<Name>Сидоров</Name>
+		<Code>Сидоров</Code>
+		<Description>Сидоров</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="372c46f1-75b1-400b-b51c-085fdb9c169b">
+		<Name>Степанов</Name>
+		<Code>Степанов</Code>
+		<Description>Степанов</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="9f1ea329-ad98-4bb0-a78a-0a9b34d5eece">
+		<Name>Федоров</Name>
+		<Code>Федоров</Code>
+		<Description>Федоров</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="5c781039-bcb7-4330-b401-778fcdeb0eb5">
+		<Name>Федорова</Name>
+		<Code>Федорова</Code>
+		<Description>Федорова</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+	<Item id="2d884283-014a-4f3a-8eb8-68a649d2dfd6">
+		<Name>Хабибулин</Name>
+		<Code>Хабибулин</Code>
+		<Description>Хабибулин</Description>
+		<IsFolder>false</IsFolder>
+	</Item>
+</PredefinedData>
