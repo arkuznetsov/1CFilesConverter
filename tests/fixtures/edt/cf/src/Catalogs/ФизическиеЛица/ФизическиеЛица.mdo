@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdclass:Catalog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:mdclass="http://g5.1c.ru/v8/dt/metadata/mdclass" uuid="c5838cc9-53d7-46b5-9781-2a7577a974d0">
+  <producedTypes>
+    <objectType typeId="5153706b-bffc-42f4-afe9-e4c5df99ca89" valueTypeId="64640db8-0f1a-42a0-9064-a73627d36acb"/>
+    <refType typeId="7c5fdab2-d9ca-490c-af9c-021b7268bc88" valueTypeId="c0e21149-620c-4e7d-a373-2f61e0b1ee87"/>
+    <selectionType typeId="33c67d15-3a87-4aae-bb88-6ae7b91f071b" valueTypeId="dac85acc-e02d-455a-b481-44342b3627ff"/>
+    <listType typeId="206f7221-3f8f-407a-afe9-586639e20554" valueTypeId="7e98b4db-6171-4538-a61e-b9d61c8a63b7"/>
+    <managerType typeId="d87e687e-e05a-4aed-9e3c-725162c0e77b" valueTypeId="cf70c3f1-9c47-483b-8ac2-153f1fe671e8"/>
+  </producedTypes>
+  <name>ФизическиеЛица</name>
+  <synonym>
+    <key>ru</key>
+    <value>Физические лица</value>
+  </synonym>
+  <useStandardCommands>true</useStandardCommands>
+  <inputByString>Catalog.ФизическиеЛица.StandardAttribute.Description</inputByString>
+  <inputByString>Catalog.ФизическиеЛица.StandardAttribute.Code</inputByString>
+  <fullTextSearchOnInputByString>DontUse</fullTextSearchOnInputByString>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>PredefinedDataName</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Predefined</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Ref</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>DeletionMark</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>IsFolder</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Owner</name>
+    <fillFromFillingValue>true</fillFromFillingValue>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fillChecking>ShowError</fillChecking>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Parent</name>
+    <fillFromFillingValue>true</fillFromFillingValue>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Description</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fillChecking>ShowError</fillChecking>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Code</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <createOnInput>Use</createOnInput>
+  <dataLockControlMode>Managed</dataLockControlMode>
+  <fullTextSearch>Use</fullTextSearch>
+  <levelCount>2</levelCount>
+  <foldersOnTop>true</foldersOnTop>
+  <codeLength>25</codeLength>
+  <descriptionLength>25</descriptionLength>
+  <codeType>String</codeType>
+  <codeAllowedLength>Variable</codeAllowedLength>
+  <checkUnique>true</checkUnique>
+  <autonumbering>true</autonumbering>
+  <defaultPresentation>AsDescription</defaultPresentation>
+  <predefined>
+    <items id="6b8a99ed-a196-4949-8060-9f6f08a63269">
+      <name>Бельдыев</name>
+      <description>Бельдыев</description>
+      <code xsi:type="core:StringValue">
+        <value>Бельдыев</value>
+      </code>
+    </items>
+    <items id="ffc8140b-1a0e-445c-a7c7-fd18492b5436">
+      <name>Васина</name>
+      <description>Васина</description>
+      <code xsi:type="core:StringValue">
+        <value>Васина</value>
+      </code>
+    </items>
+    <items id="556e86a6-f7af-4740-8b22-01c5076fd41c">
+      <name>Головлев</name>
+      <description>Головлев</description>
+      <code xsi:type="core:StringValue">
+        <value>Головлев</value>
+      </code>
+    </items>
+    <items id="1738669f-715d-420c-9a55-6a8b3fbbdc9d">
+      <name>Жупиков</name>
+      <description>Жупиков</description>
+      <code xsi:type="core:StringValue">
+        <value>Жупиков</value>
+      </code>
+    </items>
+    <items id="205cf355-c949-4519-9588-47ce8dc1ce6f">
+      <name>Залкинд</name>
+      <description>Залкинд</description>
+      <code xsi:type="core:StringValue">
+        <value>Залкинд</value>
+      </code>
+    </items>
+    <items id="08e27333-7311-47d6-a393-3275f6c38cf3">
+      <name>Иванов</name>
+      <description>Иванов</description>
+      <code xsi:type="core:StringValue">
+        <value>Иванов</value>
+      </code>
+    </items>
+    <items id="c8ab270a-844d-4db0-ab2e-6bfb5c129e83">
+      <name>Коган</name>
+      <description>Коган</description>
+      <code xsi:type="core:StringValue">
+        <value>Коган</value>
+      </code>
+    </items>
+    <items id="7c73a5d5-4cd8-413a-a4c5-8b15a60bbc3c">
+      <name>Кротов</name>
+      <description>Кротов</description>
+      <code xsi:type="core:StringValue">
+        <value>Кротов</value>
+      </code>
+    </items>
+    <items id="29b9406b-092b-48a7-9931-aa1d64c8807e">
+      <name>Кротова</name>
+      <description>Кротова</description>
+      <code xsi:type="core:StringValue">
+        <value>Кротова</value>
+      </code>
+    </items>
+    <items id="d315c38e-3ee2-4973-9cc8-afe193650d50">
+      <name>Лоханкина</name>
+      <description>Лоханкина</description>
+      <code xsi:type="core:StringValue">
+        <value>Лоханкина</value>
+      </code>
+    </items>
+    <items id="e319145d-71b5-452a-8a4d-f6b51daf0f50">
+      <name>Мансуров</name>
+      <description>Мансуров</description>
+      <code xsi:type="core:StringValue">
+        <value>Мансуров</value>
+      </code>
+    </items>
+    <items id="12f8b886-8f19-4408-9c77-b805a8f691ff">
+      <name>Мишин</name>
+      <description>Мишин</description>
+      <code xsi:type="core:StringValue">
+        <value>Мишин</value>
+      </code>
+    </items>
+    <items id="c1ab16a1-c50e-4eb8-baff-aa7e032af7db">
+      <name>Мишина</name>
+      <description>Мишина</description>
+      <code xsi:type="core:StringValue">
+        <value>Мишина</value>
+      </code>
+    </items>
+    <items id="57bbf4d7-4ef2-4434-b0b1-361445eac2f7">
+      <name>Онопко</name>
+      <description>Онопко</description>
+      <code xsi:type="core:StringValue">
+        <value>Онопко</value>
+      </code>
+    </items>
+    <items id="a8e63bdd-c11c-48e7-b8f1-6c4607c111be">
+      <name>Петренко</name>
+      <description>Петренко</description>
+      <code xsi:type="core:StringValue">
+        <value>Петренко</value>
+      </code>
+    </items>
+    <items id="c211de45-0657-413b-8bdd-2efb9c4cb0c4">
+      <name>Петров</name>
+      <description>Петров</description>
+      <code xsi:type="core:StringValue">
+        <value>Петров</value>
+      </code>
+    </items>
+    <items id="f4f32e65-5267-436a-9aa5-7824cc53edb5">
+      <name>Сидоров</name>
+      <description>Сидоров</description>
+      <code xsi:type="core:StringValue">
+        <value>Сидоров</value>
+      </code>
+    </items>
+    <items id="372c46f1-75b1-400b-b51c-085fdb9c169b">
+      <name>Степанов</name>
+      <description>Степанов</description>
+      <code xsi:type="core:StringValue">
+        <value>Степанов</value>
+      </code>
+    </items>
+    <items id="9f1ea329-ad98-4bb0-a78a-0a9b34d5eece">
+      <name>Федоров</name>
+      <description>Федоров</description>
+      <code xsi:type="core:StringValue">
+        <value>Федоров</value>
+      </code>
+    </items>
+    <items id="5c781039-bcb7-4330-b401-778fcdeb0eb5">
+      <name>Федорова</name>
+      <description>Федорова</description>
+      <code xsi:type="core:StringValue">
+        <value>Федорова</value>
+      </code>
+    </items>
+    <items id="2d884283-014a-4f3a-8eb8-68a649d2dfd6">
+      <name>Хабибулин</name>
+      <description>Хабибулин</description>
+      <code xsi:type="core:StringValue">
+        <value>Хабибулин</value>
+      </code>
+    </items>
+  </predefined>
+  <editType>InDialog</editType>
+  <choiceMode>BothWays</choiceMode>
+</mdclass:Catalog>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdclass:Enum xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:mdclass="http://g5.1c.ru/v8/dt/metadata/mdclass" uuid="59810901-474b-42fd-9dad-f6d2aa2dc1cf">
+  <producedTypes>
+    <refType typeId="2e39ea60-2e32-4221-9afd-0634879c9975" valueTypeId="df5c7e38-40a3-4d32-a698-2f07cb706a8e"/>
+    <listType typeId="287302e9-771a-4279-94fd-fef15c522ecc" valueTypeId="5f110509-7849-4e31-be64-0dfe3d967387"/>
+    <managerType typeId="0042730b-eec7-4b28-84e5-45d63d62611e" valueTypeId="023266a9-b172-4fe5-9899-a5832da10db2"/>
+  </producedTypes>
+  <name>УчетнаяПолитика</name>
+  <synonym>
+    <key>ru</key>
+    <value>Учетная политика</value>
+  </synonym>
+  <useStandardCommands>true</useStandardCommands>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Order</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Ref</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <quickChoice>true</quickChoice>
+  <choiceMode>BothWays</choiceMode>
+  <enumValues uuid="679db88e-ec35-411b-8c49-583fa2c57226">
+    <name>ЛИФО</name>
+    <synonym>
+      <key>ru</key>
+      <value>LIFO</value>
+    </synonym>
+  </enumValues>
+  <enumValues uuid="4cdcd321-3216-4cc8-bb41-48a72e3ff796">
+    <name>ФИФО</name>
+    <synonym>
+      <key>ru</key>
+      <value>FIFO</value>
+    </synonym>
+  </enumValues>
+</mdclass:Enum>

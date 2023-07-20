@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdclass:InformationRegister xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:mdclass="http://g5.1c.ru/v8/dt/metadata/mdclass" uuid="f78471a2-59c7-4e13-b8ef-237a008b0392">
+  <producedTypes>
+    <selectionType typeId="06cddd2a-0192-42ea-b737-0d5a4a194737" valueTypeId="3a16d3a9-7105-46d8-af2a-09f8c21bce1f"/>
+    <listType typeId="8abd86f3-8fcb-41b4-b5b2-d20da5f3c4dd" valueTypeId="4d27c901-c421-492c-8bbd-2094f3dd6a6a"/>
+    <managerType typeId="caec0682-c693-4c96-bffa-89b0d0d21082" valueTypeId="44a8ef32-c5a2-4395-a9e7-e831d903c45a"/>
+    <recordSetType typeId="5f154620-e134-4271-907a-e4b6d9b0158a" valueTypeId="6f61792a-4cb6-406c-a298-ac9b30d0b485"/>
+    <recordKeyType typeId="5532c8f3-a309-4c77-a0c9-6526c302e50d" valueTypeId="c16ae0f2-503f-4750-92ca-786c583487b4"/>
+    <recordType typeId="b12f2847-4bbd-4938-9559-0fee7b21e36f" valueTypeId="f0663371-f310-4586-89d4-25490aa8f60b"/>
+    <recordManagerType typeId="94b2e5df-0bd9-49da-8da1-3c09fe738a16" valueTypeId="c5059b12-1509-4979-8f55-4a9c19aae463"/>
+  </producedTypes>
+  <name>РегистрАдресации</name>
+  <synonym>
+    <key>ru</key>
+    <value>Регистр адресации</value>
+  </synonym>
+  <useStandardCommands>true</useStandardCommands>
+  <editType>InDialog</editType>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Active</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>LineNumber</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Recorder</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <standardAttributes>
+    <dataHistory>Use</dataHistory>
+    <name>Period</name>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <fillChecking>ShowError</fillChecking>
+    <fullTextSearch>Use</fullTextSearch>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </standardAttributes>
+  <dataLockControlMode>Managed</dataLockControlMode>
+  <dimensions uuid="ab0638d1-9955-49d1-a664-555e5299a878">
+    <name>Исполнитель</name>
+    <synonym>
+      <key>ru</key>
+      <value>Исполнитель</value>
+    </synonym>
+    <type>
+      <types>CatalogRef.ФизическиеЛица</types>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+    <fullTextSearch>Use</fullTextSearch>
+    <dataHistory>Use</dataHistory>
+    <fillFromFillingValue>true</fillFromFillingValue>
+    <fillValue xsi:type="core:UndefinedValue"/>
+    <mainFilter>true</mainFilter>
+  </dimensions>
+</mdclass:InformationRegister>
