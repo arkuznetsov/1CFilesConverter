@@ -7,10 +7,11 @@ rem %3 - path to 1C configuration (binary (*.cf), 1C:Designer XML format or 1C:E
 rem      or folder contains 1C infobase used for convertion
 
 if not defined V8_VERSION set V8_VERSION=8.3.20.2290
+if not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 
-set IB_PATH=%TEMP%\1c\tmp_db
+set IB_PATH=%V8_TEMP%\tmp_db
 set CLEAN_AFTER_EXPORT=0
 
 set DP_FILE=%1

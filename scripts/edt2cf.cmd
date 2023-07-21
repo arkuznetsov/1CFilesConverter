@@ -8,6 +8,7 @@ rem      ibcmd - ibcmd tool (default)
 rem      designer - batch run of 1C:Designer
 
 if not defined V8_VERSION set V8_VERSION=8.3.20.2290
+if not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
@@ -15,9 +16,9 @@ FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
     set RING_TOOL="%%i"
 )
 
-set IB_PATH=%TEMP%\1c\tmp_db
-set XML_PATH=%TEMP%\1c\tmp_xml
-set WS_PATH=%TEMP%\1c\edt_ws
+set IB_PATH=%V8_TEMP%\tmp_db
+set XML_PATH=%V8_TEMP%\tmp_xml
+set WS_PATH=%V8_TEMP%\edt_ws
 
 set CONFIG_PATH=%1
 if defined CONFIG_PATH set CONFIG_PATH=%CONFIG_PATH:"=%
@@ -50,7 +51,7 @@ if exist "%XML_PATH%" (
 if exist "%WS_PATH%" (
     rd /S /Q "%WS_PATH%"
 )
-md "%TEMP%\1c"
+md "%V8_TEMP%"
 md "%XML_PATH%"
 md "%WS_PATH%"
 md "%CONFIG_FILE_PATH%"

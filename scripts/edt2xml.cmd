@@ -4,12 +4,14 @@ rem Convert 1C configuration from 1C:EDT format to 1C:Designer XML format
 rem %1 - path to folder contains configuration files in 1C:EDT format
 rem %2 - path to folder to save configuration files in 1C:Designer XML format
 
+if not defined V8_TEMP set V8_TEMP=%TEMP%\1c
+
 FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
     set RING_TOOL="%%i"
 )
 
-set IB_PATH=%TEMP%\1c\tmp_db
-set WS_PATH=%TEMP%\1c\edt_ws
+set IB_PATH=%V8_TEMP%\tmp_db
+set WS_PATH=%V8_TEMP%\edt_ws
 
 set EDT_PATH=%1
 if defined EDT_PATH set EDT_PATH=%EDT_PATH:"=%

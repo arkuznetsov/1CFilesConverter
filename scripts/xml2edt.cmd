@@ -5,9 +5,10 @@ rem %1 - path to folder contains configuration files in 1C:Designer XML format
 rem %2 - path to folder to save configuration files in 1C:EDT format
 
 if not defined V8_VERSION set V8_VERSION=8.3.20.2290
+if not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
-set IB_PATH=%TEMP%\1c\tmp_db
-set WS_PATH=%TEMP%\1c\edt_ws
+set IB_PATH=%V8_TEMP%\tmp_db
+set WS_PATH=%V8_TEMP%\edt_ws
 
 set CONFIG_PATH=%1
 if defined CONFIG_PATH set CONFIG_PATH=%CONFIG_PATH:"=%

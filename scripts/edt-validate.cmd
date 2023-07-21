@@ -5,15 +5,16 @@ rem %1 - path to 1C configuration (binary (*.cf), 1C:Designer XML format or 1C:E
 rem %2 - path to validation report file
 
 if not defined V8_VERSION set V8_VERSION=8.3.20.2290
+if not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
     set RING_TOOL="%%i"
 )
 
 IF "%VALIDATE_PATH%" equ "" (
-    set VALIDATE_PATH=%TEMP%\1c\tmp_edt
+    set VALIDATE_PATH=%V8_TEMP%\tmp_edt
 )
-set WS_PATH=%TEMP%\1c\edt_ws
+set WS_PATH=%V8_TEMP%\edt_ws
 set CLEAN_AFTER_VALIDATION=0
 
 set CONFIG_PATH=%1

@@ -8,11 +8,12 @@ rem      ibcmd - ibcmd tool (default)
 rem      designer - batch run of 1C:Designer
 
 if not defined V8_VERSION set V8_VERSION=8.3.20.2290
+if not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
 
-set IB_PATH=%TEMP%\1c\tmp_db
+set IB_PATH=%V8_TEMP%\tmp_db
 set CONFIG_FILE=%1
 if defined CONFIG_FILE set CONFIG_FILE=%CONFIG_FILE:"=%
 set CONFIG_PATH=%2
