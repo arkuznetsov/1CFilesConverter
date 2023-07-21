@@ -28,8 +28,10 @@ if not defined DP_PATH (
     echo Missed parameter 2 "path to folder to save data processor & report in binary format"
     exit /b 1
 )
-
-md "%DP_PATH%"
+if not exist "%BASE_CONFIG%" (
+    echo Path "%BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
+    set BASE_CONFIG=
+)
 
 echo Set infobase for import data processor/report...
 IF "%BASE_CONFIG%" equ "" (
@@ -62,6 +64,7 @@ echo Clear temporary files...
 IF "%CLEAN_AFTER_EXPORT%" equ "1" (
     rd /S /Q "%IB_PATH%"
 )
+md "%DP_PATH%"
 
 echo Import dataprocessor / report "%DP_FILE%" to 1C:Designer format "%DP_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
 %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%DP_FILE%" "%DP_PATH%"

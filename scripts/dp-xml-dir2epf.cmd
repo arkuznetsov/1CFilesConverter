@@ -28,8 +28,10 @@ if not defined DP_BIN_PATH (
     echo Missed parameter 2 "path to folder to save data processors & reports in binary format (*.epf, *.erf)"
     exit /b 1
 )
-
-md "%DP_BIN_PATH%"
+if not exist "%BASE_CONFIG%" (
+    echo Path "%BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
+    set BASE_CONFIG=
+)
 
 echo Set infobase for import data processor/report...
 IF "%BASE_CONFIG%" equ "" (
@@ -62,6 +64,7 @@ echo Clear temporary files...
 IF "%CLEAN_AFTER_EXPORT%" equ "1" (
     rd /S /Q "%IB_PATH%"
 )
+md "%DP_BIN_PATH%"
 
 echo Import dataprocessors ^& reports from folder "%DP_SRC_PATH%" to 1C:Designer format "%DP_BIN_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
 FOR /f %%f IN ('dir /b /a-d "%DP_SRC_PATH%\*.xml"') DO (

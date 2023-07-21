@@ -33,8 +33,10 @@ if not defined DP_SRC_PATH (
     echo Missed parameter 2 "path to folder to save 1C data processors & reports in 1C:EDT format"
     exit /b 1
 )
-
-md "%DP_SRC_PATH%"
+if not exist "%BASE_CONFIG%" (
+    echo Path "%BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
+    set BASE_CONFIG=
+)
 
 echo Set infobase for export data processor/report...
 IF "%BASE_CONFIG%" equ "" (

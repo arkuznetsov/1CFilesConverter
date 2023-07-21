@@ -28,8 +28,10 @@ if not defined DP_SRC_PATH (
     echo Missed parameter 2 "path to folder to save 1C data processors & reports in 1C:Designer XML format"
     exit /b 1
 )
-
-md "%DP_SRC_PATH%"
+if not exist "%BASE_CONFIG%" (
+    echo Path "%BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
+    set BASE_CONFIG=
+)
 
 echo Set infobase for export data processor/report...
 IF "%BASE_CONFIG%" equ "" (
@@ -62,6 +64,7 @@ echo Clear temporary files...
 IF "%CLEAN_AFTER_EXPORT%" equ "1" (
     rd /S /Q "%IB_PATH%"
 )
+md "%DP_SRC_PATH%"
 
 echo Export dataprocessors from folder "%DP_BIN_PATH%" to 1C:Designer XML format "%DP_SRC_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
 FOR /f %%f IN ('dir /b /a-d "%DP_BIN_PATH%\*.epf"') DO (
