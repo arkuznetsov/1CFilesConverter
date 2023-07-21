@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<PredefinedData xmlns="http://v8.1c.ru/8.3/xcf/predef" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CalculationTypePredefinedItems" version="2.13">
-	<Item id="1d20004f-c1f4-4f2d-84dd-3f6dbe2c2538">
-		<Name>Оклад</Name>
-		<Code>1</Code>
-		<Description>Оклад</Description>
-		<ActionPeriodIsBase>false</ActionPeriodIsBase>
-	</Item>
-</PredefinedData>

@@ -1,4 +1,6 @@
-ECHO OFF
+rem @ECHO OFF
+
+chcp 65001
 
 set SCRIPTS_PATH=%~dp0..\scripts
 set FIXTURES_PATH=%~dp0fixtures
@@ -10,140 +12,174 @@ if exist "%OUT_PATH%" (
 )
 md "%OUT_PATH%"
 
-@REM echo Tests: Convert CF
+echo Prepare test data...
+md "%OUT_PATH"\data\ib
+md "%OUT_PATH"\data\edt\cf
+md "%OUT_PATH"\data\edt\ext
+md "%OUT_PATH"\data\xml\cf
+md "%OUT_PATH"\data\xml\ext
 
-@REM echo Test: CF -^> XML (ibcmd)
-@REM call %SCRIPTS_PATH%\cf2xml.cmd "%FIXTURES_PATH%\bin\1cv8.cf" "%OUT_PATH%\111_cf2xml_i" ibcmd
+set TEST_BINARY=%FIXTURES_PATH%\bin
+set TEST_IB="%OUT_PATH%"\data\ib
+set TEST_XML_CF="%OUT_PATH%"\data\xml\cf
+set TEST_XML_DP="%OUT_PATH%"\data\xml\ext
+set TEST_EDT_CF="%OUT_PATH%"\data\edt\cf
+set TEST_EDT_DP="%OUT_PATH%"\data\edt\ext
 
-@REM echo Test: CF -^> XML (designer)
-@REM call %SCRIPTS_PATH%\cf2xml.cmd "%FIXTURES_PATH%\bin\1cv8.cf" "%OUT_PATH%\112_cf2xml_d" designer
+echo ===
+echo Prepare test infobase...
+call %SCRIPTS_PATH%\cf2ib.cmd "%TEST_BINARY%\1cv8.cf" "%TEST_IB%"
 
-@REM echo ""
+echo ===
+echo Prepare configuration with 1C:Designer XML format...
+call %SCRIPTS_PATH%\ib2xml.cmd "%TEST_IB%" "%TEST_XML_CF%"
 
-@REM echo Test: CF -^> infobase (ibcmd)
-@REM call %SCRIPTS_PATH%\cf2ib.cmd "%FIXTURES_PATH%\bin\1cv8.cf" "%OUT_PATH%\113_cf2ib_i" ibcmd
+echo ===
+echo Prepare configuration with 1C:EDT format...
+call %SCRIPTS_PATH%\xml2edt.cmd "%TEST_XML_CF%" "%TEST_EDT_CF%"
 
-@REM echo Test: CF -^> infobase (designer)
-@REM call %SCRIPTS_PATH%\cf2ib.cmd "%FIXTURES_PATH%\bin\1cv8.cf" "%OUT_PATH%\114_cf2ib_d" designer
+echo ===
+echo Prepare data processors ^& reports with 1C:Designer XML format...
+call %SCRIPTS_PATH%\dp-bin-dir2xml.cmd "%TEST_BINARY%" "%TEST_XML_DP%" "%TEST_IB%"
 
-@REM echo ""
+echo ===
+echo Prepare data processors ^& reports with 1C:EDT format...
+call %SCRIPTS_PATH%\xml2edt.cmd "%TEST_XML_DP%" "%TEST_EDT_DP%"
 
-@REM echo Test: CF -^> EDT (ibcmd)
-@REM call %SCRIPTS_PATH%\cf2edt.cmd "%FIXTURES_PATH%\bin\1cv8.cf" "%OUT_PATH%\115_cf2edt_i" ibcmd
+echo Tests: Convert CF
 
-@REM echo Test: CF -^> EDT (designer)
-@REM call %SCRIPTS_PATH%\cf2edt.cmd "%FIXTURES_PATH%\bin\1cv8.cf" "%OUT_PATH%\116_cf2edt_d" designer
+echo Test: CF -^> XML (ibcmd)
+call %SCRIPTS_PATH%\cf2xml.cmd "%CONF_BINARY%" "%OUT_PATH%\111_cf2xml_i" ibcmd
 
-@REM echo ""
+echo Test: CF -^> XML (designer)
+call %SCRIPTS_PATH%\cf2xml.cmd "%CONF_BINARY%" "%OUT_PATH%\112_cf2xml_d" designer
 
-@REM echo Test: XML -^> CF (ibcmd)
-@REM call %SCRIPTS_PATH%\xml2cf.cmd "%FIXTURES_PATH%\xml\cf" "%OUT_PATH%\121_xml2cf_i\1cv8.cf" ibcmd
+echo ===
 
-@REM echo Test: XML -^> CF (designer)
-@REM call %SCRIPTS_PATH%\xml2cf.cmd "%FIXTURES_PATH%\xml\cf" "%OUT_PATH%\122_xml2cf_d\1cv8.cf" designer
+echo Test: CF -^> infobase (ibcmd)
+call %SCRIPTS_PATH%\cf2ib.cmd "%CONF_BINARY%" "%OUT_PATH%\113_cf2ib_i" ibcmd
 
-@REM echo ""
+echo Test: CF -^> infobase (designer)
+call %SCRIPTS_PATH%\cf2ib.cmd "%CONF_BINARY%" "%OUT_PATH%\114_cf2ib_d" designer
 
-@REM echo Test: XML -^> infobase (ibcmd)
-@REM call %SCRIPTS_PATH%\xml2ib.cmd "%FIXTURES_PATH%\xml\cf" "%OUT_PATH%\123_xml2ib_i" ibcmd
+echo ===
 
-@REM echo Test: XML -^> infobase (designer)
-@REM call %SCRIPTS_PATH%\xml2ib.cmd "%FIXTURES_PATH%\xml\cf" "%OUT_PATH%\124_xml2ib_d" designer
+echo Test: CF -^> EDT (ibcmd)
+call %SCRIPTS_PATH%\cf2edt.cmd "%CONF_BINARY%" "%OUT_PATH%\115_cf2edt_i" ibcmd
 
-@REM echo ""
+echo Test: CF -^> EDT (designer)
+call %SCRIPTS_PATH%\cf2edt.cmd "%CONF_BINARY%" "%OUT_PATH%\116_cf2edt_d" designer
 
-@REM echo Test: XML -^> EDT
-@REM call %SCRIPTS_PATH%\xml2edt.cmd "%FIXTURES_PATH%\xml\cf" "%OUT_PATH%\125_xml2edt"
+echo ===
 
-@REM echo ""
+echo Test: XML -^> CF (ibcmd)
+call %SCRIPTS_PATH%\xml2cf.cmd "%TEST_XML_CF%" "%OUT_PATH%\121_xml2cf_i\1cv8.cf" ibcmd
 
-@REM echo Test: infobase -^> CF (ibcmd)
-@REM call %SCRIPTS_PATH%\ib2cf.cmd "%FIXTURES_PATH%\ib" "%OUT_PATH%\131_xml2cf_i\1cv8.cf" ibcmd
+echo Test: XML -^> CF (designer)
+call %SCRIPTS_PATH%\xml2cf.cmd "%TEST_XML_CF%" "%OUT_PATH%\122_xml2cf_d\1cv8.cf" designer
 
-@REM echo Test: infobase -^> CF (designer)
-@REM call %SCRIPTS_PATH%\ib2cf.cmd "%FIXTURES_PATH%\ib" "%OUT_PATH%\132_xml2cf_d\1cv8.cf" designer
+echo ===
 
-@REM echo ""
+echo Test: XML -^> infobase (ibcmd)
+call %SCRIPTS_PATH%\xml2ib.cmd "%TEST_XML_CF%" "%OUT_PATH%\123_xml2ib_i" ibcmd
 
-@REM echo Test: infobase -^> XML (ibcmd)
-@REM call %SCRIPTS_PATH%\ib2xml.cmd "%FIXTURES_PATH%\ib" "%OUT_PATH%\133_xml2xml_i" ibcmd
+echo Test: XML -^> infobase (designer)
+call %SCRIPTS_PATH%\xml2ib.cmd "%TEST_XML_CF%" "%OUT_PATH%\124_xml2ib_d" designer
 
-@REM echo Test: infobase -^> XML (designer)
-@REM call %SCRIPTS_PATH%\ib2xml.cmd "%FIXTURES_PATH%\ib" "%OUT_PATH%\134_xml2xml_d" designer
+echo ===
 
-@REM echo ""
+echo Test: XML -^> EDT
+call %SCRIPTS_PATH%\xml2edt.cmd "%TEST_XML_CF%" "%OUT_PATH%\125_xml2edt"
 
-@REM echo Test: infobase -^> EDT (ibcmd)
-@REM call %SCRIPTS_PATH%\ib2edt.cmd "%FIXTURES_PATH%\ib" "%OUT_PATH%\135_xml2edt_i" ibcmd
+echo ===
 
-@REM echo Test: infobase -^> EDT (designer)
-@REM call %SCRIPTS_PATH%\ib2edt.cmd "%FIXTURES_PATH%\ib" "%OUT_PATH%\136_xml2edt_d" designer
+echo Test: infobase -^> CF (ibcmd)
+call %SCRIPTS_PATH%\ib2cf.cmd "%TEST_IB%" "%OUT_PATH%\131_xml2cf_i\1cv8.cf" ibcmd
 
-@REM echo ""
+echo Test: infobase -^> CF (designer)
+call %SCRIPTS_PATH%\ib2cf.cmd "%TEST_IB%" "%OUT_PATH%\132_xml2cf_d\1cv8.cf" designer
 
-@REM echo Test: EDT -^> CF (ibcmd)
-@REM call %SCRIPTS_PATH%\edt2cf.cmd "%FIXTURES_PATH%\edt\cf" "%OUT_PATH%\141_edt2cf_i\1cv8.cf" ibcmd
+echo ===
 
-@REM echo Test: EDT -^> CF (designer)
-@REM call %SCRIPTS_PATH%\edt2cf.cmd "%FIXTURES_PATH%\edt\cf" "%OUT_PATH%\142_edt2cf_d\1cv8.cf" designer
+echo Test: infobase -^> XML (ibcmd)
+call %SCRIPTS_PATH%\ib2xml.cmd "%TEST_IB%" "%OUT_PATH%\133_xml2xml_i" ibcmd
 
-@REM echo ""
+echo Test: infobase -^> XML (designer)
+call %SCRIPTS_PATH%\ib2xml.cmd "%TEST_IB%" "%OUT_PATH%\134_xml2xml_d" designer
 
-@REM echo Test: EDT -^> IB (ibcmd)
-@REM call %SCRIPTS_PATH%\edt2ib.cmd "%FIXTURES_PATH%\edt\cf" "%OUT_PATH%\143_edt2ib_i" ibcmd
+echo ===
 
-@REM echo Test: EDT -^> IB (designer)
-@REM call %SCRIPTS_PATH%\edt2ib.cmd "%FIXTURES_PATH%\edt\cf" "%OUT_PATH%\144_edt2ib_d" designer
+echo Test: infobase -^> EDT (ibcmd)
+call %SCRIPTS_PATH%\ib2edt.cmd "%TEST_IB%" "%OUT_PATH%\135_xml2edt_i" ibcmd
 
-@REM echo ""
+echo Test: infobase -^> EDT (designer)
+call %SCRIPTS_PATH%\ib2edt.cmd "%TEST_IB%" "%OUT_PATH%\136_xml2edt_d" designer
 
-@REM echo Test: EDT -^> XML
-@REM call %SCRIPTS_PATH%\edt2xml.cmd "%FIXTURES_PATH%\edt\cf" "%OUT_PATH%\145_edt2xml" ibcmd
+echo ===
 
-@REM echo ""
+echo Test: EDT -^> CF (ibcmd)
+call %SCRIPTS_PATH%\edt2cf.cmd "%TEST_EDT_CF%" "%OUT_PATH%\141_edt2cf_i\1cv8.cf" ibcmd
+
+echo Test: EDT -^> CF (designer)
+call %SCRIPTS_PATH%\edt2cf.cmd "%TEST_EDT_CF%" "%OUT_PATH%\142_edt2cf_d\1cv8.cf" designer
+
+echo ===
+
+echo Test: EDT -^> IB (ibcmd)
+call %SCRIPTS_PATH%\edt2ib.cmd "%TEST_EDT_CF%" "%OUT_PATH%\143_edt2ib_i" ibcmd
+
+echo Test: EDT -^> IB (designer)
+call %SCRIPTS_PATH%\edt2ib.cmd "%TEST_EDT_CF%" "%OUT_PATH%\144_edt2ib_d" designer
+
+echo ===
+
+echo Test: EDT -^> XML
+call %SCRIPTS_PATH%\edt2xml.cmd "%TEST_EDT_CF%" "%OUT_PATH%\145_edt2xml" ibcmd
+
+echo ===
 
 echo Tests: Convert Data Processors & Reports
 
 echo Test: DP (binary) -^> XML
 call %SCRIPTS_PATH%\dp-bin2xml.cmd "%FIXTURES_PATH%\bin\ВнешняяОбработка1.epf" "%OUT_PATH%\211_dp-bin2xml" ibcmd
 
-echo ""
+echo ===
 
 echo Test: DP (binary) -^> EDT
-call %SCRIPTS_PATH%\dp-bin2edt.cmd "%FIXTURES_PATH%\bin\ВнешнийОтчет1.erf" "%OUT_PATH%\212_dp-bin2edt" ibcmd
+call %SCRIPTS_PATH%\dp-bin2edt.cmd "%FIXTURES_PATH%\bin\ВнешнийОтчет1.erf" "%OUT_PATH%\212_dp-bin2edt"
 
-echo ""
+echo ===
 
 echo Test: DP (binary folder) -^> XML
-call %SCRIPTS_PATH%\dp-bin-dir2xml.cmd "%FIXTURES_PATH%\bin" "%OUT_PATH%\221_dp-bin-dir2xml" ibcmd
+call %SCRIPTS_PATH%\dp-bin-dir2xml.cmd "%FIXTURES_PATH%\bin" "%OUT_PATH%\221_dp-bin-dir2xml"
 
-echo ""
+echo ===
 
 echo Test: DP (binary folder) -^> EDT
-call %SCRIPTS_PATH%\dp-bin-dir2edt.cmd "%FIXTURES_PATH%\bin" "%OUT_PATH%\222_dp-bin-dir2edt" ibcmd
+call %SCRIPTS_PATH%\dp-bin-dir2edt.cmd "%FIXTURES_PATH%\bin" "%OUT_PATH%\222_dp-bin-dir2edt"
 
-echo ""
+echo ===
 
 echo Test: DP (XML) -^> binary
-call %SCRIPTS_PATH%\dp-xml2epf.cmd "%FIXTURES_PATH%\xml\dp\ВнешняяОбработка2.xml" "%OUT_PATH%\231_dp-xml2epf" ibcmd
+call %SCRIPTS_PATH%\dp-xml2epf.cmd "%TEST_XML_DP%\ВнешняяОбработка2.xml" "%OUT_PATH%\231_dp-xml2epf"
 
-echo ""
+echo ===
 
 echo Test: DP (XML folder) -^> binary
-call %SCRIPTS_PATH%\dp-xml-dir2epf.cmd "%FIXTURES_PATH%\xml\dp" "%OUT_PATH%\232_dp-xml2epf" ibcmd
+call %SCRIPTS_PATH%\dp-xml-dir2epf.cmd "%TEST_XML_DP%" "%OUT_PATH%\232_dp-xml2epf"
 
-echo ""
+echo ===
 
 echo Tests: EDT Validate
 
 echo Tests: Validate CF
 
-call %SCRIPTS_PATH%\edt-validate.cmd "%FIXTURES_PATH%\edt\cf" "%OUT_PATH%\311_edt-validate-cf\report.txt" ibcmd
+call %SCRIPTS_PATH%\edt-validate.cmd "%TEST_EDT_CF%" "%OUT_PATH%\311_edt-validate-cf\report.txt" ibcmd
 
-echo ""
+echo ===
 
 echo Tests: Validate data processors ^& reports
 
-call %SCRIPTS_PATH%\edt-validate.cmd "%FIXTURES_PATH%\edt\ext" "%OUT_PATH%\321_edt-validate-dp\report.txt" ibcmd
+call %SCRIPTS_PATH%\edt-validate.cmd "%TEST_EDT_DP%" "%OUT_PATH%\321_edt-validate-dp\report.txt" ibcmd
 
-echo ""
+echo ===
