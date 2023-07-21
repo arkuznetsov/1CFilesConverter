@@ -19,7 +19,7 @@ set CLEAN_AFTER_VALIDATION=0
 set CONFIG_PATH=%1
 if defined CONFIG_PATH set CONFIG_PATH=%CONFIG_PATH:"=%
 set REPORT_FILE=%2
-if defined CONFIG_FILE (
+if defined REPORT_FILE (
     set REPORT_FILE=%REPORT_FILE:"=%
     set REPORT_FILE_PATH=%~dp2
 )
@@ -37,18 +37,17 @@ echo Clear temporary files...
 if exist "%WS_PATH%" (
     rd /S /Q "%WS_PATH%"
 )
-del  %REPORT_FILE%
+del "%REPORT_FILE%"
 md "%REPORT_FILE_PATH%"
 
 echo Prepare project for validation...
-IF exist "%CONFIG_PATH%\src\Configuration\Configuration.mdo" (
+IF exist "%CONFIG_PATH%\DT-INF\" (
     set VALIDATE_PATH=%CONFIG_PATH%
 ) else (
+    set CLEAN_AFTER_VALIDATION=1
     IF exist "%CONFIG_PATH%\Configuration.xml" (
-        set CLEAN_AFTER_VALIDATION=1
         call %~dp0xml2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     ) else (
-        set CLEAN_AFTER_VALIDATION=1
         call %~dp0cf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     )
 )

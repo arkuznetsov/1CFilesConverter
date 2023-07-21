@@ -42,7 +42,7 @@ IF "%BASE_CONFIG%" equ "" (
     %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
 ) else (
     set BASE_CONFIG_DESCRIPTION=configuration from "%BASE_CONFIG%"
-    IF exist "%BASE_CONFIG%\src\Configuration\Configuration.mdo" (
+    IF exist "%BASE_CONFIG%\DT-INF\" (
         set CLEAN_AFTER_EXPORT=1
         call %~dp0edt2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
     ) else (
