@@ -33,8 +33,10 @@ if not defined DP_PATH (
     echo Missed parameter 2 "path to folder to save data processor & report in 1C:EDT format"
     exit /b 1
 )
-
-md "%DP_PATH%"
+if not exist "%BASE_CONFIG%" (
+    echo Path "%BASE_CONFIG%" doesn't exist (parameter 3), empty infobase will be used.
+    set BASE_CONFIG=
+)
 
 echo Set infobase for export data processor/report...
 IF "%BASE_CONFIG%" equ "" (
@@ -76,16 +78,15 @@ if exist "%WS_PATH%" (
 if exist "%DP_SRC_PATH%" (
     rd /S /Q "%DP_SRC_PATH%"
 )
-md "%TEMP%\1c"
 md "%XML_PATH%"
 md "%WS_PATH%"
-md %DP_SRC_PATH%
+md "%DP_PATH%"
 
 echo Export dataprocessor / report "%DP_FILE%" to 1C:Designer XML format "%XML_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
 %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%DP_FILE%"
 
-echo Export dataprocessor / report from 1C:Designer XML format "%XML_PATH%" to 1C:EDT format "%DP_SRC_PATH%"...
-call %RING_TOOL% edt workspace import --project "%DP_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
+echo Export dataprocessor / report from 1C:Designer XML format "%XML_PATH%" to 1C:EDT format "%DP_PATH%"...
+call %RING_TOOL% edt workspace import --project "%DP_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
 
 echo Clear temporary files...
 IF "%CLEAN_AFTER_EXPORT%" equ "1" (

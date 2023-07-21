@@ -21,15 +21,18 @@ set BASE_CONFIG=%3
 if defined BASE_CONFIG set BASE_CONFIG=%BASE_CONFIG:"=%
 
 if not defined DP_FILE (
-    echo Missed parameter 1 "path to 1C data processor or report (*.epf, *.erf)"
+    echo Missed parameter 1 "path to 1C data processor or report (*.epf, *.erf)".
     exit /b 1
 )
 if not defined DP_PATH (
-    echo Missed parameter 2 "path to folder to save data processor & report in 1C:Designer XML format"
+    echo Missed parameter 2 "path to folder to save data processor & report in 1C:Designer XML format".
     exit /b 1
 )
 
-md "%DP_PATH%"
+if not exist "%BASE_CONFIG%" (
+    echo Path "%BASE_CONFIG%" doesn't exist (parameter 3), empty infobase will be used.
+    set BASE_CONFIG=
+)
 
 echo Set infobase for export data processor/report...
 IF "%BASE_CONFIG%" equ "" (
@@ -62,6 +65,7 @@ echo Clear temporary files...
 IF "%CLEAN_AFTER_EXPORT%" equ "1" (
     rd /S /Q "%IB_PATH%"
 )
+md "%DP_PATH%"
 
 echo Export dataprocessor / report "%DP_FILE%" to 1C:Designer XML format "%DP_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
 %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%DP_PATH%" "%DP_FILE%"
