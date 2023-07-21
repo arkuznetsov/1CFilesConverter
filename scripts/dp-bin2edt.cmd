@@ -34,7 +34,7 @@ if not defined DP_PATH (
     exit /b 1
 )
 if not exist "%BASE_CONFIG%" (
-    echo Path "%BASE_CONFIG%" doesn't exist (parameter 3), empty infobase will be used.
+    echo Path "%BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
     set BASE_CONFIG=
 )
 
