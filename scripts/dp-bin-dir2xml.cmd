@@ -39,31 +39,41 @@ md "%V8_TEMP%"
 IF not exist "%DP_SRC_PATH%" md "%DP_SRC_PATH%"
 
 echo Set infobase for export data processor/report...
+set BASE_CONFIG_DESCRIPTION=configuration from "%BASE_CONFIG%"
+
 IF "%BASE_CONFIG%" equ "" (
-    echo Creating infobase "%IB_PATH%"...
     md "%IB_PATH%"
+    echo Creating infobase "%IB_PATH%"...
     set BASE_CONFIG_DESCRIPTION=empty configuration
     %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
-) ELSE (
-    set BASE_CONFIG_DESCRIPTION=configuration from "%BASE_CONFIG%"
-    IF exist "%BASE_CONFIG%\DT-INF\" (
-        md "%IB_PATH%"
-        call %~dp0edt2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
-    ) ELSE (
-        IF exist "%BASE_CONFIG%\Configuration.xml" (
-            md "%IB_PATH%"
-            call %~dp0xml2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
-        ) ELSE (
-            IF exist "%BASE_CONFIG%\1cv8.1cd" (
-                set BASE_CONFIG_DESCRIPTION=existed configuration
-                set IB_PATH=%BASE_CONFIG%
-            ) ELSE (
-                md "%IB_PATH%"
-                call %~dp0cf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
-            )
-        )
-    )
+    goto export
 )
+IF /i "%BASE_CONFIG:~-3%" equ ".cf" (
+    md "%IB_PATH%"
+    call %~dp0cf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
+    goto export
+)
+IF exist "%BASE_CONFIG%\DT-INF\" (
+    md "%IB_PATH%"
+    call %~dp0edt2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
+    goto export
+)
+IF exist "%BASE_CONFIG%\Configuration.xml" (
+    md "%IB_PATH%"
+    call %~dp0xml2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
+    goto export
+)
+IF exist "%BASE_CONFIG%\1cv8.1cd" (
+    set BASE_CONFIG_DESCRIPTION=existed configuration
+    set IB_PATH=%BASE_CONFIG%
+    goto export
+)
+
+echo Error cheking type of basic configuration "%BASE_CONFIG%"!
+echo Infobase, configuration file (*.cf), 1C:Designer XML, 1C:EDT project or no configuration expected.
+exit /b 1
+
+:export
 
 echo Export dataprocessors from folder "%DP_BIN_PATH%" to 1C:Designer XML format "%DP_SRC_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
 FOR /f %%f IN ('dir /b /a-d "%DP_BIN_PATH%\*.epf"') DO (

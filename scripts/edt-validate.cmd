@@ -50,6 +50,31 @@ IF exist "%CONFIG_PATH%\DT-INF\" (
         call %~dp0cf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     )
 )
+echo Prepare project for validation...
+
+IF exist "%CONFIG_PATH%\DT-INF\" (
+    set VALIDATE_PATH=%CONFIG_PATH%
+    goto validate
+)
+md "%VALIDATE_PATH%"
+IF /i "%CONFIG_PATH:~-3%" equ ".cf" (
+    call %~dp0cf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
+IF exist "%CONFIG_PATH%\Configuration.xml" (
+    call %~dp0xml2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
+IF exist "%CONFIG_PATH%\1cv8.1cd" (
+    call %~dp0ib2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
+
+echo Error cheking type of configuration "%BASE_CONFIG%"!
+echo Infobase, configuration file (*.cf), 1C:Designer XML or 1C:EDT project expected.
+exit /b 1
+
+:validate
 
 echo Run validation in "%VALIDATE_PATH%"...
 call %RING_TOOL% edt workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
