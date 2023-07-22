@@ -13,9 +13,7 @@ set V8_VERSION=8.3.20.2290
 set V8_TEMP=%OUT_PATH%\tmp
 
 echo Clear output files...
-if exist "%OUT_PATH%" (
-    rd /S /Q "%OUT_PATH%"
-)
+IF exist "%OUT_PATH%" rd /S /Q "%OUT_PATH%"
 md "%OUT_PATH%"
 md "%V8_TEMP%"
 
@@ -45,9 +43,9 @@ echo ======
 FOR /f %%f IN ('dir /b /a-d "%~dp0before\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
     call %BEFORE_TEST_PATH%\%%~f
-    if exist "!TEST_CHECK_PATH!" (
+    IF exist "!TEST_CHECK_PATH!" (
         set /a TEST_SUCCESS=!TEST_SUCCESS!+1
-    ) else (
+    ) ELSE (
         echo ===
         echo Prepare step FAILED ^(%%~nf^): Path "!TEST_CHECK_PATH!" not found
         echo ===
@@ -64,9 +62,9 @@ echo ======
 FOR /f %%f IN ('dir /b /a-d "%~dp0tests\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
     call %TEST_PATH%\%%~f
-    if exist "!TEST_CHECK_PATH!" (
+    IF exist "!TEST_CHECK_PATH!" (
         set /a TEST_SUCCESS=!TEST_SUCCESS!+1
-    ) else (
+    ) ELSE (
         echo ===
         echo Test FAILED ^(%%~nf^): Path "!TEST_CHECK_PATH!" not found
         echo ===
@@ -89,4 +87,4 @@ FOR %%j IN (!TEST_FAILED_LIST!) DO (
     echo         %%j
 )
 
-rd /S /Q "%IB_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
