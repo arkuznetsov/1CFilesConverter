@@ -8,4 +8,4 @@ echo ===
 echo Prepare %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
 
-call %SCRIPTS_PATH%\ib2xml.cmd "%TEST_IB%" "%TEST_OUT_PATH%"
+call %SCRIPTS_PATH%\conf2xml.cmd "%TEST_IB%" "%TEST_OUT_PATH%"
