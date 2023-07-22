@@ -76,8 +76,8 @@ if exist "%XML_PATH%" (
 if exist "%WS_PATH%" (
     rd /S /Q "%WS_PATH%"
 )
-if exist "%DP_SRC_PATH%" (
-    rd /S /Q "%DP_SRC_PATH%"
+if exist "%DP_PATH%" (
+    rd /S /Q "%DP_PATH%"
 )
 md "%XML_PATH%"
 md "%WS_PATH%"
