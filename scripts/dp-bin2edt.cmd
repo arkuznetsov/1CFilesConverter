@@ -58,17 +58,17 @@ IF "%BASE_CONFIG%" equ "" (
 )
 IF /i "%BASE_CONFIG:~-3%" equ ".cf" (
     md "%IB_PATH%"
-    call %~dp0cf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
+    call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
     goto export
 )
 IF exist "%BASE_CONFIG%\DT-INF\" (
     md "%IB_PATH%"
-    call %~dp0edt2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
+    call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
     goto export
 )
 IF exist "%BASE_CONFIG%\Configuration.xml" (
     md "%IB_PATH%"
-    call %~dp0xml2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
+    call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
     goto export
 )
 IF exist "%BASE_CONFIG%\1cv8.1cd" (

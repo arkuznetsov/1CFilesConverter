@@ -7,4 +7,4 @@ set TEST_CHECK_PATH=%TEST_OUT_PATH%\1cv8.1cd
 echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
-call %SCRIPTS_PATH%\edt2ib.cmd "%TEST_EDT_CF%" "%TEST_OUT_PATH%" designer
+call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_EDT_CF%" "%TEST_OUT_PATH%" designer
