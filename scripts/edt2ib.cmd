@@ -68,5 +68,9 @@ if "%CONV_TOOL%" equ "designer" (
 )
 
 echo Clear temporary files...
-rd /S /Q "%XML_PATH%"
-rd /S /Q "%WS_PATH%"
+if exist "%XML_PATH%" (
+    rd /S /Q "%XML_PATH%"
+)
+if exist "%WS_PATH%" (
+    rd /S /Q "%WS_PATH%"
+)

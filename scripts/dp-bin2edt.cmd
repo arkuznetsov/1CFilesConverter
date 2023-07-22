@@ -93,5 +93,9 @@ echo Clear temporary files...
 IF "%CLEAN_AFTER_EXPORT%" equ "1" (
     rd /S /Q "%IB_PATH%"
 )
-rd /S /Q "%XML_PATH%"
-rd /S /Q "%WS_PATH%"
+if exist "%XML_PATH%" (
+    rd /S /Q "%XML_PATH%"
+)
+if exist "%WS_PATH%" (
+    rd /S /Q "%WS_PATH%"
+)

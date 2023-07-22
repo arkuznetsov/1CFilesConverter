@@ -60,4 +60,6 @@ if "%CONV_TOOL%" equ "designer" (
 )
 
 echo Clear temporary files...
-rd /S /Q "%IB_PATH%"
+if exist "%IB_PATH%" (
+    rd /S /Q "%IB_PATH%"
+)

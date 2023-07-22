@@ -43,5 +43,9 @@ echo Export "%EDT_PATH%" to 1C:Designer XML format "%CONFIG_PATH%"...
 call %RING_TOOL% edt workspace export --project "%EDT_PATH%" --configuration-files "%CONFIG_PATH%" --workspace-location "%WS_PATH%"
 
 echo Clear temporary files...
-rd /S /Q "%IB_PATH%"
-rd /S /Q "%WS_PATH%"
+if exist "%IB_PATH%" (
+    rd /S /Q "%IB_PATH%"
+)
+if exist "%WS_PATH%" (
+    rd /S /Q "%WS_PATH%"
+)
