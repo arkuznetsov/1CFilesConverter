@@ -15,7 +15,6 @@ IF "%VALIDATE_PATH%" equ "" (
     set VALIDATE_PATH=%V8_TEMP%\tmp_edt
 )
 set WS_PATH=%V8_TEMP%\edt_ws
-set CLEAN_AFTER_VALIDATION=0
 
 set CONFIG_PATH=%1
 IF defined CONFIG_PATH set CONFIG_PATH=%CONFIG_PATH:"=%
@@ -35,15 +34,16 @@ IF not defined REPORT_FILE (
 )
 
 echo Clear temporary files...
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
-IF exist "%REPORT_FILE_PATH%" rd /S /Q "%REPORT_FILE_PATH%"
-md "%REPORT_FILE_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
+md "%V8_TEMP%"
+md "%WS_PATH%"
+IF not exist "%REPORT_FILE_PATH%" md "%REPORT_FILE_PATH%"
 
 echo Prepare project for validation...
 IF exist "%CONFIG_PATH%\DT-INF\" (
     set VALIDATE_PATH=%CONFIG_PATH%
 ) ELSE (
-    set CLEAN_AFTER_VALIDATION=1
+    md "%VALIDATE_PATH%"
     IF exist "%CONFIG_PATH%\Configuration.xml" (
         call %~dp0xml2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     ) ELSE (
@@ -56,4 +56,3 @@ call %RING_TOOL% edt workspace validate --project-list "%VALIDATE_PATH%" --works
 
 echo Clear temporary files...
 IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
-IF "%CLEAN_AFTER_VALIDATION%" equ "1" IF exist "%VALIDATE_PATH%" rd /S /Q "%VALIDATE_PATH%"

@@ -38,8 +38,7 @@ IF not defined IB_PATH (
 )
 
 echo Clear temporary files...
-IF exist "%XML_PATH%" rd /S /Q "%XML_PATH%"
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
 md "%V8_TEMP%"
 md "%XML_PATH%"
 md "%WS_PATH%"
@@ -62,5 +61,4 @@ IF "%CONV_TOOL%" equ "designer" (
 )
 
 echo Clear temporary files...
-IF exist "%XML_PATH%" rd /S /Q "%XML_PATH%"
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"

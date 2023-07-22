@@ -33,7 +33,9 @@ IF not defined CONFIG_PATH (
 )
 
 echo Clear temporary files...
-IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
+md "%V8_TEMP%"
+md "%IB_PATH%"
 IF exist "%CONFIG_PATH%" rd /S /Q "%CONFIG_PATH%"
 md "%CONFIG_PATH%"
 
@@ -52,4 +54,4 @@ IF "%CONV_TOOL%" equ "designer" (
 )
 
 echo Clear temporary files...
-IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"

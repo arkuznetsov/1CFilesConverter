@@ -25,8 +25,10 @@ IF not defined EDT_PATH (
 )
 
 echo Clear temporary files...
-IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
+md "%V8_TEMP%"
+md "%IB_PATH%"
+md "%WS_PATH%"
 IF exist "%EDT_PATH%" rd /S /Q "%EDT_PATH%"
 md "%EDT_PATH%"
 
@@ -34,5 +36,4 @@ echo Export "%CONFIG_PATH%" to 1C:EDT format "%EDT_PATH%"...
 call %RING_TOOL% edt workspace import --project "%EDT_PATH%" --configuration-files "%CONFIG_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
 
 echo Clear temporary files...
-IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"

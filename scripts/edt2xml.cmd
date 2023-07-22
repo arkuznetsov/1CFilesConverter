@@ -28,8 +28,10 @@ IF not defined CONFIG_PATH (
 )
 
 echo Clear temporary files...
-IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
+md "%V8_TEMP%"
+md "%IB_PATH%"
+md "%WS_PATH%"
 IF exist "%CONFIG_PATH%" rd /S /Q "%CONFIG_PATH%"
 md "%CONFIG_PATH%"
 
@@ -37,5 +39,4 @@ echo Export "%EDT_PATH%" to 1C:Designer XML format "%CONFIG_PATH%"...
 call %RING_TOOL% edt workspace export --project "%EDT_PATH%" --configuration-files "%CONFIG_PATH%" --workspace-location "%WS_PATH%"
 
 echo Clear temporary files...
-IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
+IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
