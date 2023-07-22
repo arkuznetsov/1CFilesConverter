@@ -1,4 +1,4 @@
-@ECHO ON
+@ECHO OFF
 
 rem Convert (load) 1C data processor or report from 1C:Designer XML format to binary format (*.epf, *.erf)
 rem %1 - path to main file of 1C data processor or report in 1C:Designer XML format (*.xml)

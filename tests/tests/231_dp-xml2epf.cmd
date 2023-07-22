@@ -1,4 +1,4 @@
-@ECHO ON
+@ECHO OFF
 
 set TEST_NAME="DP (XML) -> binary"
 set TEST_OUT_PATH=%OUT_PATH%\%~n0
