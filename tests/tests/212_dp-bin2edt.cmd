@@ -7,4 +7,4 @@ set TEST_CHECK_PATH=%TEST_OUT_PATH%\src\ExternalReports\ВнешнийОтчет
 echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
-call %SCRIPTS_PATH%\dp-bin2edt.cmd "%FIXTURES_PATH%\bin\ВнешнийОтчет1.erf" "%TEST_OUT_PATH%"
+call %SCRIPTS_PATH%\dp2edt.cmd "%FIXTURES_PATH%\bin\ВнешнийОтчет1.erf" "%TEST_OUT_PATH%"

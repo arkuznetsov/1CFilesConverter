@@ -7,4 +7,4 @@ set TEST_CHECK_PATH=%TEST_OUT_PATH%\ВнешняяОбработка1.xml
 echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
-call %SCRIPTS_PATH%\dp-bin2xml.cmd "%FIXTURES_PATH%\bin\ВнешняяОбработка1.epf" "%TEST_OUT_PATH%" ibcmd
+call %SCRIPTS_PATH%\dp2xml.cmd "%FIXTURES_PATH%\bin\ВнешняяОбработка1.epf" "%TEST_OUT_PATH%"
