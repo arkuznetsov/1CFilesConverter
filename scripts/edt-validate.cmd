@@ -40,17 +40,6 @@ md "%WS_PATH%"
 IF not exist "%REPORT_FILE_PATH%" md "%REPORT_FILE_PATH%"
 
 echo Prepare project for validation...
-IF exist "%CONFIG_PATH%\DT-INF\" (
-    set VALIDATE_PATH=%CONFIG_PATH%
-) ELSE (
-    md "%VALIDATE_PATH%"
-    IF exist "%CONFIG_PATH%\Configuration.xml" (
-        call %~dp0xml2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
-    ) ELSE (
-        call %~dp0cf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
-    )
-)
-echo Prepare project for validation...
 
 IF exist "%CONFIG_PATH%\DT-INF\" (
     set VALIDATE_PATH=%CONFIG_PATH%
@@ -58,15 +47,19 @@ IF exist "%CONFIG_PATH%\DT-INF\" (
 )
 md "%VALIDATE_PATH%"
 IF /i "%CONFIG_PATH:~-3%" equ ".cf" (
-    call %~dp0cf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
 IF exist "%CONFIG_PATH%\Configuration.xml" (
-    call %~dp0xml2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
 IF exist "%CONFIG_PATH%\1cv8.1cd" (
-    call %~dp0ib2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
+FOR /f %%f IN ('dir /b /a-d "%DP_SOURCE%\*.epf" "%DP_SOURCE%\*.erf" "%DP_SOURCE%\*.xml"') DO (
+    call %~dp0dp2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
 
