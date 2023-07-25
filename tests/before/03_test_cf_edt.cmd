@@ -8,4 +8,4 @@ echo ===
 echo Prepare %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
 
-call %SCRIPTS_PATH%\xml2edt.cmd "%TEST_XML_CF%" "%TEST_OUT_PATH%"
+call %SCRIPTS_PATH%\conf2edt.cmd "%TEST_XML_CF%" "%TEST_OUT_PATH%"

@@ -1,6 +1,6 @@
 @ECHO OFF
 
-set TEST_NAME="Test: XML -> infobase (designer)"
+set TEST_NAME="Conf XML -> infobase (designer)"
 set TEST_OUT_PATH=%OUT_PATH%\%~n0
 set TEST_CHECK_PATH=%TEST_OUT_PATH%\1cv8.1cd
 

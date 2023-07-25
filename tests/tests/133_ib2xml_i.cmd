@@ -1,6 +1,6 @@
 @ECHO OFF
 
-set TEST_NAME="infobase -> XML (ibcmd)"
+set TEST_NAME="Conf infobase -> XML (ibcmd)"
 set TEST_OUT_PATH=%OUT_PATH%\%~n0
 set TEST_CHECK_PATH=%TEST_OUT_PATH%\Configuration.xml
 

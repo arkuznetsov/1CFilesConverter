@@ -40,6 +40,7 @@ md "%IB_PATH%"
 echo Checking configuration source type...
 
 IF /i "%CONFIG_SOURCE:~-3%" equ ".cf" (
+    echo Source type: Configuration file ^(CF^)
     md "%IB_PATH%"
     echo Creating infobase "%IB_PATH%" from file "%CONFIG_SOURCE%"...
     IF "%CONV_TOOL%" equ "designer" (
@@ -50,12 +51,14 @@ IF /i "%CONFIG_SOURCE:~-3%" equ ".cf" (
     goto end
 )
 IF exist "%CONFIG_SOURCE%\DT-INF\" (
+    echo Source type: 1C:EDT project
     echo Export "%CONFIG_SOURCE%" to 1C:Designer XML format "%XML_PATH%"...
     call %RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
     goto export
 )
 IF exist "%CONFIG_SOURCE%\Configuration.xml" (
-    set XML_PATH=CONFIG_SOURCE
+    echo Source type: 1C:Designer XML files
+    set XML_PATH=%CONFIG_SOURCE%
     goto export
 )
 
