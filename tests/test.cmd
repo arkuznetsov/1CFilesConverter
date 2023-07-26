@@ -47,6 +47,7 @@ echo ======
 FOR /f %%f IN ('dir /b /a-d "%~dp0before\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
     call %BEFORE_TEST_PATH%\%%~f
+    set TEST_ERROR_MESSAGE=
     set TEST_CHECK_PATH_SUCCESS=
     set TEST_CHECK_PATH_FAILED=
     FOR %%i IN (!TEST_CHECK_PATH!) DO (
@@ -56,6 +57,7 @@ FOR /f %%f IN ('dir /b /a-d "%~dp0before\*.cmd"') DO (
             set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! %%i
         )
     )
+    IF "!TEST_ERROR_MESSAGE!" neq "" set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! !TEST_ERROR_MESSAGE!
     IF "!TEST_CHECK_PATH_FAILED!" equ "" (
         set /a TEST_SUCCESS=!TEST_SUCCESS!+1
     ) ELSE (
@@ -77,6 +79,7 @@ echo ======
 FOR /f %%f IN ('dir /b /a-d "%~dp0tests\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
     call %TEST_PATH%\%%~f
+    set TEST_ERROR_MESSAGE=
     set TEST_CHECK_PATH_SUCCESS=
     set TEST_CHECK_PATH_FAILED=
     FOR %%i IN (!TEST_CHECK_PATH!) DO (
@@ -86,6 +89,7 @@ FOR /f %%f IN ('dir /b /a-d "%~dp0tests\*.cmd"') DO (
             set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! %%i
         )
     )
+    IF "!TEST_ERROR_MESSAGE!" neq "" set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! !TEST_ERROR_MESSAGE!
     IF "!TEST_CHECK_PATH_FAILED!" equ "" (
         set /a TEST_SUCCESS=!TEST_SUCCESS!+1
     ) ELSE (
