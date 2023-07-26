@@ -49,8 +49,6 @@ IF not exist "%BASE_CONFIG%" (
 echo Clear temporary files...
 IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
 md "%V8_TEMP%"
-md "%XML_PATH%"
-md "%WS_PATH%"
 IF exist "%DP_DEST_PATH%" rd /S /Q "%DP_DEST_PATH%"
 md %DP_DEST_PATH%
 
@@ -131,12 +129,17 @@ exit /b 1
 :export_epf
 
 echo Export data processors ^& reports from folder "%DP_SOURCE%" to 1C:Designer XML format "%XML_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
+
+md "%XML_PATH%"
+
 FOR /f %%f IN ('dir /b /a-d %DP_SOURCE_MASK%') DO (
     echo Building %%~ni...
     %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%DP_SOURCE_PATH%\%%~nxf"
 )
 
 :export_xml
+
+md "%WS_PATH%"
 
 echo Export dataprocessors ^& reports from 1C:Designer XML format "%XML_PATH%" to 1C:EDT format "%DP_DEST_PATH%"...
 call %V8_RING_TOOL% edt workspace import --project "%DP_DEST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
