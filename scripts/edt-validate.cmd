@@ -25,6 +25,8 @@ IF defined REPORT_FILE (
     set REPORT_FILE=%REPORT_FILE:"=%
     set REPORT_FILE_PATH=%~dp2
 )
+set EXT_NAME=%3
+IF defined EXT_NAME set EXT_NAME=%EXT_NAME:"=%
 
 IF not defined CONFIG_PATH (
     echo Missed parameter 1 "path to 1C configuration, extension, data processors or reports (binary (*.cf, *.cfe, *.epf, *.erf), 1C:Designer XML format or 1C:EDT format)"
@@ -52,7 +54,15 @@ IF /i "%CONFIG_PATH:~-3%" equ ".cf" (
     call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
+IF /i "%CONFIG_PATH:~-4%" equ ".cfe" (
+    call %~dp0ext2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%" "%EXT_NAME%"
+    goto validate
+)
 IF exist "%CONFIG_PATH%\Configuration.xml" (
+    FOR /f %%t IN ('findstr /r /i "<objectBelonging>" "%CONFIG_PATH%\Configuration.xml"') DO (
+        call %~dp0ext2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+        goto validate
+    )
     call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
