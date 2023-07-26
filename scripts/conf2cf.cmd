@@ -10,8 +10,10 @@ rem      designer - batch run of 1C:Designer
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
+IF not "%V8_CONVERT_TOOL%" equ "designer" IF not "%V8_CONVERT_TOOL%" equ "ibcmd" set V8_CONVERT_TOOL=designer
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
+
 IF not defined V8_RING_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
         set V8_RING_TOOL="%%i"
@@ -29,10 +31,6 @@ IF defined CONFIG_FILE (
     set CONFIG_FILE=%CONFIG_FILE:"=%
     set CONFIG_FILE_PATH=%~dp2
 )
-set CONV_TOOL=%3
-IF defined CONV_TOOL (
-    set CONV_TOOL=%CONV_TOOL:"=%
-) ELSE set CONV_TOOL=ibcmd
 
 IF not defined CONFIG_SOURCE (
     echo Missed parameter 1 "path to 1C configuration source (infobase, 1C:Designer XML files or 1C:EDT project)"
@@ -79,7 +77,7 @@ call %V8_RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configura
 
 :export_xml
 
-IF "%CONV_TOOL%" equ "designer" (
+IF "%V8_CONVERT_TOOL%" equ "designer" (
     echo Creating infobase "%IB_PATH%"...
     %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
 
@@ -93,7 +91,7 @@ IF "%CONV_TOOL%" equ "designer" (
 :export_ib
 
 echo Export infobase "%IB_PATH%" configuration to "%CONFIG_FILE%"...
-IF "%CONV_TOOL%" equ "designer" (
+IF "%V8_CONVERT_TOOL%" equ "designer" (
     %V8_TOOL% DESIGNER /IBConnectionString File=%IB_PATH%; /DisableStartupDialogs /DumpCfg %CONFIG_FILE%
 ) ELSE (
     %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" "%CONFIG_FILE%"

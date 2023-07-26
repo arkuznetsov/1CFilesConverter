@@ -6,6 +6,7 @@ rem %2 - path to validation report file
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
+
 IF not defined V8_RING_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
         set V8_RING_TOOL="%%i"
@@ -59,7 +60,7 @@ IF exist "%CONFIG_PATH%\1cv8.1cd" (
     call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
-FOR /f %%f IN ('dir /b /a-d "%DP_SOURCE%\*.epf" "%DP_SOURCE%\*.erf" "%DP_SOURCE%\*.xml"') DO (
+FOR /f %%f IN ('dir /b /a-d "%CONFIG_PATH%\*.epf" "%CONFIG_PATH%\*.erf" "%CONFIG_PATH%\*.xml" "%CONFIG_PATH%\ExternalDataProcessors\*.xml" "%CONFIG_PATH%\ExternalReports\*.xml"') DO (
     call %~dp0dp2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
