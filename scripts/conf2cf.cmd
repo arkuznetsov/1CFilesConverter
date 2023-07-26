@@ -3,9 +3,6 @@
 rem Convert (load) 1C configuration from 1C:EDT format to 1C configuration file (*.cf)
 rem %1 - path to 1C configuration source (infobase, 1C:Designer XML files or 1C:EDT project)
 rem %2 - path to 1C configuration file (*.cf)
-rem %3 - convertion tool to use:
-rem      ibcmd - ibcmd tool (default)
-rem      designer - batch run of 1C:Designer
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c

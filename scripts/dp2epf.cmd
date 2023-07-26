@@ -98,9 +98,6 @@ IF exist "%DP_SOURCE%\DT-INF\" (
 )
 IF "%DP_SOURCE_IS_EDT%" equ "1" (
     echo Source type: 1C:EDT project
-    echo Export "%EDT_PATH%" to 1C:Designer XML format "%DP_DEST_PATH%"...
-    md "%WS_PATH%"
-    md "%XML_PATH%"
     goto export_edt
 )
 FOR /f %%f IN ('dir /b /a-d "%DP_SOURCE%\*.xml"') DO (
@@ -121,6 +118,10 @@ exit /b 1
 :export_edt
 
 echo Export external data processors ^& reports from 1C:EDT format "%DP_SOURCE%" to 1C:Designer XML format "%XML_PATH%"...
+
+md "%WS_PATH%"
+md "%XML_PATH%"
+
 call %V8_RING_TOOL% edt workspace export --project "%DP_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
 
 :export_xml
@@ -143,5 +144,6 @@ IF "%DP_SOURCE_IS_EDT%" equ "1" (
         %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%DP_DEST_PATH%"
     )
 )
+
 echo Clear temporary files...
 IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"

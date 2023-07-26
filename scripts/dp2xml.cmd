@@ -96,9 +96,6 @@ IF exist "%DP_SOURCE%\DT-INF\" (
 )
 IF "%DP_SOURCE_IS_EDT%" equ "1" (
     echo Source type: 1C:EDT project
-    echo Export "%EDT_PATH%" to 1C:Designer XML format "%DP_DEST_PATH%"...
-    md "%WS_PATH%"
-    call %V8_RING_TOOL% edt workspace export --project "%DP_SOURCE%" --configuration-files "%DP_DEST_PATH%" --workspace-location "%WS_PATH%"
     goto end
 )
 FOR /f %%f IN ('dir /b /a-d "%DP_SOURCE%\*.epf" "%DP_SOURCE%\*.erf"') DO (
@@ -128,6 +125,14 @@ FOR /f %%f IN ('dir /b /a-d %DP_SOURCE_MASK%') DO (
     echo Building %%~nf...
     %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%DP_DEST_PATH%" "%DP_SOURCE_PATH%\%%~nxf"
 )
+
+goto end
+
+:export_xml
+
+echo Export dataprocessors ^& reports from 1C:EDT project "%DP_SOURCE%" to 1C:Designer XML format "%DP_DEST_PATH%"...
+md "%WS_PATH%"
+call %V8_RING_TOOL% edt workspace export --project "%DP_SOURCE%" --configuration-files "%DP_DEST_PATH%" --workspace-location "%WS_PATH%"
 
 :end
 

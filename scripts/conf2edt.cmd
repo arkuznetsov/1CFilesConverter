@@ -2,10 +2,7 @@
 
 rem Convert (dump) 1C configuration file (*.cf) to 1C:EDT format
 rem %1 - path to 1C configuration source (1C configuration file (*.cf), infobase or 1C:Designer XML files)
-rem %2 - path to folder to save configuration files in 1C:EDT format
-rem %3 - convertion tool to use:
-rem      ibcmd - ibcmd tool (default)
-rem      designer - batch run of 1C:Designer
+rem %2 - path to folder to save configuration files in 1C:EDT project format
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
@@ -33,14 +30,13 @@ IF not defined CONFIG_SOURCE (
     exit /b 1
 )
 IF not defined CONFIG_PATH (
-    echo Missed parameter 2 "path to folder to save configuration files in 1C:EDT format"
+    echo Missed parameter 2 "path to folder to save configuration files in 1C:EDT peoject format"
     exit /b 1
 )
 
 echo Clear temporary files...
 IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
 md "%V8_TEMP%"
-md "%IB_PATH%"
 md "%XML_PATH%"
 md "%WS_PATH%"
 IF exist "%CONFIG_PATH%" rd /S /Q "%CONFIG_PATH%"
@@ -70,6 +66,9 @@ exit /b 1
 :export_cf
 
 echo Creating infobase "%IB_PATH%" from file "%CONFIG_FILE%"...
+
+md "%IB_PATH%"
+
 IF "%V8_CONVERT_TOOL%" equ "designer" (
     %V8_TOOL% CREATEINFOBASE File="%IB_PATH%"; /DisableStartupDialogs /UseTemplate "%CONFIG_FILE%"
 ) ELSE (
