@@ -1,7 +1,6 @@
 @ECHO OFF
 
 rem Convert (load) all 1C data processors & reports in folder from 1C:Designer XML format to binary format (*.epf, *.erf)
-rem %1 - path to folder contains 1C data processors & reports in 1C:Designer XML format
 rem %1 - path to folder contains 1C data processors & reports in 1C:Designer XML format or EDT format
 rem      or path to main xml-file of data processor or report
 rem %2 - path to folder to save data processors & reports in binary format (*.epf, *.erf)
@@ -12,6 +11,11 @@ IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF not defined V8_RING_TOOL (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
+        set V8_RING_TOOL="%%i"
+    )
+)
 
 set IB_PATH=%V8_TEMP%\tmp_db
 set XML_PATH=%V8_TEMP%\tmp_xml
@@ -111,13 +115,13 @@ IF /i "%DP_SOURCE:~-4%" equ ".xml" (
 )
 
 echo Wrong path "%DP_SOURCE%"!
-echo Folder containing external data processors ^& reports in XML or 1C:EDT project format or path to main xml-file of data processor or report expected.
+echo Folder containing external data processors ^& reports in XML format or 1C:EDT project or path to main xml-file of data processor or report expected.
 exit /b 1
 
 :export_edt
 
 echo Export external data processors ^& reports from 1C:EDT format "%DP_SOURCE%" to 1C:Designer XML format "%XML_PATH%"...
-call %RING_TOOL% edt workspace export --project "%DP_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+call %V8_RING_TOOL% edt workspace export --project "%DP_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
 
 :export_xml
 

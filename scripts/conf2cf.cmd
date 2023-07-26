@@ -12,8 +12,10 @@ IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
-FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
-    set RING_TOOL="%%i"
+IF not defined V8_RING_TOOL (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
+        set V8_RING_TOOL="%%i"
+    )
 )
 
 set IB_PATH=%V8_TEMP%\tmp_db
@@ -73,7 +75,7 @@ exit /b 1
 :export_edt
 
 echo Export "%CONFIG_SOURCE%" to 1C:Designer XML format "%XML_PATH%"...
-call %RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+call %V8_RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
 
 :export_xml
 

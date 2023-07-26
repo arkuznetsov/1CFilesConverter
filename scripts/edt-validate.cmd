@@ -1,14 +1,15 @@
 @ECHO OFF
 
 rem Validate 1C configuration using 1C:EDT (ring tool)
-rem %1 - path to 1C configuration (binary (*.cf), 1C:Designer XML format or 1C:EDT format)
+rem %1 - path to 1C configuration, extension, data processors or reports (binary (*.cf, *.cfe, *.epf, *.erf), 1C:Designer XML format or 1C:EDT format)
 rem %2 - path to validation report file
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
-
-FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
-    set RING_TOOL="%%i"
+IF not defined V8_RING_TOOL (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
+        set V8_RING_TOOL="%%i"
+    )
 )
 
 IF "%VALIDATE_PATH%" equ "" (
@@ -25,7 +26,7 @@ IF defined REPORT_FILE (
 )
 
 IF not defined CONFIG_PATH (
-    echo Missed parameter 1 "path to 1C configuration (binary (*.cf), 1C:Designer XML format or 1C:EDT format)"
+    echo Missed parameter 1 "path to 1C configuration, extension, data processors or reports (binary (*.cf, *.cfe, *.epf, *.erf), 1C:Designer XML format or 1C:EDT format)"
     exit /b 1
 )
 IF not defined REPORT_FILE (
@@ -64,13 +65,13 @@ FOR /f %%f IN ('dir /b /a-d "%DP_SOURCE%\*.epf" "%DP_SOURCE%\*.erf" "%DP_SOURCE%
 )
 
 echo Error cheking type of configuration "%BASE_CONFIG%"!
-echo Infobase, configuration file (*.cf), 1C:Designer XML or 1C:EDT project expected.
+echo Infobase, configuration file ^(*.cf^), configuration extension file ^(*.cfe^), folder contains external data processors ^& reports in binary or XML format, 1C:Designer XML or 1C:EDT project expected.
 exit /b 1
 
 :validate
 
 echo Run validation in "%VALIDATE_PATH%"...
-call %RING_TOOL% edt workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
+call %V8_RING_TOOL% edt workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
 
 echo Clear temporary files...
 IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"

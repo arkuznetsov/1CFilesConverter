@@ -1,7 +1,7 @@
 @ECHO OFF
 
 rem Convert (dump) all 1C data processors & reports (*.epf, *.erf) in folder to 1C:Designer XML format
-rem %1 - path to folder containing data processors (*.epf) & reports (*.erf) in binary or EDT format
+rem %1 - path to folder containing data processors (*.epf) & reports (*.erf) in binary or EDT project
 rem      or path to binary data processor (*.epf) or report (*.erf)
 rem %2 - path to folder to save 1C data processors & reports in 1C:Designer XML format
 rem %3 - path to 1C configuration (binary (*.cf), 1C:Designer XML format or 1C:EDT format)
@@ -11,8 +11,10 @@ IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
-FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
-    set RING_TOOL="%%i"
+IF not defined V8_RING_TOOL (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
+        set V8_RING_TOOL="%%i"
+    )
 )
 
 set IB_PATH=%V8_TEMP%\tmp_db
@@ -27,7 +29,7 @@ set BASE_CONFIG=%3
 IF defined BASE_CONFIG set BASE_CONFIG=%BASE_CONFIG:"=%
 
 IF not defined DP_SOURCE (
-    echo Missed parameter 1 "path to folder containing data processors (*.epf) & reports (*.erf) in binary or EDT format or path to binary data processor (*.epf) or report (*.erf)"
+    echo Missed parameter 1 "path to folder containing data processors (*.epf) & reports (*.erf) in binary or EDT project or path to binary data processor (*.epf) or report (*.erf)"
     exit /b 1
 )
 IF not defined DP_DEST_PATH (
@@ -96,7 +98,7 @@ IF "%DP_SOURCE_IS_EDT%" equ "1" (
     echo Source type: 1C:EDT project
     echo Export "%EDT_PATH%" to 1C:Designer XML format "%DP_DEST_PATH%"...
     md "%WS_PATH%"
-    call %RING_TOOL% edt workspace export --project "%DP_SOURCE%" --configuration-files "%DP_DEST_PATH%" --workspace-location "%WS_PATH%"
+    call %V8_RING_TOOL% edt workspace export --project "%DP_SOURCE%" --configuration-files "%DP_DEST_PATH%" --workspace-location "%WS_PATH%"
     goto end
 )
 FOR /f %%f IN ('dir /b /a-d "%DP_SOURCE%\*.epf" "%DP_SOURCE%\*.erf"') DO (
@@ -116,7 +118,7 @@ IF /i "%DP_SOURCE:~-4%" equ ".erf" (
 )
 
 echo Wrong path "%DP_SOURCE%"!
-echo Folder containing external data processors ^& reports in binary or XML format, data processor binary ^(*.epf^) or report binary ^(*.erf^) expected.
+echo Folder containing external data processors ^& reports in binary or EDT project, data processor binary ^(*.epf^) or report binary ^(*.erf^) expected.
 exit /b 1
 
 :export_epf

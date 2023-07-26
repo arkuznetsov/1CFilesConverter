@@ -11,8 +11,10 @@ IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
-FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
-    set RING_TOOL="%%i"
+IF not defined V8_RING_TOOL (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
+        set V8_RING_TOOL="%%i"
+    )
 )
 
 set IB_PATH=%V8_TEMP%\tmp_db
@@ -137,7 +139,7 @@ FOR /f %%f IN ('dir /b /a-d %DP_SOURCE_MASK%') DO (
 :export_xml
 
 echo Export dataprocessors ^& reports from 1C:Designer XML format "%XML_PATH%" to 1C:EDT format "%DP_DEST_PATH%"...
-call %RING_TOOL% edt workspace import --project "%DP_DEST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
+call %V8_RING_TOOL% edt workspace import --project "%DP_DEST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
 
 echo Clear temporary files...
 IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"

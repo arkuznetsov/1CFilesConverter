@@ -11,6 +11,11 @@ IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
+IF not defined V8_RING_TOOL (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
+        set V8_RING_TOOL="%%i"
+    )
+)
 
 set XML_PATH=%V8_TEMP%\tmp_xml
 set WS_PATH=%V8_TEMP%\edt_ws
@@ -53,7 +58,7 @@ IF /i "%CONFIG_SOURCE:~-3%" equ ".cf" (
 IF exist "%CONFIG_SOURCE%\DT-INF\" (
     echo Source type: 1C:EDT project
     echo Export "%CONFIG_SOURCE%" to 1C:Designer XML format "%XML_PATH%"...
-    call %RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+    call %V8_RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
     goto export
 )
 IF exist "%CONFIG_SOURCE%\Configuration.xml" (
