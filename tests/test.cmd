@@ -30,8 +30,10 @@ set TEST_BINARY=%FIXTURES_PATH%\bin
 set TEST_IB=%OUT_PATH%\data\ib
 set TEST_XML_CF=%OUT_PATH%\data\xml\cf
 set TEST_XML_DP=%OUT_PATH%\data\xml\ext
+set TEST_XML_EXT=%OUT_PATH%\data\xml\cfe
 set TEST_EDT_CF=%OUT_PATH%\data\edt\cf
 set TEST_EDT_DP=%OUT_PATH%\data\edt\ext
+set TEST_EDT_EXT=%OUT_PATH%\data\edt\cfe
 
 set /a TEST_COUNT=0
 set /a TEST_SUCCESS=0
@@ -105,7 +107,7 @@ echo.
 
 echo     Tests total: %TEST_COUNT%
 echo     Tests SUCCESS: %TEST_SUCCESS%
-echo     Tests FAILED: %TEST_FAILED%:
+echo     Tests FAILED: %TEST_FAILED%
 
 FOR %%j IN (!TEST_FAILED_LIST!) DO (
     echo         %%j
