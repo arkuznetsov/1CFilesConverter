@@ -1,11 +1,8 @@
 @ECHO OFF
 
-rem Convert (dump) all 1C data processors & reports (*.epf, *.erf) in folder to 1C:EDT format
-rem %1 - path to folder containing data processors (*.epf) & reports (*.erf) in binary or XML format
-rem      or path to binary data processor (*.epf) or report (*.erf)
-rem %2 - path to folder to save 1C data processors & reports in 1C:EDT format
-rem %3 - path to 1C configuration (binary (*.cf), 1C:Designer XML format or 1C:EDT format)
-rem      or folder contains 1C infobase used for convertion
+echo Convert 1C external data processors ^& reports to 1C:EDT project
+
+set ERROR_CODE=0
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
@@ -30,20 +27,32 @@ set BASE_CONFIG=%3
 IF defined BASE_CONFIG set BASE_CONFIG=%BASE_CONFIG:"=%
 
 IF not defined DP_SOURCE (
-    echo Missed parameter 1 "path to folder containing data processors (*.epf) & reports (*.erf) in binary or XML format or path to binary data processor (*.epf) or report (*.erf)"
-    exit /b 1
-)
-IF not exist "%DP_SOURCE%" (
-    echo Path "%DP_SOURCE%" doesn't exist ^(parameter 1^).
-    exit /b 1
+    echo [ERROR] Missed parameter 1 - "path to folder containing data processors (*.epf) & reports (*.erf) in binary or XML format or path to binary data processor (*.epf) or report (*.erf)"
+    set ERROR_CODE=1
+) ELSE (
+    IF not exist "%DP_SOURCE%" (
+        echo [ERROR] Path "%DP_SOURCE%" doesn't exist ^(parameter 1^).
+        set ERROR_CODE=1
+    )
 )
 IF not defined DP_DEST_PATH (
-    echo Missed parameter 2 "path to folder to save 1C data processors & reports in 1C:EDT format"
-    exit /b 1
+    echo [ERROR] Missed parameter 2 - "path to folder to save 1C data processors & reports in 1C:EDT format"
+    set ERROR_CODE=1
 )
 IF not exist "%BASE_CONFIG%" (
-    echo Path "%BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
+    echo [INFO] Path "%BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
     set BASE_CONFIG=
+)
+IF %ERROR_CODE% neq 0 (
+    echo ===
+    echo [ERROR] Input parameters error. Expected:
+    echo     %%1 - path to folder containing data processors ^(*.epf^) ^& reports ^(*.erf^) in binary or XML format
+    echo           or path to binary data processor ^(*.epf^) or report ^(*.erf^)
+    echo     %%2 - path to folder to save 1C data processors ^& reports in 1C:EDT format
+    echo     %%3 - ^(optional^) path to 1C configuration ^(binary ^(*.cf^), 1C:Designer XML format or 1C:EDT project^)
+    echo           or folder contains 1C infobase used for convertion
+    echo.
+    exit /b %ERROR_CODE%
 )
 
 echo Clear temporary files...
@@ -88,7 +97,7 @@ IF exist "%BASE_CONFIG%\1cv8.1cd" (
 )
 
 echo Error cheking type of basic configuration "%BASE_CONFIG%"!
-echo Infobase, configuration file (*.cf), 1C:Designer XML, 1C:EDT project or no configuration expected.
+echo Infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
 exit /b 1
 
 :export

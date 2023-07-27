@@ -1,11 +1,8 @@
 @ECHO OFF
 
-rem Convert (dump) all 1C data processors & reports (*.epf, *.erf) in folder to 1C:Designer XML format
-rem %1 - path to folder contains 1C extension binary file (*.cfe) or EDT project
-rem %2 - path to folder to save configuration extension files in 1C:Designer XML format
-rem %3 - configuration extension name
-rem %4 - path to 1C configuration (binary (*.cf), 1C:Designer XML format or 1C:EDT format)
-rem      or folder contains 1C infobase used for convertion
+echo Convert 1C configuration extension to 1C:Designer XML format
+
+set ERROR_CODE=0
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
@@ -27,24 +24,41 @@ IF defined EXT_SOURCE set EXT_SOURCE=%EXT_SOURCE:"=%
 set EXT_DEST_PATH=%2
 IF defined EXT_DEST_PATH set EXT_DEST_PATH=%EXT_DEST_PATH:"=%
 set EXT_NAME=%3
+IF defined EXT_NAME set EXT_NAME=%EXT_NAME:"=%
 set BASE_CONFIG=%4
 IF defined BASE_CONFIG set BASE_CONFIG=%BASE_CONFIG:"=%
 
 IF not defined EXT_SOURCE (
-    echo Missed parameter 1 "path to folder contains 1C extension binary file (*.cfe) or EDT project"
-    exit /b 1
+    echo [ERROR] Missed parameter 1 - "path to folder contains 1C extension binary file (*.cfe) or EDT project"
+    set ERROR_CODE=1
+) ELSE (
+    IF not exist "%EXT_SOURCE%" (
+        echo [ERROR] Path "%EXT_SOURCE%" doesn't exist ^(parameter 1^).
+        set ERROR_CODE=1
+    )
 )
 IF not defined EXT_DEST_PATH (
-    echo Missed parameter 2 "path to folder to save configuration extension files in 1C:Designer XML format"
-    exit /b 1
+    echo [ERROR] Missed parameter 2 - "path to folder to save configuration extension files in 1C:Designer XML format"
+    set ERROR_CODE=1
 )
 IF not defined EXT_NAME (
-    echo Missed parameter 3 "configuration extension name"
-    exit /b 1
+    echo [ERROR] Missed parameter 3 - "configuration extension name"
+    set ERROR_CODE=1
 )
 IF not exist "%BASE_CONFIG%" (
-    echo Path "%BASE_CONFIG%" doesn't exist ^(parameter 4^), empty infobase will be used.
+    echo [INFO] Path "%BASE_CONFIG%" doesn't exist ^(parameter 4^), empty infobase will be used.
     set BASE_CONFIG=
+)
+IF %ERROR_CODE% neq 0 (
+    echo ===
+    echo [ERROR] Input parameters error. Expected:
+    echo     %%1 - path to folder contains 1C extension binary file ^(*.cfe^) or EDT project
+    echo     %%2 - path to folder to save configuration extension files in 1C:Designer XML format
+    echo     %%3 - configuration extension name
+    echo     %%4 - ^(optional^) path to 1C configuration ^(binary ^(*.cf^), 1C:Designer XML format or 1C:EDT project^)
+    echo           or folder contains 1C infobase used for convertion
+    echo.
+    exit /b %ERROR_CODE%
 )
 
 echo Clear temporary files...
@@ -88,7 +102,7 @@ IF exist "%BASE_CONFIG%\1cv8.1cd" (
 )
 
 echo Error cheking type of basic configuration "%BASE_CONFIG%"!
-echo Infobase, configuration file (*.cf), 1C:Designer XML, 1C:EDT project or no configuration expected.
+echo Infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
 exit /b 1
 
 :export
@@ -109,7 +123,7 @@ IF exist "%EXT_SOURCE%\DT-INF\" (
 )
 
 echo Wrong path "%EXT_SOURCE%"!
-echo Configuration extension binary (*.cfe) or folder containing configuration extension 1C:EDT project expected.
+echo Configuration extension binary ^(*.cfe^) or folder containing configuration extension 1C:EDT project expected.
 exit /b 1
 
 :export_cfe

@@ -1,8 +1,8 @@
 @ECHO OFF
 
-rem Load 1C configuration file (*.cf) to 1C infobase (file)
-rem %1 - path to 1C configuration source (1C configuration file (*.cf), 1C:Designer XML files or 1C:EDT project)
-rem %2 - path to folder contains 1C infobase
+echo Load 1C configuration to 1C infobase
+
+set ERROR_CODE=0
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
@@ -25,12 +25,20 @@ set IB_PATH=%2
 IF defined IB_PATH set IB_PATH=%IB_PATH:"=%
 
 IF not defined CONFIG_SOURCE (
-    echo Missed parameter 1 "path to 1C configuration source (1C configuration file (*.cf), 1C:Designer XML files or 1C:EDT project)"
-    exit /b 1
+    echo [ERROR] Missed parameter 1 - "path to 1C configuration source (1C configuration file (*.cf), 1C:Designer XML files or 1C:EDT project)"
+    set ERROR_CODE=1
 )
 IF not defined IB_PATH (
-    echo Missed parameter 2 "path to folder contains 1C infobase"
-    exit /b 1
+    echo [ERROR] Missed parameter 2 - "path to folder contains 1C infobase"
+    set ERROR_CODE=1
+)
+IF %ERROR_CODE% neq 0 (
+    echo ===
+    echo [ERROR] Input parameters error. Expected:
+    echo     %%1 - path to 1C configuration source ^(1C configuration file ^(*.cf^), 1C:Designer XML files or 1C:EDT project^)
+    echo     %%2 - path to folder contains 1C infobase
+    echo.
+    exit /b %ERROR_CODE%
 )
 
 echo Clear infobase folder "%IB_PATH%"...
@@ -56,7 +64,7 @@ IF exist "%CONFIG_SOURCE%\Configuration.xml" (
 )
 
 echo Error cheking type of configuration "%CONFIG_SOURCE%"!
-echo Configuration file (*.cf), 1C:Designer XML files or 1C:EDT project expected.
+echo Configuration file ^(*.cf^), 1C:Designer XML files or 1C:EDT project expected.
 exit /b 1
 
 :export_edt

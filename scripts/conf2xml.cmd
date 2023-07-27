@@ -1,8 +1,8 @@
 @ECHO OFF
 
-rem Convert (dump) 1C configuration file (*.cf) to 1C:Designer XML format
-rem %1 - path to 1C configuration source (1C configuration file (*.cf), infobase or 1C:EDT project)
-rem %2 - path to folder to save configuration files in 1C:Designer XML format
+echo Convert 1C configuration to 1C:Designer XML format
+
+set ERROR_CODE=0
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
@@ -25,12 +25,20 @@ set CONFIG_PATH=%2
 IF defined CONFIG_PATH set CONFIG_PATH=%CONFIG_PATH:"=%
 
 IF not defined CONFIG_SOURCE (
-    echo Missed parameter 1 "path to 1C configuration source (1C configuration file (*.cf), infobase or 1C:EDT project)"
-    exit /b 1
+    echo [ERROR] Missed parameter 1 - "path to 1C configuration source (1C configuration file (*.cf), infobase or 1C:EDT project)"
+    set ERROR_CODE=1
 )
 IF not defined CONFIG_PATH (
-    echo Missed parameter 2 "path to folder to save configuration files in 1C:Designer XML format"
-    exit /b 1
+    echo [ERROR] Missed parameter 2 - "path to folder to save configuration files in 1C:Designer XML format"
+    set ERROR_CODE=1
+)
+IF %ERROR_CODE% neq 0 (
+    echo ===
+    echo [ERROR] Input parameters error. Expected:
+    echo     %%1 - path to 1C configuration source ^(1C configuration file ^(*.cf^), infobase or 1C:EDT project^)
+    echo     %%2 - path to folder to save configuration files in 1C:Designer XML format
+    echo.
+    exit /b %ERROR_CODE%
 )
 
 echo Clear temporary files...
@@ -56,7 +64,7 @@ IF exist "%CONFIG_SOURCE%\DT-INF\" (
 )
 
 echo Error cheking type of configuration "%CONFIG_SOURCE%"!
-echo Infobase, configuration file (*.cf) or 1C:EDT project expected.
+echo Infobase, configuration file ^(*.cf^) or 1C:EDT project expected.
 exit /b 1
 
 :export_cf

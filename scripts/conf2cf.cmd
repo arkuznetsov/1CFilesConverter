@@ -1,8 +1,8 @@
 @ECHO OFF
 
-rem Convert (load) 1C configuration from 1C:EDT format to 1C configuration file (*.cf)
-rem %1 - path to 1C configuration source (infobase, 1C:Designer XML files or 1C:EDT project)
-rem %2 - path to 1C configuration file (*.cf)
+echo Convert 1C configuration to 1C configuration file ^(*.cf^)
+
+set ERROR_CODE=0
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
@@ -30,12 +30,21 @@ IF defined CONFIG_FILE (
 )
 
 IF not defined CONFIG_SOURCE (
-    echo Missed parameter 1 "path to 1C configuration source (infobase, 1C:Designer XML files or 1C:EDT project)"
-    exit /b 1
+    echo [ERROR] Missed parameter 1 - "path to 1C configuration source (infobase, 1C:Designer XML files or 1C:EDT project)"
+    set ERROR_CODE=1
 )
 IF not defined CONFIG_FILE (
-    echo Missed parameter 2 "path to 1C configuration file (*.cf)"
-    exit /b 1
+    echo [ERROR] Missed parameter 2 - "path to 1C configuration file (*.cf)"
+    set ERROR_CODE=1
+)
+
+IF %ERROR_CODE% neq 0 (
+    echo ===
+    echo [ERROR] Input parameters error. Expected:
+    echo     %%1 - path to 1C configuration source ^(infobase, 1C:Designer XML files or 1C:EDT project^)
+    echo     %%2 - path to 1C configuration file ^(*.cf^)
+    echo.
+    exit /b %ERROR_CODE%
 )
 
 echo Clear temporary files...

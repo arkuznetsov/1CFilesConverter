@@ -1,8 +1,8 @@
 @ECHO OFF
 
-rem Validate 1C configuration using 1C:EDT (ring tool)
-rem %1 - path to 1C configuration, extension, data processors or reports (binary (*.cf, *.cfe, *.epf, *.erf), 1C:Designer XML format or 1C:EDT format)
-rem %2 - path to validation report file
+echo Validate 1C configuration, extension, external data processors ^& reports using 1C:EDT ^(using ring tool^)
+
+set ERROR_CODE=0
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
@@ -29,12 +29,20 @@ set EXT_NAME=%3
 IF defined EXT_NAME set EXT_NAME=%EXT_NAME:"=%
 
 IF not defined CONFIG_PATH (
-    echo Missed parameter 1 "path to 1C configuration, extension, data processors or reports (binary (*.cf, *.cfe, *.epf, *.erf), 1C:Designer XML format or 1C:EDT format)"
-    exit /b 1
+    echo [ERROR] Missed parameter 1 - "path to 1C configuration, extension, data processors or reports (binary (*.cf, *.cfe, *.epf, *.erf), 1C:Designer XML format or 1C:EDT format)"
+    set ERROR_CODE=1
 )
 IF not defined REPORT_FILE (
-    echo Missed parameter 2 "path to validation report file"
-    exit /b 1
+    echo [ERROR] Missed parameter 2 - "path to validation report file"
+    set ERROR_CODE=1
+)
+IF %ERROR_CODE% neq 0 (
+    echo ===
+    echo [ERROR] Input parameters error. Expected:
+    echo     %%1 - path to 1C configuration, extension, data processors or reports ^(binary ^(*.cf, *.cfe, *.epf, *.erf^), 1C:Designer XML format or 1C:EDT project^)
+    echo     %%2 - path to validation report file
+    echo.
+    exit /b %ERROR_CODE%
 )
 
 echo Clear temporary files...
