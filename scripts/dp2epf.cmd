@@ -70,30 +70,15 @@ IF "%BASE_CONFIG%" equ "" (
     %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
     goto export
 )
-IF /i "%BASE_CONFIG:~-3%" equ ".cf" (
-    echo Basic config source type: Configuration file ^(CF^)
-    md "%IB_PATH%"
-    call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
-    goto export
-)
-IF exist "%BASE_CONFIG%\DT-INF\" (
-    echo Basic config source type: 1C:EDT project
-    md "%IB_PATH%"
-    call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%" designer
-    goto export
-)
-IF exist "%BASE_CONFIG%\Configuration.xml" (
-    echo Basic config source type: 1C:Designer XML files
-    md "%IB_PATH%"
-    call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%" designer
-    goto export
-)
 IF exist "%BASE_CONFIG%\1cv8.1cd" (
     echo Basic config source type: Infobase
     set BASE_CONFIG_DESCRIPTION=existed configuration
     set IB_PATH=%BASE_CONFIG%
     goto export
 )
+md "%IB_PATH%"
+call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
+IF ERRORLEVEL 0 goto export
 
 echo Error cheking type of basic configuration "%BASE_CONFIG%"!
 echo Infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
