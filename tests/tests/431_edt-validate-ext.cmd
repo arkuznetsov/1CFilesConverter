@@ -1,6 +1,6 @@
 @ECHO OFF
 
-set TEST_NAME="Validate data processors & reports"
+set TEST_NAME="Validate configuration extension"
 set TEST_EXT_NAME=Расширение1
 set TEST_OUT_PATH=%OUT_PATH%\%~n0\report.txt
 set TEST_CHECK_PATH=%TEST_OUT_PATH%
