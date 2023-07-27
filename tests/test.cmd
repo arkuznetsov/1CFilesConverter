@@ -3,22 +3,24 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 
 chcp 65001
 
-set SCRIPTS_PATH=%~dp0..\scripts
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%~dp0.." /M "scripts" /C "cmd /c echo @path"`) DO set SCRIPTS_PATH=%%i
+set SCRIPTS_PATH=%SCRIPTS_PATH:"=%
 set BEFORE_TEST_PATH=%~dp0before
 set TEST_PATH=%~dp0tests
 set FIXTURES_PATH=%~dp0fixtures
-set OUT_PATH=%~dp0..\out
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%~dp0.." /M "out" /C "cmd /c echo @path"`) DO set OUT_PATH=%%i
+set OUT_PATH=%OUT_PATH:"=%
 
 set V8_VERSION=8.3.20.2290
 set V8_TEMP=%OUT_PATH%\tmp
 
-echo Clear output files...
+echo [INFO] Clear output files...
 
 IF exist "%OUT_PATH%" rd /S /Q "%OUT_PATH%"
 md "%OUT_PATH%"
 md "%V8_TEMP%"
 
-echo Prepare working directories...
+echo [INFO] Prepare working directories...
 
 md "%OUT_PATH%\data\ib"
 md "%OUT_PATH%\data\edt\cf"
@@ -58,17 +60,18 @@ FOR /f %%f IN ('dir /b /a-d "%~dp0before\*.cmd"') DO (
         )
     )
     IF "!TEST_ERROR_MESSAGE!" neq "" set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! !TEST_ERROR_MESSAGE!
+    echo ===
     IF "!TEST_CHECK_PATH_FAILED!" equ "" (
+        echo [SUCCESS] Test SUCCESS ^(%%~nf^)
         set /a TEST_SUCCESS=!TEST_SUCCESS!+1
     ) ELSE (
-        echo ===
-        echo Test FAILED ^(%%~nf^):
+        echo [ERROR] Test FAILED ^(%%~nf^):
         FOR %%i IN (!TEST_CHECK_PATH_FAILED!) DO echo     Path "%%i" not found
         FOR %%i IN (!TEST_CHECK_PATH_SUCCESS!) DO echo     Path "%%i" exist
-        echo ===
-        set TEST_FAILED_LIST=!TEST_FAILED_LIST! %%~nf
+        set TEST_FAILED_LIST=!TEST_FAILED_LIST! !TEST_COUNT!:%%~nf
         set /a TEST_FAILED=!TEST_FAILED!+1
     )
+    echo ===
     echo.
 )
 
@@ -90,17 +93,18 @@ FOR /f %%f IN ('dir /b /a-d "%~dp0tests\*.cmd"') DO (
         )
     )
     IF "!TEST_ERROR_MESSAGE!" neq "" set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! !TEST_ERROR_MESSAGE!
+    echo ===
     IF "!TEST_CHECK_PATH_FAILED!" equ "" (
+        echo [SUCCESS] Test SUCCESS ^(%%~nf^)
         set /a TEST_SUCCESS=!TEST_SUCCESS!+1
     ) ELSE (
-        echo ===
-        echo Test FAILED ^(%%~nf^):
+        echo [ERROR] Test FAILED ^(%%~nf^):
         FOR %%i IN (!TEST_CHECK_PATH_FAILED!) DO echo     Path "%%i" not found
         FOR %%i IN (!TEST_CHECK_PATH_SUCCESS!) DO echo     Path "%%i" exist
-        echo ===
-        set TEST_FAILED_LIST=!TEST_FAILED_LIST! %%~nf
+        set TEST_FAILED_LIST=!TEST_FAILED_LIST! !TEST_COUNT!:%%~nf
         set /a TEST_FAILED=!TEST_FAILED!+1
     )
+    echo ===
     echo.
 )
 
@@ -109,9 +113,9 @@ echo Test results:
 echo ======
 echo.
 
-echo     Tests total: %TEST_COUNT%
-echo     Tests SUCCESS: %TEST_SUCCESS%
-echo     Tests FAILED: %TEST_FAILED%
+echo     Tests total: !TEST_COUNT!
+echo     Tests SUCCESS: !TEST_SUCCESS!
+echo     Tests FAILED: !TEST_FAILED!
 
 FOR %%j IN (!TEST_FAILED_LIST!) DO (
     echo         %%j
