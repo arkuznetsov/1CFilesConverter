@@ -13,10 +13,11 @@ IF not defined V8_RING_TOOL (
     )
 )
 
+set LOCAL_TEMP=%V8_TEMP%\%~n0
 IF "%VALIDATE_PATH%" equ "" (
-    set VALIDATE_PATH=%V8_TEMP%\tmp_edt
+    set VALIDATE_PATH=%LOCAL_TEMP%\tmp_edt
 )
-set WS_PATH=%V8_TEMP%\edt_ws
+set WS_PATH=%LOCAL_TEMP%\edt_ws
 
 set CONFIG_PATH=%1
 IF defined CONFIG_PATH set CONFIG_PATH=%CONFIG_PATH:"=%
@@ -45,13 +46,12 @@ IF %ERROR_CODE% neq 0 (
     exit /b %ERROR_CODE%
 )
 
-echo Clear temporary files...
-IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
-md "%V8_TEMP%"
-md "%WS_PATH%"
+echo [INFO] Clear temporary files...
+IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
+md "%LOCAL_TEMP%"
 IF not exist "%REPORT_FILE_PATH%" md "%REPORT_FILE_PATH%"
 
-echo Prepare project for validation...
+echo [INFO] Prepare project for validation...
 
 IF exist "%CONFIG_PATH%\DT-INF\" (
     set VALIDATE_PATH=%CONFIG_PATH%
@@ -83,14 +83,17 @@ FOR /f %%f IN ('dir /b /a-d "%CONFIG_PATH%\*.epf" "%CONFIG_PATH%\*.erf" "%CONFIG
     goto validate
 )
 
-echo Error cheking type of configuration "%BASE_CONFIG%"!
+echo [ERROR] Error cheking type of configuration "%BASE_CONFIG%"!
 echo Infobase, configuration file ^(*.cf^), configuration extension file ^(*.cfe^), folder contains external data processors ^& reports in binary or XML format, 1C:Designer XML or 1C:EDT project expected.
 exit /b 1
 
 :validate
 
-echo Run validation in "%VALIDATE_PATH%"...
+echo [INFO] Run validation in "%VALIDATE_PATH%"...
+
+md "%WS_PATH%"
+
 call %V8_RING_TOOL% edt workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
 
-echo Clear temporary files...
-IF exist "%WS_PATH%" rd /S /Q "%WS_PATH%"
+echo [INFO] Clear temporary files...
+IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"

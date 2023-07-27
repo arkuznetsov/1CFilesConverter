@@ -16,9 +16,10 @@ IF not defined V8_RING_TOOL (
     )
 )
 
-set IB_PATH=%V8_TEMP%\tmp_db
-set XML_PATH=%V8_TEMP%\tmp_xml
-set WS_PATH=%V8_TEMP%\edt_ws
+set LOCAL_TEMP=%V8_TEMP%\%~n0
+set IB_PATH=%LOCAL_TEMP%\tmp_db
+set XML_PATH=%LOCAL_TEMP%\tmp_xml
+set WS_PATH=%LOCAL_TEMP%\edt_ws
 
 set EXT_SOURCE=%1
 IF defined EXT_SOURCE set EXT_SOURCE=%EXT_SOURCE:"=%
@@ -62,24 +63,25 @@ IF %ERROR_CODE% neq 0 (
     exit /b %ERROR_CODE%
 )
 
-echo Clear temporary files...
-IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
-md "%V8_TEMP%"
+echo [INFO] Clear temporary files...
+IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
+md "%LOCAL_TEMP%"
 IF exist "%EXT_DEST_PATH%" rd /S /Q "%EXT_DEST_PATH%"
 md %EXT_DEST_PATH%
 
-echo Set infobase for export data processor/report...
+echo [INFO] Set infobase for export data processor/report...
+
 set BASE_CONFIG_DESCRIPTION=configuration from "%BASE_CONFIG%"
 
 IF "%BASE_CONFIG%" equ "" (
     md "%IB_PATH%"
-    echo Creating infobase "%IB_PATH%"...
+    echo [INFO] Creating infobase "%IB_PATH%"...
     set BASE_CONFIG_DESCRIPTION=empty configuration
     %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
     goto export
 )
 IF exist "%BASE_CONFIG%\1cv8.1cd" (
-    echo Basic config source type: Infobase
+    echo [INFO] Basic config source type: Infobase
     set BASE_CONFIG_DESCRIPTION=existed configuration
     set IB_PATH=%BASE_CONFIG%
     goto export
@@ -88,33 +90,33 @@ md "%IB_PATH%"
 call %~dp0conf2ib.cmd "%BASE_CONFIG%" "%IB_PATH%"
 IF ERRORLEVEL 0 goto export
 
-echo Error cheking type of basic configuration "%BASE_CONFIG%"!
+echo [ERROR] Error cheking type of basic configuration "%BASE_CONFIG%"!
 echo Infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
 exit /b 1
 
 :export
 
-echo Checking 1C extension source type...
+echo [INFO] Checking 1C extension source type...
 
 IF /i "%EXT_SOURCE:~-4%" equ ".cfe" (
-    echo Source type: Configuration extension file ^(CFE^)
+    echo [INFO] Source type: Configuration extension file ^(CFE^)
     goto export_cfe
 )
 IF exist "%EXT_SOURCE%\Configuration.xml" (
     FOR /f %%t IN ('findstr /r /i "<objectBelonging>" "%EXT_SOURCE%\Configuration.xml"') DO (
-        echo Source type: 1C:Designer XML files
+        echo [INFO] Source type: 1C:Designer XML files
         set XML_PATH=%EXT_SOURCE%
         goto export_xml
     )
 )
 
-echo Wrong path "%EXT_SOURCE%"!
+echo [ERROR] Wrong path "%EXT_SOURCE%"!
 echo Configuration extension binary ^(*.cfe^) or folder containing configuration extension in 1C:Designer XML format expected.
 exit /b 1
 
 :export_cfe
 
-echo Loading configuration extension from file "%EXT_SOURCE%" to infobase "%IB_PATH%"...
+echo [INFO] Loading configuration extension from file "%EXT_SOURCE%" to infobase "%IB_PATH%"...
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
     %V8_TOOL% DESIGNER /IBConnectionString File=%IB_PATH%; /DisableStartupDialogs /LoadCfg %EXT_SOURCE% -Extension %EXT_NAME%
@@ -122,7 +124,7 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     %IBCMD_TOOL% infobase config load --db-path="%IB_PATH%" --extension=%EXT_NAME% "%EXT_SOURCE%"
 )
 
-echo Export configuration extension from infobase "%IB_PATH%" to 1C:Designer XML format "%XML_PATH%"...
+echo [INFO] Export configuration extension from infobase "%IB_PATH%" to 1C:Designer XML format "%XML_PATH%"...
 
 md %XML_PATH%
 
@@ -134,11 +136,11 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
 
 :export_xml
 
-echo Export configuration extension from 1C:Designer XML format "%XML_PATH%" to 1C:EDT format "%EXT_DEST_PATH%"...
+echo [INFO] Export configuration extension from 1C:Designer XML format "%XML_PATH%" to 1C:EDT format "%EXT_DEST_PATH%"...
 
 md %WS_PATH%
 
 call %V8_RING_TOOL% edt workspace import --project "%EXT_DEST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
 
-echo Clear temporary files...
-IF exist "%V8_TEMP%" rd /S /Q "%V8_TEMP%"
+echo [INFO] Clear temporary files...
+IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
