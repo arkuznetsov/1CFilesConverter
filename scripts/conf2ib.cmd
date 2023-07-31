@@ -1,5 +1,7 @@
 @ECHO OFF
 
+SETLOCAL
+
 echo Load 1C configuration to 1C infobase
 
 set ERROR_CODE=0
@@ -20,16 +22,16 @@ set LOCAL_TEMP=%V8_TEMP%\%~n0
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
 set WS_PATH=%LOCAL_TEMP%\edt_ws
 
-set CONFIG_SOURCE=%1
-IF defined CONFIG_SOURCE set CONFIG_SOURCE=%CONFIG_SOURCE:"=%
-set IB_PATH=%2
-IF defined IB_PATH set IB_PATH=%IB_PATH:"=%
+IF "%1" neq "" set V8_SRC_PATH=%1
+IF defined V8_SRC_PATH set V8_SRC_PATH=%V8_SRC_PATH:"=%
+IF "%2" neq "" set V8_DST_PATH=%2
+IF defined V8_DST_PATH set V8_DST_PATH=%V8_DST_PATH:"=%
 
-IF not defined CONFIG_SOURCE (
+IF not defined V8_SRC_PATH (
     echo [ERROR] Missed parameter 1 - "path to 1C configuration source (1C configuration file (*.cf), 1C:Designer XML files or 1C:EDT project)"
     set ERROR_CODE=1
 )
-IF not defined IB_PATH (
+IF not defined V8_DST_PATH (
     echo [ERROR] Missed parameter 2 - "path to folder contains 1C infobase"
     set ERROR_CODE=1
 )
@@ -45,60 +47,60 @@ IF %ERROR_CODE% neq 0 (
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
 md "%LOCAL_TEMP%"
-IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
-md "%IB_PATH%"
+IF exist "%V8_DST_PATH%" rd /S /Q "%V8_DST_PATH%"
+md "%V8_DST_PATH%"
 
 echo [INFO] Checking configuration source type...
 
-IF /i "%CONFIG_SOURCE:~-3%" equ ".cf" (
+IF /i "%V8_SRC_PATH:~-3%" equ ".cf" (
     echo [INFO] Source type: Configuration file ^(CF^)
     goto export_cf
 )
-IF exist "%CONFIG_SOURCE%\DT-INF\" (
+IF exist "%V8_SRC_PATH%\DT-INF\" (
     echo [INFO] Source type: 1C:EDT project
     goto export_edt
 )
-IF exist "%CONFIG_SOURCE%\Configuration.xml" (
+IF exist "%V8_SRC_PATH%\Configuration.xml" (
     echo [INFO] Source type: 1C:Designer XML files
-    set XML_PATH=%CONFIG_SOURCE%
+    set XML_PATH=%V8_SRC_PATH%
     goto export_xml
 )
 
-echo [ERROR] Error cheking type of configuration "%CONFIG_SOURCE%"!
+echo [ERROR] Error cheking type of configuration "%V8_SRC_PATH%"!
 echo Configuration file ^(*.cf^), 1C:Designer XML files or 1C:EDT project expected.
 exit /b 1
 
 :export_edt
 
-echo [INFO] Export "%CONFIG_SOURCE%" to 1C:Designer XML format "%XML_PATH%"...
+echo [INFO] Export "%V8_SRC_PATH%" to 1C:Designer XML format "%XML_PATH%"...
 
 md "%XML_PATH%"
 md "%WS_PATH%"
 
-call %V8_RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+call %V8_RING_TOOL% edt workspace export --project "%V8_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
 
 :export_xml
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    echo [INFO] Creating infobase "%IB_PATH%"...
-    %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
+    echo [INFO] Creating infobase "%V8_DST_PATH%"...
+    %V8_TOOL% CREATEINFOBASE File=%V8_DST_PATH%; /DisableStartupDialogs
 
-    echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
-    %V8_TOOL% DESIGNER /IBConnectionString File=%IB_PATH%; /DisableStartupDialogs /LoadConfigFromFiles %XML_PATH%
+    echo [INFO] Loading infobase "%V8_DST_PATH%" configuration from XML-files "%XML_PATH%"...
+    %V8_TOOL% DESIGNER /IBConnectionString File=%V8_DST_PATH%; /DisableStartupDialogs /LoadConfigFromFiles %XML_PATH%
 ) ELSE (
-    echo [INFO] Creating infobase "%IB_PATH%" from XML files "%XML_PATH%"...
-    %IBCMD_TOOL% infobase create --db-path="%IB_PATH%" --create-database --import="%XML_PATH%"
+    echo [INFO] Creating infobase "%V8_DST_PATH%" from XML files "%XML_PATH%"...
+    %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --import="%XML_PATH%"
 )
 
 goto end
 
 :export_cf
 
-echo [INFO] Creating infobase "%IB_PATH%" from file "%CONFIG_SOURCE%"...
+echo [INFO] Creating infobase "%V8_DST_PATH%" from file "%V8_SRC_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% CREATEINFOBASE File="%IB_PATH%"; /DisableStartupDialogs /UseTemplate "%CONFIG_SOURCE%"
+    %V8_TOOL% CREATEINFOBASE File="%V8_DST_PATH%"; /DisableStartupDialogs /UseTemplate "%V8_SRC_PATH%"
 ) ELSE (
-    %IBCMD_TOOL% infobase create --db-path="%IB_PATH%" --create-database --load="%CONFIG_SOURCE%"
+    %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --load="%V8_SRC_PATH%"
 )
 
 :end

@@ -1,5 +1,7 @@
 @ECHO OFF
 
+SETLOCAL
+
 echo Convert 1C configuration to 1C configuration file ^(*.cf^)
 
 set ERROR_CODE=0
@@ -22,19 +24,18 @@ set IB_PATH=%LOCAL_TEMP%\tmp_db
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
 set WS_PATH=%LOCAL_TEMP%\edt_ws
 
-set CONFIG_SOURCE=%1
-IF defined CONFIG_SOURCE set CONFIG_SOURCE=%CONFIG_SOURCE:"=%
-set CONFIG_FILE=%2
-IF defined CONFIG_FILE (
-    set CONFIG_FILE=%CONFIG_FILE:"=%
-    set CONFIG_FILE_PATH=%~dp2
-)
+IF "%1" neq "" set V8_SRC_PATH=%1
+IF defined V8_SRC_PATH set V8_SRC_PATH=%V8_SRC_PATH:"=%
+IF "%2" neq "" set V8_DST_PATH=%2
+IF defined V8_DST_PATH set V8_DST_PATH=%V8_DST_PATH:"=%
+set V8_DST_FOLDER=%~dp2
+set V8_DST_FOLDER=%V8_DST_FOLDER:~0,-1%
 
-IF not defined CONFIG_SOURCE (
+IF not defined V8_SRC_PATH (
     echo [ERROR] Missed parameter 1 - "path to 1C configuration source (infobase, 1C:Designer XML files or 1C:EDT project)"
     set ERROR_CODE=1
 )
-IF not defined CONFIG_FILE (
+IF not defined V8_DST_PATH (
     echo [ERROR] Missed parameter 2 - "path to 1C configuration file (*.cf)"
     set ERROR_CODE=1
 )
@@ -51,26 +52,26 @@ IF %ERROR_CODE% neq 0 (
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
 md "%LOCAL_TEMP%"
-IF not exist "%CONFIG_FILE_PATH%" md "%CONFIG_FILE_PATH%"
+IF not exist "%V8_DST_FOLDER%" md "%V8_DST_FOLDER%"
 
 echo [INFO] Checking configuration source type...
 
-IF exist "%CONFIG_SOURCE%\DT-INF\" (
+IF exist "%V8_SRC_PATH%\DT-INF\" (
     echo [INFO] Source type: 1C:EDT project
     goto export_edt
 )
-IF exist "%CONFIG_SOURCE%\Configuration.xml" (
+IF exist "%V8_SRC_PATH%\Configuration.xml" (
     echo [INFO] Source type: 1C:Designer XML files
-    set XML_PATH=%CONFIG_SOURCE%
+    set XML_PATH=%V8_SRC_PATH%
     goto export_xml
 )
-IF exist "%CONFIG_SOURCE%\1cv8.1cd" (
+IF exist "%V8_SRC_PATH%\1cv8.1cd" (
     echo [INFO] Source type: Infobase
-    set IB_PATH=%CONFIG_SOURCE%
+    set IB_PATH=%V8_SRC_PATH%
     goto export_ib
 )
 
-echo [ERROR] Error cheking type of configuration "%CONFIG_SOURCE%"!
+echo [ERROR] Error cheking type of configuration "%V8_SRC_PATH%"!
 echo Infobase, 1C:Designer XML files or 1C:EDT project expected.
 exit /b 1
 
@@ -79,8 +80,8 @@ exit /b 1
 IF not exist "%XML_PATH%" md "%XML_PATH%"
 md "%WS_PATH%"
 
-echo [INFO] Export "%CONFIG_SOURCE%" to 1C:Designer XML format "%XML_PATH%"...
-call %V8_RING_TOOL% edt workspace export --project "%CONFIG_SOURCE%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+echo [INFO] Export "%V8_SRC_PATH%" to 1C:Designer XML format "%XML_PATH%"...
+call %V8_RING_TOOL% edt workspace export --project "%V8_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
 
 :export_xml
 
@@ -99,11 +100,11 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
 
 :export_ib
 
-echo [INFO] Export infobase "%IB_PATH%" configuration to "%CONFIG_FILE%"...
+echo [INFO] Export infobase "%IB_PATH%" configuration to "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString File=%IB_PATH%; /DisableStartupDialogs /DumpCfg %CONFIG_FILE%
+    %V8_TOOL% DESIGNER /IBConnectionString File=%IB_PATH%; /DisableStartupDialogs /DumpCfg %V8_DST_PATH%
 ) ELSE (
-    %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" "%CONFIG_FILE%"
+    %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" "%V8_DST_PATH%"
 )
 
 echo [INFO] Clear temporary files...

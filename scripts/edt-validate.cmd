@@ -1,5 +1,7 @@
 @ECHO OFF
 
+SETLOCAL
+
 echo Validate 1C configuration, extension, external data processors ^& reports using 1C:EDT ^(using ring tool^)
 
 set ERROR_CODE=0
@@ -19,8 +21,8 @@ IF "%VALIDATE_PATH%" equ "" (
 )
 set WS_PATH=%LOCAL_TEMP%\edt_ws
 
-set CONFIG_PATH=%1
-IF defined CONFIG_PATH set CONFIG_PATH=%CONFIG_PATH:"=%
+IF "%1" neq "" set V8_SRC_PATH=%1
+IF defined V8_SRC_PATH set V8_SRC_PATH=%V8_SRC_PATH:"=%
 set REPORT_FILE=%2
 IF defined REPORT_FILE (
     set REPORT_FILE=%REPORT_FILE:"=%
@@ -29,7 +31,7 @@ IF defined REPORT_FILE (
 set EXT_NAME=%3
 IF defined EXT_NAME set EXT_NAME=%EXT_NAME:"=%
 
-IF not defined CONFIG_PATH (
+IF not defined V8_SRC_PATH (
     echo [ERROR] Missed parameter 1 - "path to 1C configuration, extension, data processors or reports (binary (*.cf, *.cfe, *.epf, *.erf), 1C:Designer XML format or 1C:EDT format)"
     set ERROR_CODE=1
 )
@@ -53,33 +55,33 @@ IF not exist "%REPORT_FILE_PATH%" md "%REPORT_FILE_PATH%"
 
 echo [INFO] Prepare project for validation...
 
-IF exist "%CONFIG_PATH%\DT-INF\" (
-    set VALIDATE_PATH=%CONFIG_PATH%
+IF exist "%V8_SRC_PATH%\DT-INF\" (
+    set VALIDATE_PATH=%V8_SRC_PATH%
     goto validate
 )
 md "%VALIDATE_PATH%"
-IF /i "%CONFIG_PATH:~-3%" equ ".cf" (
-    call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+IF /i "%V8_SRC_PATH:~-3%" equ ".cf" (
+    call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
-IF /i "%CONFIG_PATH:~-4%" equ ".cfe" (
-    call %~dp0ext2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%" "%EXT_NAME%"
+IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
+    call %~dp0ext2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%" "%EXT_NAME%"
     goto validate
 )
-IF exist "%CONFIG_PATH%\Configuration.xml" (
-    FOR /f %%t IN ('findstr /r /i "<objectBelonging>" "%CONFIG_PATH%\Configuration.xml"') DO (
-        call %~dp0ext2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+IF exist "%V8_SRC_PATH%\Configuration.xml" (
+    FOR /f %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
+        call %~dp0ext2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
         goto validate
     )
-    call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+    call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
-IF exist "%CONFIG_PATH%\1cv8.1cd" (
-    call %~dp0conf2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+IF exist "%V8_SRC_PATH%\1cv8.1cd" (
+    call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
-FOR /f %%f IN ('dir /b /a-d "%CONFIG_PATH%\*.epf" "%CONFIG_PATH%\*.erf" "%CONFIG_PATH%\*.xml" "%CONFIG_PATH%\ExternalDataProcessors\*.xml" "%CONFIG_PATH%\ExternalReports\*.xml"') DO (
-    call %~dp0dp2edt.cmd "%CONFIG_PATH%" "%VALIDATE_PATH%"
+FOR /f %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf" "%V8_SRC_PATH%\*.xml" "%V8_SRC_PATH%\ExternalDataProcessors\*.xml" "%V8_SRC_PATH%\ExternalReports\*.xml"') DO (
+    call %~dp0dp2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
 
