@@ -22,14 +22,18 @@ set LOCAL_TEMP=%V8_TEMP%\%~n0
 set IB_PATH=%LOCAL_TEMP%\tmp_db
 set WS_PATH=%LOCAL_TEMP%\edt_ws
 
-IF "%1" neq "" set V8_SRC_PATH=%1
-IF defined V8_SRC_PATH set V8_SRC_PATH=%V8_SRC_PATH:"=%
-IF "%2" neq "" set V8_DST_PATH=%2
-IF defined V8_DST_PATH set V8_DST_PATH=%V8_DST_PATH:"=%
-IF "%3" neq "" set V8_EXT_NAME=%3
-IF defined V8_EXT_NAME set V8_EXT_NAME=%V8_EXT_NAME:"=%
-IF "%4" neq "" set V8_BASE_CONFIG=%4
-IF defined V8_BASE_CONFIG set V8_BASE_CONFIG=%V8_BASE_CONFIG:"=%
+set ARG=%1
+IF defined ARG set ARG=%ARG:"=%
+IF "%ARG%" neq "" set V8_SRC_PATH=%ARG%
+set ARG=%2
+IF defined ARG set ARG=%ARG:"=%
+IF "%ARG%" neq "" set V8_DST_PATH=%ARG%
+set ARG=%3
+IF defined ARG set ARG=%ARG:"=%
+IF "%ARG%" neq "" set V8_EXT_NAME=%ARG%
+set ARG=%4
+IF defined ARG set ARG=%ARG:"=%
+IF "%ARG%" neq "" set V8_BASE_CONFIG=%ARG%
 
 IF not defined V8_SRC_PATH (
     echo [ERROR] Missed parameter 1 - "path to folder contains 1C extension binary file (*.cfe) or EDT project"

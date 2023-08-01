@@ -24,10 +24,12 @@ set IB_PATH=%LOCAL_TEMP%\tmp_db
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
 set WS_PATH=%LOCAL_TEMP%\edt_ws
 
-IF "%1" neq "" set V8_SRC_PATH=%1
-IF defined V8_SRC_PATH set V8_SRC_PATH=%V8_SRC_PATH:"=%
-IF "%2" neq "" set V8_DST_PATH=%2
-IF defined V8_DST_PATH set V8_DST_PATH=%V8_DST_PATH:"=%
+set ARG=%1
+IF defined ARG set ARG=%ARG:"=%
+IF "%ARG%" neq "" set V8_SRC_PATH=%ARG%
+set ARG=%2
+IF defined ARG set ARG=%ARG:"=%
+IF "%ARG%" neq "" set V8_DST_PATH=%ARG%
 set V8_DST_FOLDER=%~dp2
 set V8_DST_FOLDER=%V8_DST_FOLDER:~0,-1%
 

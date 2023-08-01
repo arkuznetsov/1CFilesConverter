@@ -21,8 +21,9 @@ IF "%VALIDATE_PATH%" equ "" (
 )
 set WS_PATH=%LOCAL_TEMP%\edt_ws
 
-IF "%1" neq "" set V8_SRC_PATH=%1
-IF defined V8_SRC_PATH set V8_SRC_PATH=%V8_SRC_PATH:"=%
+set ARG=%1
+IF defined ARG set ARG=%ARG:"=%
+IF "%ARG%" neq "" set V8_SRC_PATH=%ARG%
 set REPORT_FILE=%2
 IF defined REPORT_FILE (
     set REPORT_FILE=%REPORT_FILE:"=%
