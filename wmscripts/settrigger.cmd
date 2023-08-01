@@ -11,6 +11,12 @@
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
+set CONVERT_VERSION=UNKNOWN
+IF exist "..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("..\VERSION") DO set CONVERT_VERSION=%%i
+echo 1C files converter v.%CONVERT_VERSION%
+echo ===
+echo Creating trigger watching 1C files
+
 set ERROR_CODE=0
 
 IF not defined WATCH_TOOL (

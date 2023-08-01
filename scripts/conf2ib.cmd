@@ -11,6 +11,10 @@
 
 SETLOCAL
 
+set CONVERT_VERSION=UNKNOWN
+IF exist "..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("..\VERSION") DO set CONVERT_VERSION=%%i
+echo 1C files converter v.%CONVERT_VERSION%
+echo ===
 echo Load 1C configuration to 1C infobase
 
 set ERROR_CODE=0

@@ -13,6 +13,12 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 
 chcp 65001
 
+set CONVERT_VERSION=UNKNOWN
+IF exist "..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("..\VERSION") DO set CONVERT_VERSION=%%i
+echo 1C files converter v.%CONVERT_VERSION%
+echo ===
+echo Running conversion of files
+
 set ERROR_CODE=0
 
 set CONVERT_SCRIPT=%1
