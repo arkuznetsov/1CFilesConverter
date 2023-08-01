@@ -7,7 +7,7 @@
 @rem Codebase: https://github.com/ArKuznetsov/1CFilesConverter/
 @rem ----------------------------------------------------------
 
-@ECHO ON
+@ECHO OFF
 
 SETLOCAL
 
@@ -101,7 +101,7 @@ echo Infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or n
 exit /b 1
 
 :export
-@ECHO ON
+
 echo [INFO] Checking data processord ^& reports source type...
 
 set V8_SRC_IS_EDT=0
