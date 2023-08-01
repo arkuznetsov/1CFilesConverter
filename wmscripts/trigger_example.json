@@ -1,0 +1,21 @@
+[
+    "trigger",
+    "<path to my repo>\\ext",
+    {
+        "name": "myEPFTrigger",
+        "expression": [
+            "anyof",
+            [
+                "imatch",
+                "*.epf"
+            ]
+        ],
+        "command": [
+            "convert.cmd",
+            "dp2xml",
+            "<path to my repo>\\ext",
+            "<path to my repo>\\src\\ext"
+        ],
+        "stdin": "NAME_PER_LINE"
+    }
+]
