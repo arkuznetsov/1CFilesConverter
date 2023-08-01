@@ -2,6 +2,7 @@
 
 set TEST_NAME="DP (binary folder) -> EDT"
 set TEST_OUT_PATH=%OUT_PATH%\%~n0
+set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=%TEST_OUT_PATH%\src\ExternalDataProcessors\ВнешняяОбработка1\ %TEST_OUT_PATH%\src\ExternalDataProcessors\ВнешняяОбработка2\ %TEST_OUT_PATH%\src\ExternalReports\ВнешнийОтчет1\ %TEST_OUT_PATH%\src\ExternalReports\ВнешнийОтчет2\
 
 echo ===

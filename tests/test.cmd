@@ -46,9 +46,9 @@ echo ======
 echo Prepare test data...
 echo ======
 
-FOR /f %%f IN ('dir /b /a-d "%~dp0before\*.cmd"') DO (
+FOR /f /F "tokens=*" %%f IN ('dir /b /a-d "%~dp0before\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
-    call %BEFORE_TEST_PATH%\%%~f
+    call "%BEFORE_TEST_PATH%\%%~f"
     set TEST_ERROR_MESSAGE=
     set TEST_CHECK_PATH_SUCCESS=
     set TEST_CHECK_PATH_FAILED=
@@ -79,9 +79,9 @@ echo ======
 echo Run tests...
 echo ======
 
-FOR /f %%f IN ('dir /b /a-d "%~dp0tests\*.cmd"') DO (
+FOR /F "tokens=*" %%f IN ('dir /b /a-d "%~dp0tests\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
-    call %TEST_PATH%\%%~f
+    call "%TEST_PATH%\%%~f"
     set TEST_ERROR_MESSAGE=
     set TEST_CHECK_PATH_SUCCESS=
     set TEST_CHECK_PATH_FAILED=

@@ -2,6 +2,7 @@
 
 set TEST_NAME="DP (XML) -> binary"
 set TEST_OUT_PATH=%OUT_PATH%\%~n0
+set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=%TEST_OUT_PATH%\ВнешняяОбработка2.epf
 
 echo ===

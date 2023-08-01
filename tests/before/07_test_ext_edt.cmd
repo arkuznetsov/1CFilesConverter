@@ -3,6 +3,7 @@
 set TEST_NAME="Prepare configuration extension with 1C:Designer XML format..."
 set TEST_EXT_NAME=Расширение1
 set TEST_OUT_PATH=%TEST_EDT_EXT%\%TEST_EXT_NAME%
+set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=%TEST_OUT_PATH%\src\Configuration\Configuration.mdo
 
 echo ===

@@ -2,6 +2,7 @@
 
 set TEST_NAME="Validate configuration (EDT)"
 set TEST_OUT_PATH=%OUT_PATH%\%~n0\report.txt
+set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=%TEST_OUT_PATH%
 
 echo ===
