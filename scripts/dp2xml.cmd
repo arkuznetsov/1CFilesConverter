@@ -1,4 +1,4 @@
-@ECHO OFF
+@ECHO ON
 
 SETLOCAL
 
@@ -92,7 +92,7 @@ echo Infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or n
 exit /b 1
 
 :export
-
+@ECHO ON
 echo [INFO] Checking data processord ^& reports source type...
 
 set V8_SRC_IS_EDT=0
@@ -104,12 +104,6 @@ IF "%V8_SRC_IS_EDT%" equ "1" (
     echo [INFO] Source type: 1C:EDT project
     goto end
 )
-FOR /f %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"') DO (
-    echo [INFO] Source type: External data processors ^(epf^) ^& reports ^(erf^) binary files
-    set V8_SRC_FOLDER=%V8_SRC_PATH%
-    set V8_SRC_MASK="%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"
-    goto export_epf
-)
 set V8_SRC_MASK="%V8_SRC_PATH%"
 IF /i "%V8_SRC_PATH:~-4%" equ ".epf" (
     echo [INFO] Source type: External data processor binary file ^(epf^)
@@ -117,6 +111,12 @@ IF /i "%V8_SRC_PATH:~-4%" equ ".epf" (
 )
 IF /i "%V8_SRC_PATH:~-4%" equ ".erf" (
     echo [INFO] Source type: External report binary file ^(erf^)
+    goto export_epf
+)
+FOR /F "delims=" %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"') DO (
+    echo [INFO] Source type: External data processors ^(epf^) ^& reports ^(erf^) binary files
+    set V8_SRC_FOLDER=%V8_SRC_PATH%
+    set V8_SRC_MASK="%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"
     goto export_epf
 )
 
@@ -127,9 +127,9 @@ exit /b 1
 :export_epf
 
 echo [INFO] Export data processors ^& reports from folder "%V8_SRC_PATH%" to 1C:Designer XML format "%V8_DST_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
-FOR /f %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
+FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
     echo [INFO] Building %%~nf...
-    %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%V8_DST_PATH%" "%V8_SRC_FOLDER%\%%~nxf"
+    %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%V8_DST_PATH%\%%~nf.xml" "%V8_SRC_FOLDER%\%%~nxf"
 )
 
 goto end

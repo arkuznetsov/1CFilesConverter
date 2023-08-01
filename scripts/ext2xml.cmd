@@ -108,7 +108,7 @@ IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
 )
 IF exist "%V8_SRC_PATH%\DT-INF\" (
     IF exist "%V8_SRC_PATH%\src\Configuration\Configuration.mdo" (
-        FOR /f %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\src\Configuration\Configuration.mdo"') DO (
+        FOR /F "delims=" %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\src\Configuration\Configuration.mdo"') DO (
             echo [INFO] Source type: 1C:EDT project
             goto export_edt
         )

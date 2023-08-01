@@ -106,16 +106,16 @@ IF "%V8_SRC_IS_EDT%" equ "1" (
     echo [INFO] Source type: 1C:EDT project
     goto export_edt
 )
-FOR /f %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.xml"') DO (
-    echo [INFO] Source type: 1C:Designer XML files folder ^(external data processors ^& reports^)
-    set V8_SRC_MASK="%V8_SRC_PATH%\*.xml"
-    set XML_PATH=%V8_SRC_PATH%
-    goto export_xml
-)
 IF /i "%V8_SRC_PATH:~-4%" equ ".xml" (
     echo [INFO] Source type: 1C:Designer XML files ^(external data processor or report^)
     set V8_SRC_MASK="%V8_SRC_PATH%"
     set XML_PATH=%V8_SRC_FOLDER%
+    goto export_xml
+)
+FOR /F "delims=" %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.xml"') DO (
+    echo [INFO] Source type: 1C:Designer XML files folder ^(external data processors ^& reports^)
+    set V8_SRC_MASK="%V8_SRC_PATH%\*.xml"
+    set XML_PATH=%V8_SRC_PATH%
     goto export_xml
 )
 
@@ -136,19 +136,20 @@ call %V8_RING_TOOL% edt workspace export --project "%V8_SRC_PATH%" --configurati
 
 IF "%V8_SRC_IS_EDT%" equ "1" (
     echo [INFO] Import external data processors from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
-    FOR /f %%f IN ('dir /b /a-d "%XML_PATH%\ExternalDataProcessors\*.xml"') DO (
+    FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalDataProcessors\*.xml"') DO (
         echo [INFO] Building %%~nf...
         %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalDataProcessors\%%~nxf" "%V8_DST_PATH%"
     )
     echo [INFO] Import external reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
-    FOR /f %%f IN ('dir /b /a-d "%XML_PATH%\ExternalReports\*.xml"') DO (
+    FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalReports\*.xml"') DO (
         echo [INFO] Building %%~nf...
         %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalReports\%%~nxf" "%V8_DST_PATH%"
     )
 ) ELSE (
     echo [INFO] Import external datap processors ^& reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
-    FOR /f %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
+    FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
         echo [INFO] Building %%~nf...
+        echo %V8_DST_PATH%
         %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
     )
 )

@@ -70,7 +70,7 @@ IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
     goto validate
 )
 IF exist "%V8_SRC_PATH%\Configuration.xml" (
-    FOR /f %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
+    FOR /F "delims=" %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
         call %~dp0ext2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
         goto validate
     )
@@ -81,7 +81,7 @@ IF exist "%V8_SRC_PATH%\1cv8.1cd" (
     call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
-FOR /f %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf" "%V8_SRC_PATH%\*.xml" "%V8_SRC_PATH%\ExternalDataProcessors\*.xml" "%V8_SRC_PATH%\ExternalReports\*.xml"') DO (
+FOR /F "delims=" %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf" "%V8_SRC_PATH%\*.xml" "%V8_SRC_PATH%\ExternalDataProcessors\*.xml" "%V8_SRC_PATH%\ExternalReports\*.xml"') DO (
     call %~dp0dp2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )

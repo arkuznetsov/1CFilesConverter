@@ -109,7 +109,7 @@ IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
     goto export_cfe
 )
 IF exist "%V8_SRC_PATH%\Configuration.xml" (
-    FOR /f %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
+    FOR /F "delims=" %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
         echo [INFO] Source type: 1C:Designer XML files
         set XML_PATH=%V8_SRC_PATH%
         goto export_xml

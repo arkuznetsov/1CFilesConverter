@@ -97,18 +97,6 @@ exit /b 1
 
 echo [INFO] Checking data processord ^& reports source type...
 
-FOR /f %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"') DO (
-    echo [INFO] Source type: External data processors ^(epf^) ^& reports ^(erf^) binary files
-    set V8_SRC_FOLDER=%V8_SRC_PATH%
-    set V8_SRC_MASK="%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"
-    goto export_epf
-)
-FOR /f %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.xml"') DO (
-    echo [INFO] Source type: 1C:Designer XML files folder ^(external data processors ^& reports^)
-    set XML_PATH=%V8_SRC_PATH%
-    set V8_SRC_MASK="%V8_SRC_PATH%\*.xml"
-    goto export_xml
-)
 set V8_SRC_MASK="%V8_SRC_PATH%"
 IF /i "%V8_SRC_PATH:~-4%" equ ".xml" (
     echo [INFO] Source type: 1C:Designer XML files ^(external data processor or report^)
@@ -123,6 +111,18 @@ IF /i "%V8_SRC_PATH:~-4%" equ ".erf" (
     echo [INFO] Source type: External report binary file ^(erf^)
     goto export_epf
 )
+FOR /F "delims=" %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"') DO (
+    echo [INFO] Source type: External data processors ^(epf^) ^& reports ^(erf^) binary files
+    set V8_SRC_FOLDER=%V8_SRC_PATH%
+    set V8_SRC_MASK="%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf"
+    goto export_epf
+)
+FOR /F "delims=" %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.xml"') DO (
+    echo [INFO] Source type: 1C:Designer XML files folder ^(external data processors ^& reports^)
+    set XML_PATH=%V8_SRC_PATH%
+    set V8_SRC_MASK="%V8_SRC_PATH%\*.xml"
+    goto export_xml
+)
 
 echo [ERROR] Wrong path "%V8_SRC_PATH%"!
 echo Folder containing external data processors ^& reports in binary or XML format, data processor binary ^(*.epf^) or report binary ^(*.erf^) expected.
@@ -134,7 +134,7 @@ echo [INFO] Export data processors ^& reports from folder "%V8_SRC_PATH%" to 1C:
 
 md "%XML_PATH%"
 
-FOR /f %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
+FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
     echo [INFO] Building %%~nf...
     %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%V8_SRC_FOLDER%\%%~nxf"
 )
