@@ -458,6 +458,7 @@ watchman watch-del "<path to my repo>\ext"
 Переменные среды:
 
 * **WATCH_TOOL** - путь к утилите watchman (по умолчанию берется из переменной окружения `%PATH%`)
+* **WATCH_LOG** - путь к файлу протокола выполнения обработки изменения файлов
 
 Параметры:
 
@@ -505,7 +506,10 @@ echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
 
-rem Команда запуска теста (выполнеия конвертации)
+rem Команда запуска теста (выполнения конвертации)
 call %SCRIPTS_PATH%\conf2xml.cmd "%TEST_BINARY%\1cv8.cf" "%TEST_OUT_PATH%"
+
+rem Переменной TEST_ERROR_MESSAGE можно присвоить произвольный текст ошибки
+IF ERRORLEVEL 1 set TEST_ERROR_MESSAGE=Error running test "%TEST_NAME%"
 
 ```
