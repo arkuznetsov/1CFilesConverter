@@ -1,3 +1,12 @@
+@rem ----------------------------------------------------------
+@rem This Source Code Form is subject to the terms of the
+@rem Mozilla Public License, v.2.0. If a copy of the MPL
+@rem was not distributed with this file, You can obtain one
+@rem at http://mozilla.org/MPL/2.0/.
+@rem ----------------------------------------------------------
+@rem Codebase: https://github.com/ArKuznetsov/1CFilesConverter/
+@rem ----------------------------------------------------------
+
 @ECHO ON
 
 SETLOCAL
