@@ -114,8 +114,8 @@ set TRIGGER_SCRIPT=%~dp0convert.cmd
 set TRIGGER_COMMAND=["%TRIGGER_SCRIPT:\=\\%", "%WATCH_SCRIPT:\=\\%", "%WATCH_PATH:\=\\%", "%WATCH_OUT_PATH:\=\\%"]
 
 set TRIGGER_STDIN="NAME_PER_LINE"
-set TRIGGER_STDOUT=, "stdout": "%TRIGGER_STDOUT%" ^>D:\\Repo\\1CFilesConverters\\out\\output.txt
 
-set TRIGGER_JSON=["trigger", "%WATCH_PATH:\=\\%", ^{"name": "%TRIGGER_NAME%", "expression": %TRIGGER_EXPRESSION%, "command": %TRIGGER_COMMAND%, "stdin": %TRIGGER_STDIN%, "stdout": "%TRIGGER_STDOUT%"^}]
+IF defined WATCH_LOG set TRIGGER_STDOUT=, "stdout": ">%WATCH_LOG%"
 
+set TRIGGER_JSON=["trigger", "%WATCH_PATH:\=\\%", ^{"name": "%TRIGGER_NAME%", "expression": %TRIGGER_EXPRESSION%, "command": %TRIGGER_COMMAND%, "stdin": %TRIGGER_STDIN%%TRIGGER_STDOUT%^}]
 echo %TRIGGER_JSON% | %WATCH_TOOL% -j
