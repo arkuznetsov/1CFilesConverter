@@ -21,7 +21,7 @@ set FIXTURES_PATH=%~dp0fixtures
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%~dp0.." /M "out" /C "cmd /c echo @path"`) DO set OUT_PATH=%%i
 set OUT_PATH=%OUT_PATH:"=%
 
-set V8_VERSION=8.3.20.2290
+IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 set V8_TEMP=%OUT_PATH%\tmp
 
 echo [INFO] Clear output files...
