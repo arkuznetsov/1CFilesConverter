@@ -1,3 +1,8 @@
+[![GitHub release](https://img.shields.io/github/release/ArKuznetsov/1CFilesConverter.svg?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/releases)
+[![GitHub license](https://img.shields.io/github/license/ArKuznetsov/1CFilesConverter.svg?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/blob/develop/LICENSE)
+[![GitHub Releases](https://img.shields.io/github/downloads/ArKuznetsov/1CFilesConverter/latest/total?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/releases)
+[![GitHub All Releases](https://img.shields.io/github/downloads/ArKuznetsov/1CFilesConverter/total?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/releases)
+
 # Набор скриптов для конвертации файлов 1С между различными форматами (бинарные файлы, XML, EDT)
 
 Цель - упростить использование инструментов конвертации до вызова одного скрипта с парой параметров.
@@ -430,6 +435,7 @@ watchman watch-del "<path to my repo>\ext"
 Переменные среды:
 
 * **WATCH_TOOL** - путь к утилите watchman (по умолчанию берется из переменной окружения `%PATH%`)
+* **WATCH_LOG** - путь к файлу протокола выполнения обработки изменения файлов
 
 Параметры:
 
@@ -454,11 +460,6 @@ watchman watch-del "<path to my repo>\ext"
 Скрипт - обертка для запуска скриптов конвертации при срабатывании зарегистрированного тригера. Выполняет конвертацию файлов 1С с использованием указанного скрипта конвертации в указанный каталог.
 
 `Не предполагался для ручного запуска`
-
-Переменные среды:
-
-* **WATCH_TOOL** - путь к утилите watchman (по умолчанию берется из переменной окружения `%PATH%`)
-* **WATCH_LOG** - путь к файлу протокола выполнения обработки изменения файлов
 
 Параметры:
 

@@ -24,11 +24,23 @@ IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 IF not "%V8_CONVERT_TOOL%" equ "designer" IF not "%V8_CONVERT_TOOL%" equ "ibcmd" set V8_CONVERT_TOOL=designer
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
+    echo Could not find 1C:Designer with path %V8_TOOL%
+    exit /b 1
+)
 set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
+IF "%V8_CONVERT_TOOL%" equ "ibcmd" IF not exist %IBCMD_TOOL% (
+    echo Could not find ibcmd tool with path %IBCMD_TOOL%
+    exit /b 1
+)
 IF not defined V8_RING_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
         set V8_RING_TOOL="%%i"
     )
+)
+IF not defined V8_RING_TOOL (
+    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
+    set ERROR_CODE=1
 )
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
@@ -96,7 +108,7 @@ IF "%V8_BASE_CONFIG%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating infobase "%IB_PATH%"...
     set V8_BASE_CONFIG_DESCRIPTION=empty configuration
-    %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
+    %V8_TOOL% CREATEINFOBASE File="%IB_PATH%"; /DisableStartupDialogs
     goto export
 )
 IF exist "%V8_BASE_CONFIG%\1cv8.1cd" (
@@ -138,7 +150,7 @@ exit /b 1
 echo [INFO] Loading configuration extension from file "%V8_SRC_PATH%" to infobase "%IB_PATH%"...
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString File=%IB_PATH%; /DisableStartupDialogs /LoadCfg %V8_SRC_PATH% -Extension %V8_EXT_NAME%
+    %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadCfg "%V8_SRC_PATH%" -Extension %V8_EXT_NAME%
 ) ELSE (
     %IBCMD_TOOL% infobase config load --db-path="%IB_PATH%" --extension=%V8_EXT_NAME% "%V8_SRC_PATH%"
 )

@@ -23,10 +23,18 @@ IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
+    echo Could not find 1C:Designer with path %V8_TOOL%
+    exit /b 1
+)
 IF not defined V8_RING_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
         set V8_RING_TOOL="%%i"
     )
+)
+IF not defined V8_RING_TOOL (
+    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
+    set ERROR_CODE=1
 )
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
@@ -87,7 +95,7 @@ IF "%V8_BASE_CONFIG%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating infobase "%IB_PATH%"...
     set BASE_CONFIG_DESCRIPTION=empty configuration
-    %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
+    %V8_TOOL% CREATEINFOBASE File="%IB_PATH%"; /DisableStartupDialogs
     goto export
 )
 IF exist "%V8_BASE_CONFIG%\1cv8.1cd" (
