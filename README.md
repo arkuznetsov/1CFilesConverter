@@ -1,3 +1,8 @@
+[![GitHub release](https://img.shields.io/github/release/ArKuznetsov/1CFilesConverter.svg?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/releases)
+[![GitHub license](https://img.shields.io/github/license/ArKuznetsov/1CFilesConverter.svg?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/blob/develop/LICENSE)
+[![GitHub Releases](https://img.shields.io/github/downloads/ArKuznetsov/1CFilesConverter/latest/total?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/releases)
+[![GitHub All Releases](https://img.shields.io/github/downloads/ArKuznetsov/1CFilesConverter/total?style=flat-square)](https://github.com/ArKuznetsov/1CFilesConverter/releases)
+
 # Набор скриптов для конвертации файлов 1С между различными форматами (бинарные файлы, XML, EDT)
 
 Цель - упростить использование инструментов конвертации до вызова одного скрипта с парой параметров.
