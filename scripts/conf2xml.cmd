@@ -9,7 +9,7 @@
 
 @ECHO OFF
 
-SETLOCAL
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 set CONVERT_VERSION=UNKNOWN
 IF exist "..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("..\VERSION") DO set CONVERT_VERSION=%%i
@@ -81,15 +81,36 @@ echo [INFO] Checking configuration source type...
 
 IF /i "%V8_SRC_PATH:~-3%" equ ".cf" (
     echo [INFO] Source type: Configuration file ^(CF^)
+    set V8_IB_CONNECTION=File="!IB_PATH!";
     goto export_cf
 )
+IF /i "%V8_SRC_PATH:~0,2%" equ "/F" (
+    set V8_IB_PATH=%V8_SRC_PATH:~2%
+    echo [INFO] Source type: File infobase ^(!V8_IB_PATH!^)
+    set V8_IB_CONNECTION=File="!V8_IB_PATH!";
+    goto export_ib
+)
+IF /i "%V8_SRC_PATH:~0,2%" equ "/S" (
+    set V8_IB_PATH=%V8_SRC_PATH:~2%
+    FOR /F "tokens=1,2 delims=\" %%a IN ("!V8_IB_PATH!") DO (
+        set V8_IB_SERVER=%%a
+        set V8_IB_NAME=%%b
+    )
+    echo [INFO] Source type: File infobase ^(!V8_IB_SERVER!\!V8_IB_NAME!^)
+    set IB_PATH=!V8_IB_SERVER!\!V8_IB_NAME!
+    set V8_IB_CONNECTION=Srvr="!V8_IB_SERVER!";Ref="!V8_IB_NAME!";
+    IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
+    goto export_ib
+)
 IF exist "%V8_SRC_PATH%\1cv8.1cd" (
-    echo [INFO] Source type: Infobase
+    echo [INFO] Source type: File infobase ^(!V8_SRC_PATH!^)
     set IB_PATH=%V8_SRC_PATH%
+    set V8_IB_CONNECTION=File="!V8_SRC_PATH!";
     goto export_ib
 )
 IF exist "%V8_SRC_PATH%\DT-INF\" (
     echo [INFO] Source type: 1C:EDT project
+    set V8_IB_CONNECTION=File="!IB_PATH!";
     goto export_edt
 )
 
@@ -113,9 +134,13 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
 
 echo [INFO] Export configuration from infobase "%IB_PATH%" to 1C:Designer XML format "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /DumpConfigToFiles "%V8_DST_PATH%" -force
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /DisableStartupDialogs /DumpConfigToFiles "%V8_DST_PATH%" -force
 ) ELSE (
-    %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" "%V8_DST_PATH%" --force
+    IF defined V8_IB_SERVER (
+        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" "%V8_DST_PATH%" --force
+    ) ELSE (
+        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" "%V8_DST_PATH%" --force
+    )
 )
 
 goto end
