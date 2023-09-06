@@ -10,4 +10,5 @@ set V8_CONVERT_TOOL=ibcmd
 echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
-call %SCRIPTS_PATH%\ext2edt.cmd "%TEST_BINARY%\%TEST_EXT_NAME%.cfe" "%TEST_OUT_PATH%" "%TEST_EXT_NAME%" "%TEST_BINARY%\1cv8.cf"
+set V8_BASE_CONFIG=%TEST_BINARY%\1cv8.cf
+call %SCRIPTS_PATH%\ext2edt.cmd "%TEST_BINARY%\%TEST_EXT_NAME%.cfe" "%TEST_OUT_PATH%" "%TEST_EXT_NAME%"
