@@ -188,7 +188,7 @@ md "%XML_PATH%"
 
 FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
     echo [INFO] Building %%~nf...
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%V8_SRC_FOLDER%\%%~nxf"
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%V8_SRC_FOLDER%\%%~nxf"
 )
 
 :export_xml

@@ -158,12 +158,12 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
 
 echo [INFO] Export infobase "%IB_PATH%" configuration to "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /DisableStartupDialogs /DumpCfg  "%V8_DST_PATH%"
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpCfg  "%V8_DST_PATH%"
 ) ELSE (
     IF defined V8_IB_SERVER (
-        %IBCMD_TOOL% infobase config save --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" "%V8_DST_PATH%"
+        %IBCMD_TOOL% infobase config save --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" "%V8_DST_PATH%"
+        %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%"
     )
 )
 

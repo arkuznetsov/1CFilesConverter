@@ -182,12 +182,12 @@ exit /b 1
 echo [INFO] Loading configuration extension from file "%V8_SRC_PATH%" to infobase "%IB_PATH%"...
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadCfg "%V8_SRC_PATH%" -Extension %V8_EXT_NAME%
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadCfg "%V8_SRC_PATH%" -Extension %V8_EXT_NAME%
 ) ELSE (
     IF defined V8_BASE_IB_SERVER (
-        %IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --extension=%V8_EXT_NAME% "%V8_SRC_PATH%"
+        %IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%V8_SRC_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config load --db-path="%IB_PATH%" --extension=%V8_EXT_NAME% "%V8_SRC_PATH%"
+        %IBCMD_TOOL% infobase config load --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%V8_SRC_PATH%"
     )
 )
 
@@ -196,12 +196,12 @@ echo [INFO] Export configuration extension from infobase "%IB_PATH%" to 1C:Desig
 md %XML_PATH%
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /DumpConfigToFiles "%XML_PATH%" -Extension %V8_EXT_NAME% -force
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpConfigToFiles "%XML_PATH%" -Extension %V8_EXT_NAME% -force
 ) ELSE (
     IF defined V8_BASE_IB_SERVER (
-        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --extension=%V8_EXT_NAME% --force "%XML_PATH%"
+        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% --force "%XML_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" --extension=%V8_EXT_NAME% --force "%XML_PATH%"
+        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% --force "%XML_PATH%"
     )
 )
 
