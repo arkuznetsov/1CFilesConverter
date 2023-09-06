@@ -114,7 +114,6 @@ IF /i "%V8_BASE_IB:~0,2%" equ "/S" (
     set IB_PATH=!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!
     echo [INFO] Basic config type: Server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
     set V8_BASE_IB_CONNECTION=Srvr="!V8_BASE_IB_SERVER!";Ref="!V8_BASE_IB_NAME!";
-    IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
     goto prepare_ib
 )
 IF exist "%V8_BASE_IB%\1cv8.1cd" (
