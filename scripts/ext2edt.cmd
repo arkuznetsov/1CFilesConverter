@@ -19,6 +19,14 @@ echo Convert 1C configuration extension to 1C:EDT project
 
 set ERROR_CODE=0
 
+IF exist "%cd%\.env" (
+    FOR /F "tokens=*" %%a in (%cd%\.env) DO (
+        FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
+            IF not defined %%b set "%%b=%%c"
+        )
+    )
+)
+
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
