@@ -94,6 +94,14 @@ IF exist "%V8_SRC_PATH%\Configuration.xml" (
     call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )
+IF /i "%V8_SRC_PATH:~0,2%" equ "/F" (
+    call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
+IF /i "%V8_SRC_PATH:~0,2%" equ "/S" (
+    call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
 IF exist "%V8_SRC_PATH%\1cv8.1cd" (
     call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
