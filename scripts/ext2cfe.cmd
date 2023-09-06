@@ -19,6 +19,14 @@ echo Convert 1C configuration extension to binary format ^(*.cfe^)
 
 set ERROR_CODE=0
 
+IF exist "%cd%\.env" (
+    FOR /F "tokens=*" %%a in (%cd%\.env) DO (
+        FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
+            IF not defined %%b set "%%b=%%c"
+        )
+    )
+)
+
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
@@ -185,12 +193,12 @@ call %V8_RING_TOOL% edt workspace export --project "%V8_SRC_PATH%" --configurati
 
 echo [INFO] Loading configuration extension from XML-files "%XML_PATH%" to infobase "%IB_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadConfigFromFiles "%XML_PATH%" -Extension %V8_EXT_NAME%
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadConfigFromFiles "%XML_PATH%" -Extension %V8_EXT_NAME%
 ) ELSE (
     IF defined V8_BASE_IB_SERVER (
-        %IBCMD_TOOL% infobase config import --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --extension=%V8_EXT_NAME% "%XML_PATH%"
+        %IBCMD_TOOL% infobase config import --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%XML_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config import --db-path="%IB_PATH%" --extension=%V8_EXT_NAME% "%XML_PATH%"
+        %IBCMD_TOOL% infobase config import --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%XML_PATH%"
     )
 )
 
@@ -198,12 +206,12 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
 
 echo [INFO] Export configuration extension from infobase "%IB_PATH%" configuration to "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /DumpCfg  "%V8_DST_PATH%" -Extension %V8_EXT_NAME%
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpCfg  "%V8_DST_PATH%" -Extension %V8_EXT_NAME%
 ) ELSE (
     IF defined V8_BASE_IB_SERVER (
-        %IBCMD_TOOL% infobase config save --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --extension=%V8_EXT_NAME% "%V8_DST_PATH%"
+        %IBCMD_TOOL% infobase config save --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%V8_DST_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" --extension=%V8_EXT_NAME% "%V8_DST_PATH%"
+        %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%V8_DST_PATH%"
     )
 )
 

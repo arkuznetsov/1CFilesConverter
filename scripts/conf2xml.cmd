@@ -19,6 +19,14 @@ echo Convert 1C configuration to 1C:Designer XML format
 
 set ERROR_CODE=0
 
+IF exist "%cd%\.env" (
+    FOR /F "tokens=*" %%a in (%cd%\.env) DO (
+        FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
+            IF not defined %%b set "%%b=%%c"
+        )
+    )
+)
+
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
@@ -138,12 +146,12 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
 
 echo [INFO] Export configuration from infobase "%IB_PATH%" to 1C:Designer XML format "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /DisableStartupDialogs /DumpConfigToFiles "%V8_DST_PATH%" -force
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpConfigToFiles "%V8_DST_PATH%" -force
 ) ELSE (
     IF defined V8_IB_SERVER (
-        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" "%V8_DST_PATH%" --force
+        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%" --force
     ) ELSE (
-        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" "%V8_DST_PATH%" --force
+        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%" --force
     )
 )
 

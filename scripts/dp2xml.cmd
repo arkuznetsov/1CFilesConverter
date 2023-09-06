@@ -19,6 +19,14 @@ echo Convert 1C external data processors ^& reports to 1C:Designer XML format
 
 set ERROR_CODE=0
 
+IF exist "%cd%\.env" (
+    FOR /F "tokens=*" %%a in (%cd%\.env) DO (
+        FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
+            IF not defined %%b set "%%b=%%c"
+        )
+    )
+)
+
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
@@ -173,7 +181,7 @@ exit /b 1
 echo [INFO] Export data processors ^& reports from folder "%V8_SRC_PATH%" to 1C:Designer XML format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
 FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
     echo [INFO] Building %%~nf...
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%V8_DST_PATH%\%%~nf.xml" "%V8_SRC_FOLDER%\%%~nxf"
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%V8_DST_PATH%\%%~nf.xml" "%V8_SRC_FOLDER%\%%~nxf"
 )
 
 goto end

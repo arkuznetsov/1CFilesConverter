@@ -19,6 +19,14 @@ echo Convert 1C external data processors ^& reports to binary format ^(*.epf, *.
 
 set ERROR_CODE=0
 
+IF exist "%cd%\.env" (
+    FOR /F "tokens=*" %%a in (%cd%\.env) DO (
+        FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
+            IF not defined %%b set "%%b=%%c"
+        )
+    )
+)
+
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
@@ -182,19 +190,19 @@ IF "%V8_SRC_IS_EDT%" equ "1" (
     echo [INFO] Import external data processors from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalDataProcessors\*.xml"') DO (
         echo [INFO] Building %%~nf...
-        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalDataProcessors\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalDataProcessors\%%~nxf" "%V8_DST_PATH%"
     )
     echo [INFO] Import external reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalReports\*.xml"') DO (
         echo [INFO] Building %%~nf...
-        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalReports\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalReports\%%~nxf" "%V8_DST_PATH%"
     )
 ) ELSE (
     echo [INFO] Import external datap processors ^& reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
         echo [INFO] Building %%~nf...
         echo %V8_DST_PATH%
-        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
     )
 )
 
