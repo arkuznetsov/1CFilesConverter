@@ -8,4 +8,5 @@ set TEST_CHECK_PATH=%TEST_OUT_PATH%\ВнешняяОбработка1.xml %TEST_
 echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
-call %SCRIPTS_PATH%\dp2xml.cmd "%FIXTURES_PATH%\bin" "%TEST_OUT_PATH%" "%TEST_IB%"
+set V8_BASE_IB=%TEST_IB%
+call %SCRIPTS_PATH%\dp2xml.cmd "%FIXTURES_PATH%\bin" "%TEST_OUT_PATH%"
