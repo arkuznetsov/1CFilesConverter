@@ -95,18 +95,18 @@ IF exist "%V8_SRC_PATH%\Configuration.xml" (
     goto export_xml
 )
 IF /i "%V8_SRC_PATH:~0,2%" equ "/F" (
-    set V8_IB_PATH=%V8_SRC_PATH:~2%
-    echo [INFO] Source type: File infobase ^(!V8_IB_PATH!^)
-    set V8_IB_CONNECTION=File="!V8_IB_PATH!";
+    set IB_PATH=%V8_SRC_PATH:~2%
+    echo [INFO] Source type: File infobase ^(!IB_PATH!^)
+    set V8_IB_CONNECTION=File="!IB_PATH!";
     goto export_ib
 )
 IF /i "%V8_SRC_PATH:~0,2%" equ "/S" (
-    set V8_IB_PATH=%V8_SRC_PATH:~2%
-    FOR /F "tokens=1,2 delims=\" %%a IN ("!V8_IB_PATH!") DO (
+    set IB_PATH=%V8_SRC_PATH:~2%
+    FOR /F "tokens=1,2 delims=\" %%a IN ("!IB_PATH!") DO (
         set V8_IB_SERVER=%%a
         set V8_IB_NAME=%%b
     )
-    echo [INFO] Source type: File infobase ^(!V8_IB_SERVER!\!V8_IB_NAME!^)
+    echo [INFO] Source type: Server infobase ^(!V8_IB_SERVER!\!V8_IB_NAME!^)
     set IB_PATH=!V8_IB_SERVER!\!V8_IB_NAME!
     set V8_IB_CONNECTION=Srvr="!V8_IB_SERVER!";Ref="!V8_IB_NAME!";
     IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
