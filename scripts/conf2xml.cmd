@@ -96,7 +96,7 @@ IF /i "%V8_SRC_PATH:~0,2%" equ "/S" (
         set V8_IB_SERVER=%%a
         set V8_IB_NAME=%%b
     )
-    echo [INFO] Source type: File infobase ^(!V8_IB_SERVER!\!V8_IB_NAME!^)
+    echo [INFO] Source type: Server infobase ^(!V8_IB_SERVER!\!V8_IB_NAME!^)
     set IB_PATH=!V8_IB_SERVER!\!V8_IB_NAME!
     set V8_IB_CONNECTION=Srvr="!V8_IB_SERVER!";Ref="!V8_IB_NAME!";
     IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
@@ -122,12 +122,16 @@ exit /b 1
 
 echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
 
-md "%IB_PATH%"
+IF not exist "%IB_PATH%" md "%IB_PATH%"
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% CREATEINFOBASE File="%IB_PATH%"; /DisableStartupDialogs /UseTemplate "%V8_SRC_PATH%"
+    %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /UseTemplate "%V8_SRC_PATH%"
 ) ELSE (
-    %IBCMD_TOOL% infobase create --db-path="%IB_PATH%" --create-database --load="%V8_SRC_PATH%"
+    IF defined V8_IB_SERVER (
+        %IBCMD_TOOL% infobase create --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --load="%V8_SRC_PATH%"
+    ) ELSE (
+        %IBCMD_TOOL% infobase create --db-path="%IB_PATH%" --create-database --load="%V8_SRC_PATH%"
+    )
 )
 
 :export_ib
