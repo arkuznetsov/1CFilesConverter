@@ -24,8 +24,8 @@ IF not defined WATCH_TOOL (
         set WATCH_TOOL="%%i"
     )
 )
-IF not exist %WATCH_TOOL% (
-    echo [ERROR] Can't find "watchman" tool add path to "watchman.exe" to "PATH" environment variable, or set fool specified path to "WATCH_TOOL" variable
+IF not defined WATCH_TOOL (
+    echo [ERROR] Can't find "watchman" tool. Add path to "watchman.exe" to "PATH" environment variable, or set "WATCH_TOOL" variable with full specified path 
     set ERROR_CODE=1
 )
 

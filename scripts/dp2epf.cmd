@@ -23,10 +23,18 @@ IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
+    echo Could not find 1C:Designer with path %V8_TOOL%
+    exit /b 1
+)
 IF not defined V8_RING_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
         set V8_RING_TOOL="%%i"
     )
+)
+IF not defined V8_RING_TOOL (
+    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
+    set ERROR_CODE=1
 )
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
@@ -42,9 +50,6 @@ set V8_SRC_FOLDER=%V8_SRC_FOLDER:~0,-1%
 set ARG=%2
 IF defined ARG set ARG=%ARG:"=%
 IF "%ARG%" neq "" set V8_DST_PATH=%ARG%
-set ARG=%3
-IF defined ARG set ARG=%ARG:"=%
-IF "%ARG%" neq "" set V8_BASE_CONFIG=%ARG%
 
 IF not defined V8_SRC_PATH (
     echo [ERROR] Missed parameter 1 - "path to folder contains 1C data processors & reports in 1C:Designer XML or 1C:EDT project format or path to main xml-file of data processor or report"
@@ -59,8 +64,16 @@ IF not defined V8_DST_PATH (
     echo [ERROR] Missed parameter 2 - "path to folder to save data processors & reports in binary format (*.epf, *.erf)"
     set ERROR_CODE=1
 )
-IF not exist "%V8_BASE_CONFIG%" (
-    echo [INFO] Path "%V8_BASE_CONFIG%" doesn't exist ^(parameter 3^), empty infobase will be used.
+IF defined V8_BASE_IB (
+    set V8_BASE_IB=%V8_BASE_IB:"=%
+) ELSE (
+    echo [INFO] Environment variable "V8_BASE_IB" is not defined, temporary file infobase will be used.
+    set V8_BASE_IB=
+)
+IF defined V8_BASE_CONFIG (
+    set V8_BASE_CONFIG=%V8_BASE_CONFIG:"=%
+) ELSE (
+    echo [INFO] Environment variable "V8_BASE_CONFIG" is not defined, empty configuration will be used.
     set V8_BASE_CONFIG=
 )
 IF %ERROR_CODE% neq 0 (
@@ -69,8 +82,6 @@ IF %ERROR_CODE% neq 0 (
     echo     %%1 - path to folder contains 1C data processors ^& reports in 1C:Designer XML format or EDT format
     echo           or path to main xml-file of data processor or report
     echo     %%2 - path to folder to save data processors ^& reports in binary format ^(*.epf, *.erf^)"
-    echo     %%3 - ^(optional^) path to 1C configuration ^(binary ^(*.cf^), 1C:Designer XML format or 1C:EDT project^)
-    echo           or folder contains 1C infobase used for convertion
     echo.
     exit /b %ERROR_CODE%
 )
@@ -82,22 +93,42 @@ IF not exist "%V8_DST_PATH%" md "%V8_DST_PATH%"
 
 echo [INFO] Set infobase for export data processor/report...
 
-set BASE_CONFIG_DESCRIPTION=configuration from "%V8_BASE_CONFIG%"
-
-IF "%V8_BASE_CONFIG%" equ "" (
+IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
-    echo [INFO] Creating infobase "%IB_PATH%"...
-    set BASE_CONFIG_DESCRIPTION=empty configuration
-    %V8_TOOL% CREATEINFOBASE File=%IB_PATH%; /DisableStartupDialogs
-    goto export
+    echo [INFO] Creating temporary file infobase "%IB_PATH%"...
+    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
+    %V8_TOOL% CREATEINFOBASE %V8_BASE_IB_CONNECTION% /DisableStartupDialogs
+    goto prepare_ib
 )
-IF exist "%V8_BASE_CONFIG%\1cv8.1cd" (
-    echo [INFO] Basic config source type: Infobase
-    set BASE_CONFIG_DESCRIPTION=existed configuration
-    set IB_PATH=%V8_BASE_CONFIG%
-    goto export
+IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
+    set IB_PATH=%V8_BASE_IB:~2%
+    echo [INFO] Basic config type: File infobase ^(!IB_PATH!^)
+    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
+    goto prepare_ib
 )
-md "%IB_PATH%"
+IF /i "%V8_BASE_IB:~0,2%" equ "/S" (
+    set IB_PATH=%V8_BASE_IB:~2%
+    FOR /F "tokens=1,2 delims=\" %%a IN ("!IB_PATH!") DO (
+        set V8_BASE_IB_SERVER=%%a
+        set V8_BASE_IB_NAME=%%b
+    )
+    set IB_PATH=!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!
+    echo [INFO] Basic config type: Server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
+    set V8_BASE_IB_CONNECTION=Srvr="!V8_BASE_IB_SERVER!";Ref="!V8_BASE_IB_NAME!";
+    goto prepare_ib
+)
+IF exist "%V8_BASE_IB%\1cv8.1cd" (
+    set IB_PATH=%V8_BASE_IB%
+    echo [INFO] Basic config type: File infobase ^(!V8_SRC_PATH!^)
+    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
+    goto prepare_ib
+)
+
+:prepare_ib
+
+IF "%V8_BASE_CONFIG%" equ "" goto export
+
+IF not exist "%IB_PATH%" md "%IB_PATH%"
 call %~dp0conf2ib.cmd "%V8_BASE_CONFIG%" "%IB_PATH%"
 IF ERRORLEVEL 0 goto export
 
@@ -148,22 +179,22 @@ call %V8_RING_TOOL% edt workspace export --project "%V8_SRC_PATH%" --configurati
 :export_xml
 
 IF "%V8_SRC_IS_EDT%" equ "1" (
-    echo [INFO] Import external data processors from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
+    echo [INFO] Import external data processors from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalDataProcessors\*.xml"') DO (
         echo [INFO] Building %%~nf...
-        %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalDataProcessors\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalDataProcessors\%%~nxf" "%V8_DST_PATH%"
     )
-    echo [INFO] Import external reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
+    echo [INFO] Import external reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalReports\*.xml"') DO (
         echo [INFO] Building %%~nf...
-        %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalReports\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalReports\%%~nxf" "%V8_DST_PATH%"
     )
 ) ELSE (
-    echo [INFO] Import external datap processors ^& reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%" with %BASE_CONFIG_DESCRIPTION%...
+    echo [INFO] Import external datap processors ^& reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
         echo [INFO] Building %%~nf...
         echo %V8_DST_PATH%
-        %V8_TOOL% DESIGNER /IBConnectionString File="%IB_PATH%"; /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
     )
 )
 

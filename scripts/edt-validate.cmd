@@ -27,6 +27,10 @@ IF not defined V8_RING_TOOL (
         set V8_RING_TOOL="%%i"
     )
 )
+IF not defined V8_RING_TOOL (
+    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
+    set ERROR_CODE=1
+)
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
 IF "%VALIDATE_PATH%" equ "" (
@@ -87,6 +91,14 @@ IF exist "%V8_SRC_PATH%\Configuration.xml" (
         call %~dp0ext2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
         goto validate
     )
+    call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
+IF /i "%V8_SRC_PATH:~0,2%" equ "/F" (
+    call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
+    goto validate
+)
+IF /i "%V8_SRC_PATH:~0,2%" equ "/S" (
     call %~dp0conf2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
     goto validate
 )

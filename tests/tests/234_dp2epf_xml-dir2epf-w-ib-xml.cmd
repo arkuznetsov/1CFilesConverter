@@ -8,4 +8,5 @@ set TEST_CHECK_PATH=%TEST_OUT_PATH%\ВнешняяОбработка1.epf %TEST_
 echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
-call %SCRIPTS_PATH%\dp2epf.cmd "%TEST_XML_DP%" "%TEST_OUT_PATH%" "%TEST_XML_CF%"
+set V8_BASE_CONFIG=%TEST_XML_CF%
+call %SCRIPTS_PATH%\dp2epf.cmd "%TEST_XML_DP%" "%TEST_OUT_PATH%"
