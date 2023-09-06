@@ -130,7 +130,7 @@ IF exist "%V8_BASE_IB%\1cv8.1cd" (
 
 IF "%V8_BASE_CONFIG%" equ "" goto export
 
-md "%IB_PATH%"
+IF not exist "%IB_PATH%" md "%IB_PATH%"
 call %~dp0conf2ib.cmd "%V8_BASE_CONFIG%" "%IB_PATH%"
 IF ERRORLEVEL 0 goto export
 
