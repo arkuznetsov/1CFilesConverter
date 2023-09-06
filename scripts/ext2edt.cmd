@@ -107,16 +107,14 @@ echo [INFO] Set infobase for export configuration extension...
 
 IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
-    echo [INFO] Creating infobase "%IB_PATH%"...
-    set V8_BASE_IB_DESCRIPTION=temporary file infobase ^(!IB_PATH!^)
+    echo [INFO] Creating temporary file infobase "%IB_PATH%"...
     set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
     %V8_TOOL% CREATEINFOBASE %V8_BASE_IB_CONNECTION% /DisableStartupDialogs
     goto prepare_ib
 )
 IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
     set IB_PATH=%V8_BASE_IB:~2%
-    echo [INFO] Basic config source type: File infobase ^(!IB_PATH!^)
-    set V8_BASE_IB_DESCRIPTION=file infobase ^(!IB_PATH!^)
+    echo [INFO] Basic config type: File infobase ^(!IB_PATH!^)
     set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
     goto prepare_ib
 )
@@ -127,16 +125,14 @@ IF /i "%V8_BASE_IB:~0,2%" equ "/S" (
         set V8_BASE_IB_NAME=%%b
     )
     set IB_PATH=!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!
-    echo [INFO] Basic config source type: Server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
-    set V8_BASE_IB_DESCRIPTION=server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
+    echo [INFO] Basic config type: Server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
     set V8_BASE_IB_CONNECTION=Srvr="!V8_BASE_IB_SERVER!";Ref="!V8_BASE_IB_NAME!";
     IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
     goto prepare_ib
 )
 IF exist "%V8_BASE_IB%\1cv8.1cd" (
     set IB_PATH=%V8_BASE_IB%
-    echo [INFO] Basic config source type: File infobase ^(!V8_SRC_PATH!^)
-    set V8_BASE_IB_DESCRIPTION=file infobase ^(!IB_PATH!^)
+    echo [INFO] Basic config type: File infobase ^(!V8_SRC_PATH!^)
     set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
     goto prepare_ib
 )
