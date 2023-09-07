@@ -14,7 +14,7 @@ SETLOCAL
 set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
-echo ===
+echo ======
 echo Validate 1C configuration, extension, external data processors ^& reports using 1C:EDT ^(using ring tool^)
 
 set ERROR_CODE=0
@@ -66,7 +66,7 @@ IF not defined REPORT_FILE (
     set ERROR_CODE=1
 )
 IF %ERROR_CODE% neq 0 (
-    echo ===
+    echo ======
     echo [ERROR] Input parameters error. Expected:
     echo     %%1 - path to 1C configuration, extension, data processors or reports ^(binary ^(*.cf, *.cfe, *.epf, *.erf^), 1C:Designer XML format or 1C:EDT project^)
     echo     %%2 - path to validation report file
