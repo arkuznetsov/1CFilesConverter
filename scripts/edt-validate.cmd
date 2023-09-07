@@ -12,7 +12,7 @@
 SETLOCAL
 
 set CONVERT_VERSION=UNKNOWN
-IF exist "..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("..\VERSION") DO set CONVERT_VERSION=%%i
+IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
 echo ===
 echo Validate 1C configuration, extension, external data processors ^& reports using 1C:EDT ^(using ring tool^)
