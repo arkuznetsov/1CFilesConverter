@@ -9,7 +9,7 @@
 
 @ECHO OFF
 
-SETLOCAL
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
@@ -119,8 +119,8 @@ echo [INFO] Set infobase for export configuration extension...
 IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating temporary file infobase "%IB_PATH%"...
-    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
-    %V8_TOOL% CREATEINFOBASE %V8_BASE_IB_CONNECTION% /DisableStartupDialogs
+    set V8_BASE_IB_CONNECTION=File="%IB_PATH%";
+    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs
     goto prepare_ib
 )
 IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
