@@ -15,7 +15,7 @@ set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
 echo ======
-echo Validate 1C configuration, extension, external data processors ^& reports using 1C:EDT ^(using ring tool^)
+echo [INFO] Validate 1C configuration, extension, external data processors ^& reports using 1C:EDT ^(using ring tool^)
 
 set ERROR_CODE=0
 
@@ -29,6 +29,9 @@ IF exist "%cd%\.env" (
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
+
+echo [INFO] Using 1C:Enterprise, version %V8_VERSION%
+echo [INFO] Using temporary folder "%V8_TEMP%"
 
 IF not defined V8_RING_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (

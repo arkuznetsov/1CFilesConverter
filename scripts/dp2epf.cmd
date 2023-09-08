@@ -15,7 +15,7 @@ set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
 echo ======
-echo Convert 1C external data processors ^& reports to binary format ^(*.epf, *.erf^)
+echo [INFO] Convert 1C external data processors ^& reports to binary format ^(*.epf, *.erf^)
 
 set ERROR_CODE=0
 
@@ -29,6 +29,9 @@ IF exist "%cd%\.env" (
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
+
+echo [INFO] Using 1C:Enterprise, version %V8_VERSION%
+echo [INFO] Using temporary folder "%V8_TEMP%"
 
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
