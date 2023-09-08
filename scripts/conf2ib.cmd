@@ -15,7 +15,7 @@ set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
 echo ======
-echo Load 1C configuration to 1C infobase
+echo [INFO] Load 1C configuration to 1C infobase
 
 set ERROR_CODE=0
 
@@ -29,6 +29,9 @@ IF exist "%cd%\.env" (
 
 IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
+
+echo [INFO] Using 1C:Enterprise, version %V8_VERSION%
+echo [INFO] Using temporary folder "%V8_TEMP%"
 
 IF not "%V8_CONVERT_TOOL%" equ "designer" IF not "%V8_CONVERT_TOOL%" equ "ibcmd" set V8_CONVERT_TOOL=designer
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
