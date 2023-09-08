@@ -9,12 +9,12 @@
 
 @ECHO OFF
 
-SETLOCAL
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
-echo ===
+echo ======
 echo Convert 1C external data processors ^& reports to 1C:EDT project
 
 set ERROR_CODE=0
@@ -44,6 +44,8 @@ IF not defined V8_RING_TOOL (
     echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
     set ERROR_CODE=1
 )
+
+echo [INFO] Start conversion using "designer"
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
 set IB_PATH=%LOCAL_TEMP%\tmp_db
@@ -85,7 +87,7 @@ IF defined V8_BASE_CONFIG (
     set V8_BASE_CONFIG=
 )
 IF %ERROR_CODE% neq 0 (
-    echo ===
+    echo ======
     echo [ERROR] Input parameters error. Expected:
     echo     %%1 - path to folder containing data processors ^(*.epf^) ^& reports ^(*.erf^) in binary or XML format
     echo           or path to binary data processor ^(*.epf^) or report ^(*.erf^)
@@ -105,8 +107,8 @@ echo [INFO] Set infobase for export data processor/report...
 IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating temporary file infobase "%IB_PATH%"...
-    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
-    %V8_TOOL% CREATEINFOBASE %V8_BASE_IB_CONNECTION% /DisableStartupDialogs
+    set V8_BASE_IB_CONNECTION=File="%IB_PATH%";
+    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs
     goto prepare_ib
 )
 IF /i "%V8_BASE_IB:~0,2%" equ "/F" (

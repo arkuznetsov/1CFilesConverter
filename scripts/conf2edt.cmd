@@ -14,7 +14,7 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
-echo ===
+echo ======
 echo Convert 1C configuration to 1C:EDT project
 
 set ERROR_CODE=0
@@ -51,6 +51,8 @@ IF not defined V8_RING_TOOL (
     set ERROR_CODE=1
 )
 
+echo [INFO] Start conversion using "%V8_CONVERT_TOOL%"
+
 set LOCAL_TEMP=%V8_TEMP%\%~n0
 set IB_PATH=%LOCAL_TEMP%\tmp_db
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
@@ -72,7 +74,7 @@ IF not defined V8_DST_PATH (
     set ERROR_CODE=1
 )
 IF %ERROR_CODE% neq 0 (
-    echo ===
+    echo ======
     echo [ERROR] Input parameters error. Expected:
     echo     %%1 - path to 1C configuration source ^(1C configuration file ^(*.cf^), infobase or 1C:Designer XML files^)
     echo     %%2 - path to folder to save configuration files in 1C:EDT project format

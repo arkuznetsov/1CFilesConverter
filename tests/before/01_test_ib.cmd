@@ -9,4 +9,4 @@ echo ===
 echo Prepare %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
 
-call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_BINARY%\1cv8.cf" "%TEST_OUT_PATH%"
+call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_BINARY%\1cv8.cf" "%TEST_OUT_PATH%" create

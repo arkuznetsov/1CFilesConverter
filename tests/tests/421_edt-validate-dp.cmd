@@ -1,6 +1,6 @@
 @ECHO OFF
 
-set TEST_NAME="Validate data processors & reports"
+set TEST_NAME="Validate data processors & reports (EDT)"
 set TEST_OUT_PATH=%OUT_PATH%\%~n0\report.txt
 set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=%TEST_OUT_PATH%
