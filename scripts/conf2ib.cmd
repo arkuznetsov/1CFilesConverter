@@ -112,16 +112,21 @@ IF /i "%V8_DST_PATH:~0,2%" equ "/S" (
     IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
     goto check_src
 )
-IF exist "%V8_DST_PATH%\1cv8.1cd" (
-    set IB_PATH=%V8_DST_PATH%
-    echo [INFO] Destination type: File infobase ^(!IB_PATH!^)
-    set V8_IB_CONNECTION=File="!V8_DST_PATH!";
+set IB_PATH=%V8_DST_PATH%
+IF exist "%IB_PATH%\1cv8.1cd" (
+    echo [INFO] Destination type: File infobase ^(%IB_PATH%^)
+    set V8_IB_CONNECTION=File="%IB_PATH%";
+    goto check_src
+)
+IF not exist "%IB_PATH%" (
+    echo [INFO] Destination type: New file infobase ^(%IB_PATH%^)
+    set V8_IB_CONNECTION=File="%IB_PATH%";
+    md "%IB_PATH%"
     goto check_src
 )
 IF "%V8_IB_CREATE%" equ "1" (
-    set IB_PATH=%V8_DST_PATH%
-    echo [INFO] Destination type: New file infobase ^(!V8_DST_PATH!^)
-    set V8_IB_CONNECTION=File="!V8_DST_PATH!";
+    echo [INFO] Destination type: New file infobase ^(%IB_PATH%^)
+    set V8_IB_CONNECTION=File="%IB_PATH%";
     IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
     md "%IB_PATH%"
     goto check_src
