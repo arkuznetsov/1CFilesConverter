@@ -9,12 +9,12 @@
 
 @ECHO OFF
 
-SETLOCAL
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
-echo ===
+echo ======
 echo Load 1C configuration to 1C infobase
 
 set ERROR_CODE=0
@@ -51,6 +51,8 @@ IF not defined V8_RING_TOOL (
     set ERROR_CODE=1
 )
 
+echo [INFO] Start conversion using "%V8_CONVERT_TOOL%"
+
 set LOCAL_TEMP=%V8_TEMP%\%~n0
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
 set WS_PATH=%LOCAL_TEMP%\edt_ws
@@ -61,6 +63,13 @@ IF "%ARG%" neq "" set V8_SRC_PATH=%ARG%
 set ARG=%2
 IF defined ARG set ARG=%ARG:"=%
 IF "%ARG%" neq "" set V8_DST_PATH=%ARG%
+set ARG=%3
+IF defined ARG set ARG=%ARG:"=%
+IF /i "%ARG%" equ "create" (
+    set V8_IB_CREATE=1
+) ELSE (
+    set V8_IB_CREATE=0
+)
 
 IF not defined V8_SRC_PATH (
     echo [ERROR] Missed parameter 1 - "path to 1C configuration source (1C configuration file (*.cf), 1C:Designer XML files or 1C:EDT project)"
@@ -71,7 +80,7 @@ IF not defined V8_DST_PATH (
     set ERROR_CODE=1
 )
 IF %ERROR_CODE% neq 0 (
-    echo ===
+    echo ======
     echo [ERROR] Input parameters error. Expected:
     echo     %%1 - path to 1C configuration source ^(1C configuration file ^(*.cf^), 1C:Designer XML files or 1C:EDT project^)
     echo     %%2 - path to folder contains 1C infobase
@@ -82,8 +91,47 @@ IF %ERROR_CODE% neq 0 (
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
 md "%LOCAL_TEMP%"
-IF exist "%V8_DST_PATH%" rd /S /Q "%V8_DST_PATH%"
-md "%V8_DST_PATH%"
+
+echo [INFO] Checking configuration %V8_DST_PATH% destination type...
+
+IF /i "%V8_DST_PATH:~0,2%" equ "/F" (
+    set IB_PATH=%V8_DST_PATH:~2%
+    echo [INFO] Destination type: File infobase ^(!IB_PATH!^)
+    set V8_IB_CONNECTION=File="!IB_PATH!";
+    goto check_src
+)
+IF /i "%V8_DST_PATH:~0,2%" equ "/S" (
+    set IB_PATH=%V8_DST_PATH:~2%
+    FOR /F "tokens=1,2 delims=\" %%a IN ("!IB_PATH!") DO (
+        set V8_IB_SERVER=%%a
+        set V8_IB_NAME=%%b
+    )
+    echo [INFO] Destination type: Server infobase ^(!V8_IB_SERVER!\!V8_IB_NAME!^)
+    set IB_PATH=!V8_IB_SERVER!\!V8_IB_NAME!
+    set V8_IB_CONNECTION=Srvr="!V8_IB_SERVER!";Ref="!V8_IB_NAME!";
+    IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
+    goto check_src
+)
+IF exist "%V8_DST_PATH%\1cv8.1cd" (
+    set IB_PATH=%V8_DST_PATH%
+    echo [INFO] Destination type: File infobase ^(!IB_PATH!^)
+    set V8_IB_CONNECTION=File="!V8_DST_PATH!";
+    goto check_src
+)
+IF "%V8_IB_CREATE%" equ "1" (
+    set IB_PATH=%V8_DST_PATH%
+    echo [INFO] Destination type: New file infobase ^(!V8_DST_PATH!^)
+    set V8_IB_CONNECTION=File="!V8_DST_PATH!";
+    IF exist "%IB_PATH%" rd /S /Q "%IB_PATH%"
+    md "%IB_PATH%"
+    goto check_src
+)
+
+echo [ERROR] Error cheking type of destination "%V8_DST_PATH%"!
+echo Server or file infobase expected.
+exit /b 1
+
+:check_src
 
 echo [INFO] Checking configuration source type...
 
@@ -117,25 +165,62 @@ call %V8_RING_TOOL% edt workspace export --project "%V8_SRC_PATH%" --configurati
 :export_xml
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    echo [INFO] Creating infobase "%V8_DST_PATH%"...
-    %V8_TOOL% CREATEINFOBASE File="%V8_DST_PATH%"; /DisableStartupDialogs
-
-    echo [INFO] Loading infobase "%V8_DST_PATH%" configuration from XML-files "%XML_PATH%"...
-    %V8_TOOL% DESIGNER /IBConnectionString File="%V8_DST_PATH%"; /DisableStartupDialogs /LoadConfigFromFiles "%XML_PATH%"
+    IF "%V8_IB_CREATE%" equ "1" (
+        echo [INFO] Creating infobase "%IB_PATH%"...
+        %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs
+    )
+    echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadConfigFromFiles "%XML_PATH%"
 ) ELSE (
-    echo [INFO] Creating infobase "%V8_DST_PATH%" from XML files "%XML_PATH%"...
-    %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --import="%XML_PATH%"
+    IF defined V8_IB_SERVER (
+        IF "%V8_IB_CREATE%" equ "1" (
+            echo [INFO] Creating infobase "%IB_PATH%" from XML-files "%XML_PATH%"...
+            %IBCMD_TOOL% infobase create --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --import="%XML_PATH%"
+        ) ELSE (
+            echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
+            %IBCMD_TOOL% infobase config import --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%"
+        )
+    ) ELSE (
+        IF "%V8_IB_CREATE%" equ "1" (
+            echo [INFO] Creating infobase "%IB_PATH%" from XML-files "%XML_PATH%"...
+            %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --import="%XML_PATH%"
+        ) ELSE (
+            echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
+            %IBCMD_TOOL% infobase config import --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%"
+        )
+    )
 )
 
 goto end
 
 :export_cf
 
-echo [INFO] Creating infobase "%V8_DST_PATH%" from file "%V8_SRC_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% CREATEINFOBASE File="%V8_DST_PATH%"; /DisableStartupDialogs /UseTemplate "%V8_SRC_PATH%"
+    IF "%V8_IB_CREATE%" equ "1" (
+        echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
+        %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /UseTemplate "%V8_SRC_PATH%"
+    ) ELSE (
+        echo [INFO] Loading infobase "%IB_PATH%" configuration from file "%V8_SRC_PATH%"...
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadCfg "%V8_SRC_PATH%"
+    )
 ) ELSE (
-    %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --load="%V8_SRC_PATH%"
+    IF defined V8_IB_SERVER (
+        IF "%V8_IB_CREATE%" equ "1" (
+            echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
+            %IBCMD_TOOL% infobase create --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --load="%V8_SRC_PATH%"
+        ) ELSE (
+            echo [INFO] Loading infobase "%IB_PATH%" configuration from file "%V8_SRC_PATH%"...
+            %IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_SRC_PATH%"
+        )
+    ) ELSE (
+        IF "%V8_IB_CREATE%" equ "1" (
+            echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
+            %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --load="%V8_SRC_PATH%"
+        ) ELSE (
+            echo [INFO] Loading infobase "%IB_PATH%" configuration from file "%V8_SRC_PATH%"...
+            %IBCMD_TOOL% infobase config load --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_SRC_PATH%"
+        )
+    )
 )
 
 :end
