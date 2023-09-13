@@ -47,6 +47,9 @@ IF not defined V8_RING_TOOL (
     echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
     set ERROR_CODE=1
 )
+IF defined V8_EDT_VERSION (
+    set V8_EDT_VERSION=@%V8_EDT_VERSION:@=%
+)
 
 echo [INFO] Start conversion using "designer"
 
@@ -187,7 +190,7 @@ echo [INFO] Export external data processors ^& reports from 1C:EDT format "%V8_S
 md "%XML_PATH%"
 md "%WS_PATH%"
 
-call %V8_RING_TOOL% edt workspace export --project "%V8_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace export --project "%V8_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
 
 :export_xml
 

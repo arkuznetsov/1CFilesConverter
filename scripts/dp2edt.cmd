@@ -47,6 +47,9 @@ IF not defined V8_RING_TOOL (
     echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
     set ERROR_CODE=1
 )
+IF defined V8_EDT_VERSION (
+    set V8_EDT_VERSION=@%V8_EDT_VERSION:@=%
+)
 
 echo [INFO] Start conversion using "designer"
 
@@ -201,7 +204,7 @@ FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
 md "%WS_PATH%"
 
 echo [INFO] Export dataprocessors ^& reports from 1C:Designer XML format "%XML_PATH%" to 1C:EDT format "%V8_DST_PATH%"...
-call %V8_RING_TOOL% edt workspace import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
+call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
 
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
