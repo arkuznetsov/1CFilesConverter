@@ -9,7 +9,7 @@
 
 @ECHO OFF
 
-SETLOCAL
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
@@ -41,6 +41,9 @@ IF not defined V8_RING_TOOL (
 IF not defined V8_RING_TOOL (
     echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
     set ERROR_CODE=1
+)
+IF defined V8_EDT_VERSION (
+    set V8_EDT_VERSION=@%V8_EDT_VERSION:@=%
 )
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
@@ -132,7 +135,7 @@ echo [INFO] Run validation in "%VALIDATE_PATH%"...
 
 md "%WS_PATH%"
 
-call %V8_RING_TOOL% edt workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
+call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
 
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
