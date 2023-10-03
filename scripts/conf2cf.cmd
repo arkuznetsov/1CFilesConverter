@@ -45,15 +45,6 @@ IF "%V8_CONVERT_TOOL%" equ "ibcmd" IF not exist %IBCMD_TOOL% (
     exit /b 1
 )
 
-IF not defined V8_RING_TOOL (
-    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
-        set V8_RING_TOOL="%%i"
-    )
-)
-IF not defined V8_RING_TOOL (
-    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
-    set ERROR_CODE=1
-)
 IF defined V8_EDT_VERSION (
     set V8_EDT_VERSION=@%V8_EDT_VERSION:@=%
 )
@@ -145,6 +136,15 @@ IF not exist "%XML_PATH%" md "%XML_PATH%"
 md "%WS_PATH%"
 
 echo [INFO] Export "%V8_SRC_PATH%" to 1C:Designer XML format "%XML_PATH%"...
+IF not defined V8_RING_TOOL (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
+        set V8_RING_TOOL="%%i"
+    )
+)
+IF not defined V8_RING_TOOL (
+    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
+    exit /b 0
+)
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace export --project "%V8_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
 
 :export_xml
