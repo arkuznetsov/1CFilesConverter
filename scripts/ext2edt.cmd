@@ -37,12 +37,14 @@ IF not "%V8_CONVERT_TOOL%" equ "designer" IF not "%V8_CONVERT_TOOL%" equ "ibcmd"
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
     echo Could not find 1C:Designer with path %V8_TOOL%
-    exit /b 1
+    set ERROR_CODE=1
+    goto finally
 )
 set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
 IF "%V8_CONVERT_TOOL%" equ "ibcmd" IF not exist %IBCMD_TOOL% (
     echo Could not find ibcmd tool with path %IBCMD_TOOL%
-    exit /b 1
+    set ERROR_CODE=1
+    goto finally
 )
 
 IF defined V8_EDT_VERSION (
@@ -102,7 +104,7 @@ IF %ERROR_CODE% neq 0 (
     echo     %%2 - path to folder to save configuration extension in 1C:EDT project format
     echo     %%3 - configuration extension name
     echo.
-    exit /b %ERROR_CODE%
+    goto finally
 )
 
 echo [INFO] Clear temporary files...
@@ -154,7 +156,8 @@ IF ERRORLEVEL 0 goto export
 
 echo [ERROR] Error cheking type of basic configuration "%V8_BASE_CONFIG%"!
 echo File or server infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
-exit /b 1
+set ERROR_CODE=1
+goto finally
 
 :export
 
@@ -174,7 +177,8 @@ IF exist "%V8_SRC_PATH%\Configuration.xml" (
 
 echo [ERROR] Wrong path "%V8_SRC_PATH%"!
 echo Configuration extension binary ^(*.cfe^) or folder containing configuration extension in 1C:Designer XML format expected.
-exit /b 1
+set ERROR_CODE=1
+goto finally
 
 :export_cfe
 
@@ -217,9 +221,14 @@ IF not defined V8_RING_TOOL (
 )
 IF not defined V8_RING_TOOL (
     echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
-    exit /b 0
+    set ERROR_CODE=1
+    goto finally
 )
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
 
+:finally
+
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
+
+exit /b %ERROR_CODE%

@@ -68,7 +68,7 @@ IF %ERROR_CODE% neq 0 (
     echo     %%1 - path to 1C configuration, extension, data processors or reports ^(binary ^(*.cf, *.cfe, *.epf, *.erf^), 1C:Designer XML format or 1C:EDT project^)
     echo     %%2 - path to validation report file
     echo.
-    exit /b %ERROR_CODE%
+    goto finally
 )
 
 echo [INFO] Clear temporary files...
@@ -118,7 +118,8 @@ FOR /F "delims=" %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf
 
 echo [ERROR] Error cheking type of configuration "%BASE_CONFIG%"!
 echo Infobase, configuration file ^(*.cf^), configuration extension file ^(*.cfe^), folder contains external data processors ^& reports in binary or XML format, 1C:Designer XML or 1C:EDT project expected.
-exit /b 1
+set ERROR_CODE=1
+goto finally
 
 :validate
 
@@ -133,9 +134,14 @@ IF not defined V8_RING_TOOL (
 )
 IF not defined V8_RING_TOOL (
     echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
-    exit /b 0
+    set ERROR_CODE=1
+    goto finally
 )
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
 
+:finally
+
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
+
+exit /b %ERROR_CODE%

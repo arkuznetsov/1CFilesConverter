@@ -36,7 +36,8 @@ echo [INFO] Using temporary folder "%V8_TEMP%"
 set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
     echo Could not find 1C:Designer with path %V8_TOOL%
-    exit /b 1
+    set ERROR_CODE=1
+    goto finally
 )
 
 IF defined V8_EDT_VERSION (
@@ -90,7 +91,7 @@ IF %ERROR_CODE% neq 0 (
     echo           or path to binary data processor ^(*.epf^) or report ^(*.erf^)
     echo     %%2 - path to folder to save 1C data processors ^& reports in 1C:Designer XML format
     echo.
-    exit /b %ERROR_CODE%
+    goto finally
 )
 
 echo [INFO] Clear temporary files...
@@ -141,7 +142,8 @@ IF ERRORLEVEL 0 goto export
 
 echo [ERROR] Error cheking type of basic configuration "%V8_BASE_CONFIG%"!
 echo Infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
-exit /b 1
+set ERROR_CODE=1
+goto finally
 
 :export
 
@@ -154,7 +156,7 @@ IF exist "%V8_SRC_PATH%\DT-INF\" (
 )
 IF "%V8_SRC_IS_EDT%" equ "1" (
     echo [INFO] Source type: 1C:EDT project
-    goto end
+    goto finally
 )
 set V8_SRC_MASK="%V8_SRC_PATH%"
 IF /i "%V8_SRC_PATH:~-4%" equ ".epf" (
@@ -174,7 +176,8 @@ FOR /F "delims=" %%f IN ('dir /b /a-d "%V8_SRC_PATH%\*.epf" "%V8_SRC_PATH%\*.erf
 
 echo [ERROR] Wrong path "%V8_SRC_PATH%"!
 echo Folder containing external data processors ^& reports in binary or EDT project, data processor binary ^(*.epf^) or report binary ^(*.erf^) expected.
-exit /b 1
+set ERROR_CODE=1
+goto finally
 
 :export_epf
 
@@ -184,7 +187,7 @@ FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
     %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%V8_DST_PATH%\%%~nf.xml" "%V8_SRC_FOLDER%\%%~nxf"
 )
 
-goto end
+goto finally
 
 :export_xml
 
@@ -199,11 +202,14 @@ IF not defined V8_RING_TOOL (
 )
 IF not defined V8_RING_TOOL (
     echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
-    exit /b 0
+    set ERROR_CODE=1
+    goto finally
 )
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace export --project "%V8_SRC_PATH%" --configuration-files "%V8_DST_PATH%" --workspace-location "%WS_PATH%"
 
-:end
+:finally
 
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
+
+exit /b %ERROR_CODE%
