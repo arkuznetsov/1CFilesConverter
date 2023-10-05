@@ -165,10 +165,12 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /DumpConfigToFiles "%XML_PATH%" -force
     FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
+    set IBCMD_EXPORT_FLAGS=--force
+    IF exist "%V8_DST_PATH%\Configuration.xml" set IBCMD_EXPORT_FLAGS=!IBCMD_EXPORT_FLAGS! --sync
     IF defined V8_IB_SERVER (
-        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%" --force
+        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" !IBCMD_EXPORT_FLAGS! "%XML_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%" --force
+        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" !IBCMD_EXPORT_FLAGS! "%XML_PATH%"
     )
 )
 IF not ERRORLEVEL 0 (

@@ -247,7 +247,7 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
             %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --load="%V8_SRC_PATH%"
         ) ELSE (
             echo [INFO] Loading infobase "%IB_PATH%" configuration from file "%V8_SRC_PATH%"...
-            %IBCMD_TOOL% infobase config load --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_SRC_PATH%"
+            %IBCMD_TOOL% infobase config load --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --force "%V8_SRC_PATH%"
         )
     )
 )

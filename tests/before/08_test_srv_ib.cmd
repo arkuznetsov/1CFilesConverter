@@ -75,4 +75,4 @@ for /f "tokens=2 delims==:" %%i in (' "%tasks_ras%" ') do (
 
 echo [INFO] Loading config "%TEST_BINARY%\1cv8.cf" to infobase "%V8_SRV_ADDR%\%V8_IB_NAME%"
 
-%IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_DB_SRV_ADDR% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" "%TEST_BINARY%\1cv8.cf"
+%IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_DB_SRV_ADDR% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --force "%TEST_BINARY%\1cv8.cf"
