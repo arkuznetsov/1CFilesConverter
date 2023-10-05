@@ -138,6 +138,7 @@ IF not defined V8_RING_TOOL (
     goto finally
 )
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
+set ERROR_CODE=%ERRORLEVEL%
 
 :finally
 

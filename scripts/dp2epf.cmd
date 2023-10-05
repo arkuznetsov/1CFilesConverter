@@ -196,6 +196,10 @@ IF not defined V8_RING_TOOL (
     goto finally
 )
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace export --project "%V8_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+IF not ERRORLEVEL 0 (
+    set ERROR_CODE=%ERRORLEVEL%
+    goto finally
+)
 
 :export_xml
 
@@ -218,6 +222,7 @@ IF "%V8_SRC_IS_EDT%" equ "1" (
         %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
     )
 )
+set ERROR_CODE=%ERRORLEVEL%
 
 :finally
 

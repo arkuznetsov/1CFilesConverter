@@ -178,6 +178,10 @@ IF not defined V8_RING_TOOL (
     goto finally
 )
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace export --project "%V8_SRC_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%"
+IF not ERRORLEVEL 0 (
+    set ERROR_CODE=%ERRORLEVEL%
+    goto finally
+)
 
 :export_xml
 
@@ -207,7 +211,7 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
         )
     )
 )
-
+set ERROR_CODE=%ERRORLEVEL%
 goto finally
 
 :export_cf
@@ -238,6 +242,9 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
             %IBCMD_TOOL% infobase config load --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_SRC_PATH%"
         )
     )
+)
+IF not ERRORLEVEL 0 (
+    set ERROR_CODE=%ERRORLEVEL%
 )
 
 :finally

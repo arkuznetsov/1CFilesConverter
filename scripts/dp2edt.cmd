@@ -191,6 +191,10 @@ md "%XML_PATH%"
 FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
     echo [INFO] Building %%~nf...
     %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%V8_SRC_FOLDER%\%%~nxf"
+    IF not ERRORLEVEL 0 (
+        set ERROR_CODE=%ERRORLEVEL%
+        goto finally
+    )
 )
 
 :export_xml
@@ -209,6 +213,7 @@ IF not defined V8_RING_TOOL (
     goto finally
 )
 call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
+set ERROR_CODE=%ERRORLEVEL%
 
 :finally
 
