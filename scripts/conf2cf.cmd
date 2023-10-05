@@ -160,11 +160,14 @@ IF not ERRORLEVEL 0 (
 IF not exist "%IB_PATH%" md "%IB_PATH%"
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
     echo [INFO] Creating infobase "%IB_PATH%"...
-    %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs
+    %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!"
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 
     echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /DisableStartupDialogs /LoadConfigFromFiles "%XML_PATH%"
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadConfigFromFiles "%XML_PATH%"
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     echo [INFO] Creating infobase "%IB_PATH%" with configuration from XML-files "%XML_PATH%"...
     %IBCMD_TOOL% infobase create --db-path="%IB_PATH%" --create-database --import="%XML_PATH%"
@@ -178,7 +181,9 @@ IF not ERRORLEVEL 0 (
 
 echo [INFO] Export infobase "%IB_PATH%" configuration to "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpCfg  "%V8_DST_PATH%"
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /DumpCfg  "%V8_DST_PATH%"
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     IF defined V8_IB_SERVER (
         %IBCMD_TOOL% infobase config save --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%"

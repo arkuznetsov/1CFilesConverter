@@ -106,7 +106,7 @@ IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating temporary file infobase "%IB_PATH%"...
     set V8_BASE_IB_CONNECTION=File="%IB_PATH%";
-    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs
+    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!"
     goto prepare_ib
 )
 IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
@@ -203,23 +203,28 @@ IF not ERRORLEVEL 0 (
 
 :export_xml
 
+set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
+
 IF "%V8_SRC_IS_EDT%" equ "1" (
     echo [INFO] Import external data processors from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalDataProcessors\*.xml"') DO (
         echo [INFO] Building %%~nf...
-        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalDataProcessors\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalDataProcessors\%%~nxf" "%V8_DST_PATH%"
+        FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
     )
     echo [INFO] Import external reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d "%XML_PATH%\ExternalReports\*.xml"') DO (
         echo [INFO] Building %%~nf...
-        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalReports\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\ExternalReports\%%~nxf" "%V8_DST_PATH%"
+        FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
     )
 ) ELSE (
     echo [INFO] Import external datap processors ^& reports from "%XML_PATH%" to 1C:Designer format "%V8_DST_PATH%" using infobase "%IB_PATH%"...
     FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
         echo [INFO] Building %%~nf...
         echo %V8_DST_PATH%
-        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadExternalDataProcessorOrReportFromFiles "%XML_PATH%\%%~nxf" "%V8_DST_PATH%"
+        FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
     )
 )
 set ERROR_CODE=%ERRORLEVEL%

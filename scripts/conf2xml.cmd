@@ -135,7 +135,7 @@ echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
 IF not exist "%IB_PATH%" md "%IB_PATH%"
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /UseTemplate "%V8_SRC_PATH%"
+    %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /UseTemplate "%V8_SRC_PATH%"
 ) ELSE (
     IF defined V8_IB_SERVER (
         %IBCMD_TOOL% infobase create --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --load="%V8_SRC_PATH%"
@@ -152,7 +152,9 @@ IF not ERRORLEVEL 0 (
 
 echo [INFO] Export configuration from infobase "%IB_PATH%" to 1C:Designer XML format "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpConfigToFiles "%V8_DST_PATH%" -force
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /DumpConfigToFiles "%V8_DST_PATH%" -force
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     IF defined V8_IB_SERVER (
         %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%" --force

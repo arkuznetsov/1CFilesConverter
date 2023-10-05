@@ -120,7 +120,7 @@ IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating temporary file infobase "%IB_PATH%"...
     set V8_BASE_IB_CONNECTION=File="%IB_PATH%";
-    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs
+    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!"
     goto prepare_ib
 )
 IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
@@ -211,7 +211,9 @@ IF not ERRORLEVEL 0 (
 
 echo [INFO] Loading configuration extension from XML-files "%XML_PATH%" to infobase "%IB_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadConfigFromFiles "%XML_PATH%" -Extension %V8_EXT_NAME%
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadConfigFromFiles "%XML_PATH%" -Extension %V8_EXT_NAME%
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     IF defined V8_BASE_IB_SERVER (
         %IBCMD_TOOL% infobase config import --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%XML_PATH%"
@@ -228,7 +230,9 @@ IF not ERRORLEVEL 0 (
 
 echo [INFO] Export configuration extension from infobase "%IB_PATH%" configuration to "%V8_DST_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpCfg  "%V8_DST_PATH%" -Extension %V8_EXT_NAME%
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /DumpCfg  "%V8_DST_PATH%" -Extension %V8_EXT_NAME%
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     IF defined V8_BASE_IB_SERVER (
         %IBCMD_TOOL% infobase config save --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%V8_DST_PATH%"

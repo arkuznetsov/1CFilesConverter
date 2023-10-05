@@ -186,12 +186,15 @@ IF not ERRORLEVEL 0 (
 :export_xml
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
     IF "%V8_IB_CREATE%" equ "1" (
         echo [INFO] Creating infobase "%IB_PATH%"...
-        %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs
+        %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!"
+        FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
     )
     echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadConfigFromFiles "%XML_PATH%"
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadConfigFromFiles "%XML_PATH%"
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     IF defined V8_IB_SERVER (
         IF "%V8_IB_CREATE%" equ "1" (
@@ -217,13 +220,15 @@ goto finally
 :export_cf
 
 IF "%V8_CONVERT_TOOL%" equ "designer" (
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
     IF "%V8_IB_CREATE%" equ "1" (
         echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
-        %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /UseTemplate "%V8_SRC_PATH%"
+        %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /UseTemplate "%V8_SRC_PATH%"
     ) ELSE (
         echo [INFO] Loading infobase "%IB_PATH%" configuration from file "%V8_SRC_PATH%"...
-        %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /LoadCfg "%V8_SRC_PATH%"
+        %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadCfg "%V8_SRC_PATH%"
     )
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     IF defined V8_IB_SERVER (
         IF "%V8_IB_CREATE%" equ "1" (

@@ -106,7 +106,7 @@ IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating temporary file infobase "%IB_PATH%"...
     set V8_BASE_IB_CONNECTION=File="%IB_PATH%";
-    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs
+    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!"
     goto prepare_ib
 )
 IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
@@ -188,9 +188,12 @@ echo [INFO] Export data processors ^& reports from folder "%V8_SRC_PATH%" to 1C:
 
 md "%XML_PATH%"
 
+set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
+
 FOR /F "delims=" %%f IN ('dir /b /a-d %V8_SRC_MASK%') DO (
     echo [INFO] Building %%~nf...
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%V8_SRC_FOLDER%\%%~nxf"
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /DumpExternalDataProcessorOrReportToFiles "%XML_PATH%" "%V8_SRC_FOLDER%\%%~nxf"
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
     IF not ERRORLEVEL 0 (
         set ERROR_CODE=%ERRORLEVEL%
         goto finally
