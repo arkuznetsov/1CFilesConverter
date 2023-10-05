@@ -100,6 +100,7 @@ IF %ERROR_CODE% neq 0 (
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
 md "%LOCAL_TEMP%"
+IF exist "%V8_DST_PATH%" IF "%V8_DP_XML_CLEAN_DST%" equ "1" rd /S /Q "%V8_DST_PATH%"
 IF not exist "%V8_DST_PATH%" md "%V8_DST_PATH%"
 
 echo [INFO] Set infobase for export data processor/report...
