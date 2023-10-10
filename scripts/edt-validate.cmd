@@ -23,7 +23,7 @@ echo [INFO] Validate 1C configuration, extension, external data processors ^& re
 set ERROR_CODE=0
 
 IF exist "%cd%\.env" (
-    FOR /F "tokens=*" %%a in (%cd%\.env) DO (
+    FOR /F "usebackq tokens=*" %%a in ("%cd%\.env") DO (
         FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
             IF not defined %%b set "%%b=%%c"
         )
