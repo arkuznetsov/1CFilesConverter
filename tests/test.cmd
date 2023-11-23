@@ -62,12 +62,15 @@ set /a TEST_SUCCESS=0
 set /a TEST_FAILED=0
 set TEST_FAILED_LIST=
 
+set TESTS_START=%date% %time%
+
 echo ======
 echo Prepare test data...
 echo ======
 
 FOR /f /F "tokens=*" %%f IN ('dir /b /a-d "%BEFORE_TEST_PATH%\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
+    set TEST_START=!date! !time!
     call "%BEFORE_TEST_PATH%\%%~f"
     set TEST_ERROR_MESSAGE=
     set TEST_CHECK_PATH_SUCCESS=
@@ -80,6 +83,9 @@ FOR /f /F "tokens=*" %%f IN ('dir /b /a-d "%BEFORE_TEST_PATH%\*.cmd"') DO (
         )
     )
     IF "!TEST_ERROR_MESSAGE!" neq "" set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! !TEST_ERROR_MESSAGE!
+    echo ===
+    echo Start: !TEST_START!
+    echo Finish: !date! !time!
     echo ===
     IF "!TEST_CHECK_PATH_FAILED!" equ "" (
         echo [SUCCESS] Test SUCCESS ^(%%~nf^)
@@ -101,6 +107,7 @@ echo ======
 
 FOR /F "tokens=*" %%f IN ('dir /b /a-d "%TEST_PATH%\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
+    set TEST_START=!date! !time!
     call "%TEST_PATH%\%%~f"
     set TEST_ERROR_MESSAGE=
     set TEST_CHECK_PATH_SUCCESS=
@@ -113,6 +120,9 @@ FOR /F "tokens=*" %%f IN ('dir /b /a-d "%TEST_PATH%\*.cmd"') DO (
         )
     )
     IF "!TEST_ERROR_MESSAGE!" neq "" set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! !TEST_ERROR_MESSAGE!
+    echo ===
+    echo Start: !TEST_START!
+    echo Finish: !date! !time!
     echo ===
     IF "!TEST_CHECK_PATH_FAILED!" equ "" (
         echo [SUCCESS] Test SUCCESS ^(%%~nf^)
@@ -134,6 +144,7 @@ echo ======
 
 FOR /f /F "tokens=*" %%f IN ('dir /b /a-d "%AFTER_TEST_PATH%\*.cmd"') DO (
     set /a TEST_COUNT=!TEST_COUNT!+1
+    set TEST_START=!date! !time!
     call "%AFTER_TEST_PATH%\%%~f"
     set TEST_ERROR_MESSAGE=
     set TEST_CHECK_PATH_SUCCESS=
@@ -146,6 +157,9 @@ FOR /f /F "tokens=*" %%f IN ('dir /b /a-d "%AFTER_TEST_PATH%\*.cmd"') DO (
         )
     )
     IF "!TEST_ERROR_MESSAGE!" neq "" set TEST_CHECK_PATH_FAILED=!TEST_CHECK_PATH_FAILED! !TEST_ERROR_MESSAGE!
+    echo ===
+    echo Start: !TEST_START!
+    echo Finish: !date! !time!
     echo ===
     IF "!TEST_CHECK_PATH_FAILED!" equ "" (
         echo [SUCCESS] Test SUCCESS ^(%%~nf^)
@@ -175,3 +189,7 @@ echo     Tests FAILED: !TEST_FAILED!
 FOR %%j IN (!TEST_FAILED_LIST!) DO (
     echo         %%j
 )
+echo ======
+echo Start: %TESTS_START%
+echo Finish: %date% %time%
+echo ======
