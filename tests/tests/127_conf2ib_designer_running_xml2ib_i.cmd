@@ -80,9 +80,9 @@ set pids_1c=%pids_1c: =%
 start /D "%V8_PATH%" 1cv8.exe DESIGNER /IBConnectionString Srvr="%V8_SRV_ADDR%";Ref="%TMP_IB_NAME%"; /DisableStartupDialogs
 timeout /T 5
 
-call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_XML_CF%" "/S%V8_SRV_ADDR%\%TMP_IB_NAME%"
+call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_XML_CF%" "/S%V8_DB_SRV_ADDR%\%TMP_IB_NAME%"
 
-call %SCRIPTS_PATH%\conf2xml.cmd "/S%V8_SRV_ADDR%\%TMP_IB_NAME%" "%TEST_OUT_PATH%"
+call %SCRIPTS_PATH%\conf2xml.cmd "/S%V8_DB_SRV_ADDR%\%TMP_IB_NAME%" "%TEST_OUT_PATH%"
 
 echo [INFO] Killing designer for infobase "%V8_SRV_ADDR%\%TMP_IB_NAME%"
 

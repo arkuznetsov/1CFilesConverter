@@ -9,4 +9,4 @@ set V8_CONVERT_TOOL=ibcmd
 echo ===
 echo Test %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
-call %SCRIPTS_PATH%\conf2edt.cmd "/S%V8_SRV_ADDR%\%V8_IB_NAME%" "%TEST_OUT_PATH%"
+call %SCRIPTS_PATH%\conf2edt.cmd "/S%V8_DB_SRV_ADDR%\%V8_IB_NAME%" "%TEST_OUT_PATH%"
