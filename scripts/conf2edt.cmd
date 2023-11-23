@@ -57,6 +57,7 @@ IF defined V8_EDT_VERSION (
 echo [INFO] Start conversion using "%V8_CONVERT_TOOL%"
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
+if not defined IBCMD_DATA set IBCMD_DATA=%V8_TEMP%\ibcmd_data
 set IB_PATH=%LOCAL_TEMP%\tmp_db
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
 set WS_PATH=%LOCAL_TEMP%\edt_ws
@@ -147,9 +148,9 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     %V8_TOOL% CREATEINFOBASE %V8_IB_CONNECTION% /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /UseTemplate "%V8_SRC_PATH%"
 ) ELSE (
     IF defined V8_IB_SERVER (
-        %IBCMD_TOOL% infobase create --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --load="%V8_SRC_PATH%"
+        %IBCMD_TOOL% infobase create --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --load="%V8_SRC_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase create --db-path="%IB_PATH%" --create-database --load="%V8_SRC_PATH%"
+        %IBCMD_TOOL% infobase create --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --create-database --load="%V8_SRC_PATH%"
     )
 )
 IF not ERRORLEVEL 0 (
@@ -171,9 +172,9 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     set IBCMD_EXPORT_FLAGS=--force
     IF exist "%V8_DST_PATH%\Configuration.xml" set IBCMD_EXPORT_FLAGS=!IBCMD_EXPORT_FLAGS! --sync
     IF defined V8_IB_SERVER (
-        %IBCMD_TOOL% infobase config export --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" !IBCMD_EXPORT_FLAGS! "%XML_PATH%"
+        %IBCMD_TOOL% infobase config export --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" !IBCMD_EXPORT_FLAGS! "%XML_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config export --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" !IBCMD_EXPORT_FLAGS! "%XML_PATH%"
+        %IBCMD_TOOL% infobase config export --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" !IBCMD_EXPORT_FLAGS! "%XML_PATH%"
     )
 )
 IF not ERRORLEVEL 0 (

@@ -57,6 +57,7 @@ IF defined V8_EDT_VERSION (
 echo [INFO] Start conversion using "%V8_CONVERT_TOOL%"
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
+if not defined IBCMD_DATA set IBCMD_DATA=%V8_TEMP%\ibcmd_data
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
 set WS_PATH=%LOCAL_TEMP%\edt_ws
 
@@ -202,18 +203,18 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     IF defined V8_IB_SERVER (
         IF "%V8_IB_CREATE%" equ "1" (
             echo [INFO] Creating infobase "%IB_PATH%" from XML-files "%XML_PATH%"...
-            %IBCMD_TOOL% infobase create --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --import="%XML_PATH%"
+            %IBCMD_TOOL% infobase create --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --import="%XML_PATH%"
         ) ELSE (
             echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
-            %IBCMD_TOOL% infobase config import --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%"
+            %IBCMD_TOOL% infobase config import --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%"
         )
     ) ELSE (
         IF "%V8_IB_CREATE%" equ "1" (
             echo [INFO] Creating infobase "%IB_PATH%" from XML-files "%XML_PATH%"...
-            %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --import="%XML_PATH%"
+            %IBCMD_TOOL% infobase create --data="%IBCMD_DATA%" --db-path="%V8_DST_PATH%" --create-database --import="%XML_PATH%"
         ) ELSE (
             echo [INFO] Loading infobase "%IB_PATH%" configuration from XML-files "%XML_PATH%"...
-            %IBCMD_TOOL% infobase config import --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%"
+            %IBCMD_TOOL% infobase config import --data="%IBCMD_DATA%" --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%XML_PATH%"
         )
     )
 )
@@ -236,18 +237,18 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     IF defined V8_IB_SERVER (
         IF "%V8_IB_CREATE%" equ "1" (
             echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
-            %IBCMD_TOOL% infobase create --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --load="%V8_SRC_PATH%"
+            %IBCMD_TOOL% infobase create --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --create-database --load="%V8_SRC_PATH%"
         ) ELSE (
             echo [INFO] Loading infobase "%IB_PATH%" configuration from file "%V8_SRC_PATH%"...
-            %IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_SRC_PATH%"
+            %IBCMD_TOOL% infobase config load --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_SRC_PATH%"
         )
     ) ELSE (
         IF "%V8_IB_CREATE%" equ "1" (
             echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
-            %IBCMD_TOOL% infobase create --db-path="%V8_DST_PATH%" --create-database --load="%V8_SRC_PATH%"
+            %IBCMD_TOOL% infobase create --data="%IBCMD_DATA%" --db-path="%V8_DST_PATH%" --create-database --load="%V8_SRC_PATH%"
         ) ELSE (
             echo [INFO] Loading infobase "%IB_PATH%" configuration from file "%V8_SRC_PATH%"...
-            %IBCMD_TOOL% infobase config load --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --force "%V8_SRC_PATH%"
+            %IBCMD_TOOL% infobase config load --data="%IBCMD_DATA%" --db-path="%V8_DST_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --force "%V8_SRC_PATH%"
         )
     )
 )

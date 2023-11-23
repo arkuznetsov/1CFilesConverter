@@ -57,6 +57,7 @@ IF defined V8_EDT_VERSION (
 echo [INFO] Start conversion using "%V8_CONVERT_TOOL%"
 
 set LOCAL_TEMP=%V8_TEMP%\%~n0
+if not defined IBCMD_DATA set IBCMD_DATA=%V8_TEMP%\ibcmd_data
 set IB_PATH=%LOCAL_TEMP%\tmp_db
 set XML_PATH=%LOCAL_TEMP%\tmp_xml
 set WS_PATH=%LOCAL_TEMP%\edt_ws
@@ -173,7 +174,7 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     echo [INFO] Creating infobase "%IB_PATH%" with configuration from XML-files "%XML_PATH%"...
-    %IBCMD_TOOL% infobase create --db-path="%IB_PATH%" --create-database --import="%XML_PATH%"
+    %IBCMD_TOOL% infobase create --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --create-database --import="%XML_PATH%"
 )
 IF not ERRORLEVEL 0 (
     set ERROR_CODE=%ERRORLEVEL%
@@ -189,9 +190,9 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     IF defined V8_IB_SERVER (
-        %IBCMD_TOOL% infobase config save --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%"
+        %IBCMD_TOOL% infobase config save --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config save --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%"
+        %IBCMD_TOOL% infobase config save --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" "%V8_DST_PATH%"
     )
 )
 set ERROR_CODE=%ERRORLEVEL%
