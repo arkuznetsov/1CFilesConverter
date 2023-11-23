@@ -33,7 +33,7 @@ for /f "tokens=2 delims==:" %%i in (' "%tasks_1c%" ') do (
    set cur_1c_pid=!cur_1c_pid: =!
    set cur_1c_pid_isnew=1
    for %%t in (%pids_1c%) do (
-       if "!pid!" equ "%%t" set cur_1c_pid_isnew=0
+       if "!cur_1c_pid!" equ "%%t" set cur_1c_pid_isnew=0
    )
    if "!cur_1c_pid_isnew!" equ "1" taskkill /PID !cur_1c_pid! /T /F
 )
