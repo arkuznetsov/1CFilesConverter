@@ -80,3 +80,5 @@ for /f "tokens=2 delims==:" %%i in (' "%tasks_ragent%" ') do (
    )
    if "!cur_ragent_pid_isnew!" equ "1" taskkill /PID !cur_ragent_pid! /T /F
 )
+
+timeout /T 10
