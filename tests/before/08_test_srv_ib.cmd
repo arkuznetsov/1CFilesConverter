@@ -61,18 +61,6 @@ infobase create ^
 --scheduled-jobs-deny=on ^
 --license-distribution=allow
 
-echo [INFO] Killing RAS service
-
-for /f "tokens=2 delims==:" %%i in (' "%tasks_ras%" ') do (
-   set cur_ras_pid=%%i
-   set cur_ras_pid=!cur_ras_pid: =!
-   set cur_ras_pid_isnew=1
-   for %%t in (%pids_ras%) do (
-       if "!cur_ras_pid!" equ "%%t" set cur_ras_pid_isnew=0
-   )
-   if "!cur_ras_pid_isnew!" equ "1" taskkill /PID !cur_ras_pid! /T /F
-)
-
 echo [INFO] Loading config "%TEST_BINARY%\1cv8.cf" to infobase "%V8_SRV_ADDR%\%V8_IB_NAME%"
 
 %IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_DB_SRV_ADDR% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --force "%TEST_BINARY%\1cv8.cf"

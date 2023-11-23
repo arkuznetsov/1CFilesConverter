@@ -16,20 +16,6 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 set TMP_IB_NAME=TMP_IB_%~n0
 set TMP_IB_NAME=%TMP_IB_NAME: =_%
 
-echo [INFO] Starting RAS service
-
-set "tasks_ras=tasklist /fi "imagename eq ras.exe" /fo "list" | findstr "PID""
-for /f "tokens=2 delims==:" %%i in (' "%tasks_ras%" ') do (
-   if not defined pids_ras (
-      set pids_ras=%%i
-   ) else (
-      set pids_ras=!pids_ras!,%%i
-   )
-)
-set pids_ras=%pids_ras: =%
-
-start /D "%V8_PATH%" ras.exe cluster --port=%V8_RAS_PORT% %V8_SRV_ADDR%:%V8_SRV_AGENT_PORT%
-
 echo [INFO] Looking for 1C cluster
 
 set "command_rac=%RAC_TOOL% localhost:%V8_RAS_PORT% cluster list"
@@ -98,15 +84,3 @@ localhost:%V8_RAS_PORT% ^
 infobase drop ^
 --cluster=%cluster_uuid% ^
 --infobase=%infobase_uuid% ^
-
-echo [INFO] Killing RAS service
-
-for /f "tokens=2 delims==:" %%i in (' "%tasks_ras%" ') do (
-   set cur_ras_pid=%%i
-   set cur_ras_pid=!cur_ras_pid: =!
-   set cur_ras_pid_isnew=1
-   for %%t in (%pids_ras%) do (
-       if "!cur_ras_pid!" equ "%%t" set cur_ras_pid_isnew=0
-   )
-   if "!cur_ras_pid_isnew!" equ "1" taskkill /PID !cur_ras_pid! /T /F
-)

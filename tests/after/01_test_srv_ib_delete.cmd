@@ -11,20 +11,6 @@ echo ===
 echo Clear %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
 
-echo [INFO] Starting RAS service
-
-set "tasks_ras=tasklist /fi "imagename eq ras.exe" /fo "list" | findstr "PID""
-for /f "tokens=2 delims==:" %%i in (' "%tasks_ras%" ') do (
-   if not defined pids_ras (
-      set pids_ras=%%i
-   ) else (
-      set pids_ras=!pids_ras!,%%i
-   )
-)
-set pids_ras=%pids_ras: =%
-
-start /D "%V8_PATH%" ras.exe cluster --port=%V8_RAS_PORT% %V8_SRV_ADDR%:%V8_SRV_AGENT_PORT%
-
 echo [INFO] Dropping temporary database "%V8_DB_SRV_ADDR%\%V8_IB_NAME%"
 
 sqlcmd -S "%V8_DB_SRV_ADDR%" -U "%V8_DB_SRV_USR%" -P "%V8_DB_SRV_PWD%" -Q "USE [master]; ALTER DATABASE [%V8_IB_NAME%] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [%V8_IB_NAME%]" -b -y 0
