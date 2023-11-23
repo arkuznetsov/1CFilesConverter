@@ -12,6 +12,20 @@ echo ===
 echo Prepare %TEST_COUNT%. ^(%~n0^) %TEST_NAME%
 echo ===
 
+echo [INFO] Starting 1C:Enterprise Server agent
+
+set "tasks_ragent=tasklist /fi "imagename eq ragent.exe" /fo "list" | findstr "PID""
+for /f "tokens=2 delims==:" %%i in (' "%tasks_ragent%" ') do (
+   if not defined pids_ragent (
+      set pids_ragent=%%i
+   ) else (
+      set pids_ragent=!pids_ragent!,%%i
+   )
+)
+set pids_ragent=%pids_ragent: =%
+
+start /D "%V8_PATH%" ragent.exe -agent -regport %V8_SRV_REG_PORT% -port %V8_SRV_AGENT_PORT% -range %V8_SRV_PORT_RANGE% -d "%V8_TEMP%\srvinfo%V8_SRV_REG_PORT%"
+
 echo [INFO] Starting RAS service
 
 set "tasks_ras=tasklist /fi "imagename eq ras.exe" /fo "list" | findstr "PID""

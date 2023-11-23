@@ -51,9 +51,9 @@ infobase create ^
 --scheduled-jobs-deny=on ^
 --license-distribution=allow
 
-call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_BINARY%\1cv8.cf" "/S%V8_SRV_ADDR%\%TMP_IB_NAME%"
+call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_BINARY%\1cv8.cf" "/S%V8_SRV_ADDR%:%V8_SRV_REG_PORT%\%TMP_IB_NAME%"
 
-call %SCRIPTS_PATH%\conf2xml.cmd "/S%V8_SRV_ADDR%\%TMP_IB_NAME%" "%TEST_OUT_PATH%"
+call %SCRIPTS_PATH%\conf2xml.cmd "/S%V8_SRV_ADDR%:%V8_SRV_REG_PORT%\%TMP_IB_NAME%" "%TEST_OUT_PATH%"
 
 echo [INFO] Dropping temporary database "%V8_DB_SRV_ADDR%\%TMP_IB_NAME%"
 

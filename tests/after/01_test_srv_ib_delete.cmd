@@ -68,3 +68,15 @@ for /f "tokens=2 delims==:" %%i in (' "%tasks_ras%" ') do (
    )
    if "!cur_ras_pid_isnew!" equ "1" taskkill /PID !cur_ras_pid! /T /F
 )
+
+echo [INFO] Killing 1C:Enterprise Server agent
+
+for /f "tokens=2 delims==:" %%i in (' "%tasks_ragent%" ') do (
+   set cur_ragent_pid=%%i
+   set cur_ragent_pid=!cur_ragent_pid: =!
+   set cur_ragent_pid_isnew=1
+   for %%t in (%pids_ragent%) do (
+       if "!cur_ragent_pid!" equ "%%t" set cur_ragent_pid_isnew=0
+   )
+   if "!cur_ragent_pid_isnew!" equ "1" taskkill /PID !cur_ragent_pid! /T /F
+)
