@@ -75,11 +75,16 @@ IF defined ARG set ARG=%ARG:"=%
 IF "%ARG%" neq "" set V8_EXT_NAME=%ARG%
 
 IF not defined V8_SRC_PATH (
-    echo [ERROR] Missed parameter 1 - "infobase, path to folder contains 1C extension in 1C:Designer XML format or EDT project"
+    echo [ERROR] Missed parameter 1 - "path to 1C extension source (1C extension binary file (*.cfe), 1C:Designer XML files or 1C:EDT project)"
     set ERROR_CODE=1
+) ELSE (
+    IF not exist "%V8_SRC_PATH%" (
+        echo [ERROR] Path "%V8_SRC_PATH%" doesn't exist ^(parameter 1^).
+        set ERROR_CODE=1
+    )
 )
 IF not defined V8_DST_PATH (
-    echo [ERROR] Missed parameter 2 - "path to 1C configuration extension file (*.cfe)"
+    echo [ERROR] Missed parameter 2 - "path to 1C infobase"
     set ERROR_CODE=1
 )
 IF not defined V8_EXT_NAME (
@@ -89,8 +94,8 @@ IF not defined V8_EXT_NAME (
 IF %ERROR_CODE% neq 0 (
     echo ======
     echo [ERROR] Input parameters error. Expected:
-    echo     %%1 - infobase, path to folder contains 1C extension in 1C:Designer XML format or EDT project
-    echo     %%2 - path to 1C configuration extension file ^(*.cfe^)
+    echo     %%1 - path to 1C extension source ^(1C extension binary file ^(*.cfe^), 1C:Designer XML files or 1C:EDT project^)
+    echo     %%2 - path to 1C infobase
     echo     %%3 - configuration extension name
     echo.
     goto finally
@@ -101,6 +106,40 @@ IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
 md "%LOCAL_TEMP%"
 IF not exist "%V8_DST_FOLDER%" md "%V8_DST_FOLDER%"
 
+echo [INFO] Checking extension %V8_DST_PATH% destination type...
+
+IF /i "%V8_DST_PATH:~0,2%" equ "/F" (
+    set IB_PATH=%V8_DST_PATH:~2%
+    echo [INFO] Destination type: File infobase ^(!IB_PATH!^)
+    set V8_IB_CONNECTION=File="!IB_PATH!";
+    goto check_src
+)
+IF /i "%V8_DST_PATH:~0,2%" equ "/S" (
+    set IB_PATH=%V8_DST_PATH:~2%
+    FOR /F "tokens=1,2 delims=\" %%a IN ("!IB_PATH!") DO (
+        set V8_IB_SERVER=%%a
+        set V8_IB_NAME=%%b
+    )
+    echo [INFO] Destination type: Server infobase ^(!V8_IB_SERVER!\!V8_IB_NAME!^)
+    set IB_PATH=!V8_IB_SERVER!\!V8_IB_NAME!
+    set V8_IB_CONNECTION=Srvr="!V8_IB_SERVER!";Ref="!V8_IB_NAME!";
+    IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
+    goto check_src
+)
+set IB_PATH=%V8_DST_PATH%
+IF exist "%IB_PATH%\1cv8.1cd" (
+    echo [INFO] Destination type: File infobase ^(%IB_PATH%^)
+    set V8_IB_CONNECTION=File="%IB_PATH%";
+    goto check_src
+)
+
+echo [ERROR] Error cheking type of destination "%V8_DST_PATH%"!
+echo Server or file infobase expected.
+    set ERROR_CODE=1
+    goto finally
+
+:check_src
+
 echo [INFO] Checking 1C extension source type...
 
 IF exist "%V8_SRC_PATH%\DT-INF\" (
@@ -109,8 +148,7 @@ IF exist "%V8_SRC_PATH%\DT-INF\" (
             echo [INFO] Source type: 1C:EDT project
             md "%XML_PATH%"
             md "%WS_PATH%"
-            set V8_SRC_TYPE=edt
-            goto base_ib
+            goto export_edt
         )
     )
 )
@@ -118,108 +156,18 @@ IF exist "%V8_SRC_PATH%\Configuration.xml" (
     FOR /F "delims=" %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
         echo [INFO] Source type: 1C:Designer XML files
         set XML_PATH=%V8_SRC_PATH%
-        set V8_SRC_TYPE=xml
-        goto base_ib
+        goto export_xml
     )
 )
-set V8_SRC_TYPE=ib
-IF /i "%V8_SRC_PATH:~0,2%" equ "/F" (
-    set IB_PATH=%V8_SRC_PATH:~2%
-    echo [INFO] Basic config type: File infobase ^(!IB_PATH!^)
-    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
-    goto export_ib
-)
-IF /i "%V8_SRC_PATH:~0,2%" equ "/S" (
-    set IB_PATH=%V8_SRC_PATH:~2%
-    FOR /F "tokens=1,2 delims=\" %%a IN ("!IB_PATH!") DO (
-        set V8_BASE_IB_SERVER=%%a
-        set V8_BASE_IB_NAME=%%b
-    )
-    set IB_PATH=!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!
-    echo [INFO] Basic config type: Server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
-    set V8_BASE_IB_CONNECTION=Srvr="!V8_BASE_IB_SERVER!";Ref="!V8_BASE_IB_NAME!";
-    IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
-    goto export_ib
-)
-IF exist "%V8_SRC_PATH%\1cv8.1cd" (
-    set IB_PATH=%V8_SRC_PATH%
-    echo [INFO] Basic config type: File infobase ^(!V8_SRC_PATH!^)
-    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
-    goto export_ib
+IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
+    echo [INFO] Source type: Configuration extension file ^(CFE^)
+    goto export_cfe
 )
 
 echo [ERROR] Wrong path "%V8_SRC_PATH%"!
-echo Infobase or folder containing configuration extension in 1C:Designer XML format or 1C:EDT project expected.
+echo Configuration extension binary ^(*.cfe^) or folder containing configuration extension in 1C:Designer XML format or 1C:EDT project expected.
 set ERROR_CODE=1
 goto finally
-
-:base_ib
-
-echo [INFO] Set basic infobase for export configuration extension...
-
-IF "%V8_BASE_IB%" equ "" (
-    md "%IB_PATH%"
-    echo [INFO] Using temporary file infobase "%IB_PATH%"...
-    set V8_BASE_IB_CONNECTION=File="%IB_PATH%";
-    %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!"
-    goto prepare_ib
-)
-IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
-    set IB_PATH=%V8_BASE_IB:~2%
-    echo [INFO] Basic infobase type: File infobase ^(!IB_PATH!^)
-    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
-    goto prepare_ib
-)
-IF /i "%V8_BASE_IB:~0,2%" equ "/S" (
-    set IB_PATH=%V8_BASE_IB:~2%
-    FOR /F "tokens=1,2 delims=\" %%a IN ("!IB_PATH!") DO (
-        set V8_BASE_IB_SERVER=%%a
-        set V8_BASE_IB_NAME=%%b
-    )
-    set IB_PATH=!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!
-    echo [INFO] Basic infobase type: Server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
-    set V8_BASE_IB_CONNECTION=Srvr="!V8_BASE_IB_SERVER!";Ref="!V8_BASE_IB_NAME!";
-    IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
-    goto prepare_ib
-)
-IF exist "%V8_BASE_IB%\1cv8.1cd" (
-    set IB_PATH=%V8_BASE_IB%
-    echo [INFO] Basic infobase type: File infobase ^(!V8_SRC_PATH!^)
-    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
-    goto prepare_ib
-)
-
-:prepare_ib
-
-IF defined V8_BASE_IB (
-    set V8_BASE_IB=%V8_BASE_IB:"=%
-) ELSE (
-    echo [INFO] Environment variable "V8_BASE_IB" is not defined, temporary file infobase will be used.
-    set V8_BASE_IB=
-)
-IF defined V8_BASE_CONFIG (
-    set V8_BASE_CONFIG=%V8_BASE_CONFIG:"=%
-) ELSE (
-    echo [INFO] Environment variable "V8_BASE_CONFIG" is not defined, empty configuration will be used.
-    goto export
-)
-
-IF not exist "%IB_PATH%" md "%IB_PATH%"
-call %~dp0conf2ib.cmd "%V8_BASE_CONFIG%" "%IB_PATH%"
-IF ERRORLEVEL 0 goto export
-
-echo [ERROR] Error cheking type of basic configuration "%V8_BASE_CONFIG%"!
-echo File or server infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
-    set ERROR_CODE=1
-    goto finally
-
-:export
-if "%V8_SRC_TYPE%" equ "xml" (
-    goto load_xml
-)
-if "%V8_SRC_TYPE%" equ "edt" (
-    goto export_edt
-)
 
 :export_edt
 
@@ -240,37 +188,36 @@ IF not ERRORLEVEL 0 (
     goto finally
 )
 
-:load_xml
+:export_xml
 
 echo [INFO] Loading configuration extension from XML-files "%XML_PATH%" to infobase "%IB_PATH%"...
 IF "%V8_CONVERT_TOOL%" equ "designer" (
     set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadConfigFromFiles "%XML_PATH%" -Extension %V8_EXT_NAME%
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadConfigFromFiles "%XML_PATH%" -Extension %V8_EXT_NAME%
     FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
-    IF defined V8_BASE_IB_SERVER (
-        %IBCMD_TOOL% infobase config import --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%XML_PATH%"
+    IF defined V8_IB_SERVER (
+        %IBCMD_TOOL% infobase config import --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%XML_PATH%"
     ) ELSE (
         %IBCMD_TOOL% infobase config import --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%XML_PATH%"
     )
 )
-IF not ERRORLEVEL 0 (
-    set ERROR_CODE=%ERRORLEVEL%
-    goto finally
-)
+set ERROR_CODE=%ERRORLEVEL%
+goto finally
 
-:export_ib
+:export_cfe
 
-echo [INFO] Export configuration extension from infobase "%IB_PATH%" configuration to "%V8_DST_PATH%"...
+echo [INFO] Loading configuration extension from file "%V8_SRC_PATH%" to infobase "%IB_PATH%"...
+
 IF "%V8_CONVERT_TOOL%" equ "designer" (
     set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
-    %V8_TOOL% DESIGNER /IBConnectionString %V8_BASE_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /DumpCfg  "%V8_DST_PATH%" -Extension %V8_EXT_NAME%
+    %V8_TOOL% DESIGNER /IBConnectionString %V8_IB_CONNECTION% /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!" /LoadCfg "%V8_SRC_PATH%" -Extension %V8_EXT_NAME%
     FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
-    IF defined V8_BASE_IB_SERVER (
-        %IBCMD_TOOL% infobase config save --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%V8_DST_PATH%"
+    IF defined V8_IB_SERVER (
+        %IBCMD_TOOL% infobase config load --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_IB_SERVER% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% --force "%V8_SRC_PATH%"
     ) ELSE (
-        %IBCMD_TOOL% infobase config save --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% "%V8_DST_PATH%"
+        %IBCMD_TOOL% infobase config load --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% --force "%V8_SRC_PATH%"
     )
 )
 set ERROR_CODE=%ERRORLEVEL%
