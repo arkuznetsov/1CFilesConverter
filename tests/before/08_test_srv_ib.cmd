@@ -56,7 +56,7 @@ for /f "tokens=1,2 delims==:" %%i in (' "%command_rac%" ') do (
 )
 :create_ib
 
-echo [INFO] Creating temporary infobase "%V8_SRV_ADDR%\%V8_IB_NAME%"
+echo [INFO] Creating temporary infobase "%V8_SRV_ADDR%:%V8_SRV_REG_PORT%\%V8_IB_NAME%"
 
 %RAC_TOOL% ^
 localhost:%V8_RAS_PORT% ^
@@ -75,6 +75,6 @@ infobase create ^
 --scheduled-jobs-deny=on ^
 --license-distribution=allow
 
-echo [INFO] Loading config "%TEST_BINARY%\1cv8.cf" to infobase "%V8_SRV_ADDR%\%V8_IB_NAME%"
+echo [INFO] Loading config "%TEST_BINARY%\1cv8.cf" to database "%V8_DB_SRV_ADDR%\%V8_IB_NAME%"
 
 %IBCMD_TOOL% infobase config load --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_DB_SRV_ADDR% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --force "%TEST_BINARY%\1cv8.cf"
