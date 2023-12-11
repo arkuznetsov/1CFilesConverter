@@ -73,13 +73,8 @@ IF defined ARG set ARG=%ARG:"=%
 IF "%ARG%" neq "" set V8_EXT_NAME=%ARG%
 
 IF not defined V8_SRC_PATH (
-    echo [ERROR] Missed parameter 1 - "path to folder contains 1C extension binary file (*.cfe) or in 1C:Designer XML format"
+    echo [ERROR] Missed parameter 1 - "infobase, path to folder contains 1C extension binary file (*.cfe) or in 1C:Designer XML format"
     set ERROR_CODE=1
-) ELSE (
-    IF not exist "%V8_SRC_PATH%" (
-        echo [ERROR] Path "%V8_SRC_PATH%" doesn't exist ^(parameter 1^).
-        set ERROR_CODE=1
-    )
 )
 IF not defined V8_DST_PATH (
     echo [ERROR] Missed parameter 2 - "path to folder to save configuration extension in 1C:EDT project format"
@@ -89,22 +84,10 @@ IF not defined V8_EXT_NAME (
     echo [ERROR] Missed parameter 3 - "configuration extension name"
     set ERROR_CODE=1
 )
-IF defined V8_BASE_IB (
-    set V8_BASE_IB=%V8_BASE_IB:"=%
-) ELSE (
-    echo [INFO] Environment variable "V8_BASE_IB" is not defined, temporary file infobase will be used.
-    set V8_BASE_IB=
-)
-IF defined V8_BASE_CONFIG (
-    set V8_BASE_CONFIG=%V8_BASE_CONFIG:"=%
-) ELSE (
-    echo [INFO] Environment variable "V8_BASE_CONFIG" is not defined, empty configuration will be used.
-    set V8_BASE_CONFIG=
-)
 IF %ERROR_CODE% neq 0 (
     echo ======
     echo [ERROR] Input parameters error. Expected:
-    echo     %%1 - path to folder contains 1C extension binary file ^(*.cfe^) or in 1C:Designer XML format
+    echo     %%1 - infobase, path to folder contains 1C extension binary file ^(*.cfe^) or in 1C:Designer XML format
     echo     %%2 - path to folder to save configuration extension in 1C:EDT project format
     echo     %%3 - configuration extension name
     echo.
@@ -120,7 +103,55 @@ IF exist "%V8_DST_PATH%" IF "%V8_EXT_EDT_CLEAN_DST%" equ "1" (
 )
 IF not exist "%V8_DST_PATH%" md "%V8_DST_PATH%"
 
-echo [INFO] Set infobase for export configuration extension...
+echo [INFO] Checking 1C extension source type...
+
+IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
+    echo [INFO] Source type: Configuration extension file ^(CFE^)
+    set V8_SRC_TYPE=cfe
+    goto base_ib
+)
+IF exist "%V8_SRC_PATH%\Configuration.xml" (
+    FOR /F "delims=" %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
+        echo [INFO] Source type: 1C:Designer XML files
+        set XML_PATH=%V8_SRC_PATH%
+        set V8_SRC_TYPE=xml
+        goto base_ib
+    )
+)
+set V8_SRC_TYPE=ib
+IF /i "%V8_SRC_PATH:~0,2%" equ "/F" (
+    set IB_PATH=%V8_SRC_PATH:~2%
+    echo [INFO] Basic config type: File infobase ^(!IB_PATH!^)
+    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
+    goto export_ib
+)
+IF /i "%V8_SRC_PATH:~0,2%" equ "/S" (
+    set IB_PATH=%V8_SRC_PATH:~2%
+    FOR /F "tokens=1,2 delims=\" %%a IN ("!IB_PATH!") DO (
+        set V8_BASE_IB_SERVER=%%a
+        set V8_BASE_IB_NAME=%%b
+    )
+    set IB_PATH=!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!
+    echo [INFO] Basic config type: Server infobase ^(!V8_BASE_IB_SERVER!\!V8_BASE_IB_NAME!^)
+    set V8_BASE_IB_CONNECTION=Srvr="!V8_BASE_IB_SERVER!";Ref="!V8_BASE_IB_NAME!";
+    IF not defined V8_DB_SRV_DBMS set V8_DB_SRV_DBMS=MSSQLServer
+    goto export_ib
+)
+IF exist "%V8_SRC_PATH%\1cv8.1cd" (
+    set IB_PATH=%V8_SRC_PATH%
+    echo [INFO] Basic config type: File infobase ^(!V8_SRC_PATH!^)
+    set V8_BASE_IB_CONNECTION=File="!IB_PATH!";
+    goto export_ib
+)
+
+echo [ERROR] Wrong path "%V8_SRC_PATH%"!
+echo Infobase, configuration extension binary ^(*.cfe^) or folder containing configuration extension in 1C:Designer XML format expected.
+set ERROR_CODE=1
+goto finally
+
+:base_ib
+
+echo [INFO] Set basic infobase for export configuration extension...
 
 IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
@@ -156,39 +187,29 @@ IF exist "%V8_BASE_IB%\1cv8.1cd" (
 
 :prepare_ib
 
-IF "%V8_BASE_CONFIG%" equ "" goto export
+IF defined V8_BASE_IB (
+    set V8_BASE_IB=%V8_BASE_IB:"=%
+) ELSE (
+    echo [INFO] Environment variable "V8_BASE_IB" is not defined, temporary file infobase will be used.
+    set V8_BASE_IB=
+)
+IF defined V8_BASE_CONFIG (
+    set V8_BASE_CONFIG=%V8_BASE_CONFIG:"=%
+) ELSE (
+    echo [INFO] Environment variable "V8_BASE_CONFIG" is not defined, empty configuration will be used.
+    goto load_cfe
+)
 
 IF not exist "%IB_PATH%" md "%IB_PATH%"
 call %~dp0conf2ib.cmd "%V8_BASE_CONFIG%" "%IB_PATH%"
-IF ERRORLEVEL 0 goto export
+IF ERRORLEVEL 0 goto load_cfe
 
 echo [ERROR] Error cheking type of basic configuration "%V8_BASE_CONFIG%"!
 echo File or server infobase, configuration file ^(*.cf^), 1C:Designer XML, 1C:EDT project or no configuration expected.
 set ERROR_CODE=1
 goto finally
 
-:export
-
-echo [INFO] Checking 1C extension source type...
-
-IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
-    echo [INFO] Source type: Configuration extension file ^(CFE^)
-    goto export_cfe
-)
-IF exist "%V8_SRC_PATH%\Configuration.xml" (
-    FOR /F "delims=" %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
-        echo [INFO] Source type: 1C:Designer XML files
-        set XML_PATH=%V8_SRC_PATH%
-        goto export_xml
-    )
-)
-
-echo [ERROR] Wrong path "%V8_SRC_PATH%"!
-echo Configuration extension binary ^(*.cfe^) or folder containing configuration extension in 1C:Designer XML format expected.
-set ERROR_CODE=1
-goto finally
-
-:export_cfe
+:load_cfe
 
 echo [INFO] Loading configuration extension from file "%V8_SRC_PATH%" to infobase "%IB_PATH%"...
 
@@ -203,6 +224,15 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
         %IBCMD_TOOL% infobase config load --data="%IBCMD_DATA%" --db-path="%IB_PATH%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% --force "%V8_SRC_PATH%"
     )
 )
+
+if "%V8_SRC_TYPE%" equ "cfe" (
+    goto export_ib
+)
+if "%V8_SRC_TYPE%" equ "xml" (
+    goto export_xml
+)
+
+:export_ib
 
 echo [INFO] Export configuration extension from infobase "%IB_PATH%" to 1C:Designer XML format "%XML_PATH%"...
 

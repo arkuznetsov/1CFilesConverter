@@ -80,14 +80,14 @@ IF not defined V8_SRC_PATH (
     set ERROR_CODE=1
 )
 IF not defined V8_DST_PATH (
-    echo [ERROR] Missed parameter 2 - "path to folder contains 1C infobase"
+    echo [ERROR] Missed parameter 2 - "path to 1C infobase"
     set ERROR_CODE=1
 )
 IF %ERROR_CODE% neq 0 (
     echo ======
     echo [ERROR] Input parameters error. Expected:
     echo     %%1 - path to 1C configuration source ^(1C configuration file ^(*.cf^), 1C:Designer XML files or 1C:EDT project^)
-    echo     %%2 - path to folder contains 1C infobase
+    echo     %%2 - path to 1C infobase
     echo.
     goto finally
 )
