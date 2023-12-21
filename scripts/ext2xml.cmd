@@ -242,7 +242,7 @@ IF "%V8_CONVERT_TOOL%" equ "designer" (
     FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
 ) ELSE (
     set IBCMD_EXPORT_FLAGS=--force
-    IF exist "%V8_DST_PATH%\Configuration.xml" set IBCMD_EXPORT_FLAGS=!IBCMD_EXPORT_FLAGS! --sync
+    IF exist "%V8_DST_PATH%\Configuration.xml" IF exist "%V8_DST_PATH%\ConfigDumpInfo.xml" set IBCMD_EXPORT_FLAGS=!IBCMD_EXPORT_FLAGS! --sync
     IF defined V8_BASE_IB_SERVER (
         %IBCMD_TOOL% infobase config export --data="%IBCMD_DATA%" --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_BASE_IB_SERVER% --db-name="%V8_BASE_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --extension=%V8_EXT_NAME% !IBCMD_EXPORT_FLAGS! "%V8_DST_PATH%"
     ) ELSE (
