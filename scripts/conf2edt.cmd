@@ -22,7 +22,7 @@ echo [INFO] Convert 1C configuration to 1C:EDT project
 
 set ERROR_CODE=0
 
-IF exist "%cd%\.env" (
+IF exist "%cd%\.env" IF "%V8_SKIP_ENV%" neq "1" (
     FOR /F "usebackq tokens=*" %%a in ("%cd%\.env") DO (
         FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
             IF not defined %%b set "%%b=%%c"
