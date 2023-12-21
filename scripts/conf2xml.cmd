@@ -22,7 +22,7 @@ echo [INFO] Convert 1C configuration to 1C:Designer XML format
 
 set ERROR_CODE=0
 
-IF exist "%cd%\.env" (
+IF exist "%cd%\.env" IF "%V8_SKIP_ENV%" neq "1" (
     FOR /F "usebackq tokens=*" %%a in ("%cd%\.env") DO (
         FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
             IF not defined %%b set "%%b=%%c"
@@ -137,8 +137,6 @@ set ERROR_CODE=1
 goto finally
 
 :export_cf
-
-echo [INFO] Creating infobase "%IB_PATH%" from file "%V8_SRC_PATH%"...
 
 IF not exist "%IB_PATH%" md "%IB_PATH%"
 
