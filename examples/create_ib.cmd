@@ -35,7 +35,7 @@ IF exist "%REPO_PATH%\.env" (
 
 SET QUERY="RESTORE DATABASE [%V8_IB_NAME%] FROM  DISK = N'D:\SQL.Template\%V8_IB_TEMPLATE%.bak' WITH  FILE = 1,  MOVE N'Temlate_ERP_2_5_12' TO N'D:\SQL.Data\%V8_IB_NAME%.mdf', MOVE N'Temlate_ERP_2_5_12_log' TO N'D:\SQL.Log\%V8_IB_NAME%_log.ldf',  NOUNLOAD,  REPLACE,  STATS = 5"
 
-SET V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF not defined V8_TOOL set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
 
 echo START: %date% %time%
 
