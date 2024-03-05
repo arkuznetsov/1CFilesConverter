@@ -130,17 +130,17 @@ echo [INFO] Run validation in "%VALIDATE_PATH%"...
 
 md "%WS_PATH%"
 
-IF not defined V8_RING_TOOL (
+IF not defined RING_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where ring`) DO (
-        set V8_RING_TOOL="%%i"
+        set RING_TOOL="%%i"
     )
 )
-IF not defined V8_RING_TOOL (
-    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "V8_RING_TOOL" variable with full specified path 
+IF not defined RING_TOOL (
+    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "RING_TOOL" variable with full specified path 
     set ERROR_CODE=1
     goto finally
 )
-call %V8_RING_TOOL% edt%V8_EDT_VERSION% workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
+call %RING_TOOL% edt%V8_EDT_VERSION% workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
 set ERROR_CODE=%ERRORLEVEL%
 
 :finally
