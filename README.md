@@ -109,7 +109,7 @@
 
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
 
 Результат:
 
@@ -156,7 +156,9 @@
 
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
+* **V8_CONVERT_TOOL** - тип конвертации 'ibcmd'
+* **IBCMD_DATA** - путь к рабочему каталогу `ibcmd`. Если не указан, то создается во временных файлах. 
 
 Результат:
 
@@ -197,7 +199,7 @@
 
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
 
 Результат:
 
@@ -367,7 +369,7 @@
 
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
 
 Результат:
 
@@ -414,7 +416,7 @@
 
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
 
 Результат:
 
@@ -461,7 +463,7 @@
 
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
 
 Результат:
 
@@ -505,7 +507,7 @@
 
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
 
 Результат:
 
@@ -671,7 +673,7 @@ watchman watch-del "<path to my repo>\ext"
 * **V8_DB_SRV_DBMS** - тип сервера СУБД (MSSQLServer, PostgreSQL, IBMDB2, OracleDatabase) (опционально, по умолчанию: MSSQLServer)
 * **V8_DB_SRV_ADDR** - адрес сервера СУБД
 * **V8_DB_SRV_USR** - пользователь сервера СУБД
-* **V8_DB_SRV_PSW** - пароль пользователя сервера СУБД
+* **V8_DB_SRV_PWD** - пароль пользователя сервера СУБД
 * **V8_SRV_ADDR** - адрес сервера 1С:Предприятие
 * **V8_SRV_AGENT_PORT** - порт агента сервера 1С:Предприятие (например: 1540)
 * **V8_SRV_REG_PORT** - порт главного менеджера кластера 1С:Предприятие (например: 1541)
