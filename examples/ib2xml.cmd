@@ -11,6 +11,8 @@ set RELATIVE_SRC_PATH=src
 set RELATIVE_SRC_CF_PATH=cf
 set RELATIVE_SRC_CFE_PATH=cfe
 
+IF not defined V8_TEMP set V8_TEMP=%TEMP%\%~n0
+
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
     echo [ERROR] Path to source files "%RELATIVE_REPO_PATH%\%RELATIVE_SRC_PATH%" not found
@@ -70,22 +72,44 @@ echo ======
 echo Export main configuration
 echo ======
 
-call %REPO_PATH%\tools\1CFilesConverter\scripts\conf2xml.cmd "%V8_CONNECTION_STRING%" "%CONF_PATH%"
+set TEMP_CONF_PATH=%V8_TEMP%\src
+IF exist "%TEMP_CONF_PATH%" (
+    del /f /s /q "%TEMP_CONF_PATH%\*.*" > nul
+    rd /S /Q "%TEMP_CONF_PATH%"
+)
+IF not exist "%TEMP_CONF_PATH%" md "%TEMP_CONF_PATH%"
 
-if exist "%REPO_PATH%\.git" (
-    set "GIT_COMMAND=git status --short -- "%CONF_PATH%""
-    FOR /f "tokens=1,2 delims= " %%a in (' "!GIT_COMMAND!" ') do (
-        IF "%%a" equ "D" (
-            set PATH_TO_RESTORE=%%b
-            set PATH_TO_RESTORE=!PATH_TO_RESTORE:/=\!
-            set RESTORE_FILE=0
-            FOR %%i IN (%V8_FILES_TO_KEEP%) DO IF "!PATH_TO_RESTORE!" equ "%RELATIVE_SRC_PATH%\%RELATIVE_SRC_CF_PATH%\%%i" set RESTORE_FILE=1
-            IF "!RESTORE_FILE!" equ "1" git checkout HEAD "!PATH_TO_RESTORE!" > nul 2>&1
+call %REPO_PATH%\tools\1CFilesConverter\scripts\conf2xml.cmd "%V8_CONNECTION_STRING%" "%TEMP_CONF_PATH%"
+
+IF ERRORLEVEL == 0 (
+    IF exist "%TEMP_CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%TEMP_CONF_PATH%\ConfigDumpInfo.xml"
+
+    echo [INFO] Clear destination folder: %CONF_PATH%
+    IF exist "%CONF_PATH%" IF "%V8_CONF_XML_CLEAN_DST%" equ "1" (
+        del /f /s /q "%CONF_PATH%\*.*" > nul
+        rd /S /Q "%CONF_PATH%"
+    )
+    IF not exist "%CONF_PATH%" md "%CONF_PATH%"
+
+    echo [INFO] Moving sources from temporary path "%TEMP_CONF_PATH%" to "%CONF_PATH%"
+    FOR /f "usebackq delims=" %%f in (`dir /b "%TEMP_CONF_PATH%"`) DO move /Y "%TEMP_CONF_PATH%\%%f" "%CONF_PATH%" > nul
+
+    IF exist "%REPO_PATH%\.git" (
+        set "GIT_COMMAND=git status --short -- "%CONF_PATH%""
+        FOR /f "tokens=1,2 delims= " %%a in (' "!GIT_COMMAND!" ') do (
+            IF "%%a" equ "D" (
+                set PATH_TO_RESTORE=%%b
+                set PATH_TO_RESTORE=!PATH_TO_RESTORE:/=\!
+                set RESTORE_FILE=0
+                FOR %%i IN (%V8_FILES_TO_KEEP%) DO IF "!PATH_TO_RESTORE!" equ "%RELATIVE_SRC_PATH%\%RELATIVE_SRC_CF_PATH%\%%i" set RESTORE_FILE=1
+                IF "!RESTORE_FILE!" equ "1" (
+                    echo [INFO] Restoring special file "!PATH_TO_RESTORE!"
+                    git checkout HEAD "!PATH_TO_RESTORE!" > nul 2>&1
+                )
+            )
         )
     )
 )
-
-IF exist "%CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%CONF_PATH%\ConfigDumpInfo.xml"
 
 FOR %%j IN (%V8_EXTENSIONS%) DO (
     set EXT_NAME=%%j
@@ -95,22 +119,48 @@ FOR %%j IN (%V8_EXTENSIONS%) DO (
     echo Export extension "!EXT_NAME!"
     echo ======
 
-    call %REPO_PATH%\tools\1CFilesConverter\scripts\ext2xml.cmd "%V8_CONNECTION_STRING%" "%EXT_PATH%\!EXT_NAME!" "!EXT_NAME!"
+    IF exist "%TEMP_CONF_PATH%" (
+        del /f /s /q "%TEMP_CONF_PATH%\*.*" > nul
+        rd /S /Q "%TEMP_CONF_PATH%"
+    )
+    IF not exist "%TEMP_CONF_PATH%" md "%TEMP_CONF_PATH%"
+    
+    call %REPO_PATH%\tools\1CFilesConverter\scripts\ext2xml.cmd "%V8_CONNECTION_STRING%" "%TEMP_CONF_PATH%" "!EXT_NAME!"
 
-    if exist "%REPO_PATH%\.git" (
-        set "GIT_COMMAND=git status --short -- "%EXT_PATH%\!EXT_NAME!""
-        FOR /f "tokens=1,2 delims= " %%a in (' "!GIT_COMMAND!" ') do (
-            IF "%%a" equ "D" (
-                set PATH_TO_RESTORE=%%b
-                set PATH_TO_RESTORE=!PATH_TO_RESTORE:/=\!
-                set RESTORE_FILE=0
-                FOR %%i IN (%V8_FILES_TO_KEEP%) DO IF "!PATH_TO_RESTORE!" equ "%RELATIVE_SRC_PATH%\%RELATIVE_SRC_CFE_PATH%\!EXT_NAME!\%%i" set RESTORE_FILE=1
-                IF "!RESTORE_FILE!" equ "1" git checkout HEAD "!PATH_TO_RESTORE!" > nul 2>&1
+    IF ERRORLEVEL == 0 (
+        IF exist "%TEMP_CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%TEMP_CONF_PATH%\ConfigDumpInfo.xml"
+
+        echo [INFO] Clear destination folder "%EXT_PATH%\!EXT_NAME!"
+        IF exist "%EXT_PATH%\!EXT_NAME!" IF "%V8_EXT_XML_CLEAN_DST%" equ "1" (
+            del /f /s /q "%EXT_PATH%\!EXT_NAME!\*.*" > nul
+            rd /S /Q "%EXT_PATH%\!EXT_NAME!"
+        )
+        IF not exist "%EXT_PATH%\!EXT_NAME!" md "%EXT_PATH%\!EXT_NAME!"
+    
+        echo [INFO] Moving sources from temporary path "%TEMP_CONF_PATH%" to "%EXT_PATH%\!EXT_NAME!"
+        FOR /f "usebackq delims=" %%f in (`dir /b "%TEMP_CONF_PATH%"`) DO move /Y "%TEMP_CONF_PATH%\%%f" "%EXT_PATH%\!EXT_NAME!%" > nul
+
+        IF exist "%REPO_PATH%\.git" (
+            set "GIT_COMMAND=git status --short -- "%EXT_PATH%\!EXT_NAME!""
+            FOR /f "tokens=1,2 delims= " %%a in (' "!GIT_COMMAND!" ') do (
+                IF "%%a" equ "D" (
+                    set PATH_TO_RESTORE=%%b
+                    set PATH_TO_RESTORE=!PATH_TO_RESTORE:/=\!
+                    set RESTORE_FILE=0
+                    FOR %%i IN (%V8_FILES_TO_KEEP%) DO IF "!PATH_TO_RESTORE!" equ "%RELATIVE_SRC_PATH%\%RELATIVE_SRC_CFE_PATH%\!EXT_NAME!\%%i" set RESTORE_FILE=1
+                    IF "!RESTORE_FILE!" equ "1" (
+                        echo [INFO] Restoring special file "!PATH_TO_RESTORE!"
+                        git checkout HEAD "!PATH_TO_RESTORE!" > nul 2>&1
+                    )
+                )
             )
         )
     )
+)
 
-    IF exist "%EXT_PATH%\!EXT_NAME!\ConfigDumpInfo.xml" del /Q /F "%EXT_PATH%\!EXT_NAME!\ConfigDumpInfo.xml"
+IF exist "%TEMP_CONF_PATH%" (
+    del /f /s /q "%TEMP_CONF_PATH%\*.*" > nul
+    rd /S /Q "%TEMP_CONF_PATH%"
 )
 
 echo FINISH: %date% %time%
