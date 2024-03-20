@@ -95,7 +95,7 @@ IF /i "%V8_SRC_PATH:~-4%" equ ".cfe" (
     goto validate
 )
 IF exist "%V8_SRC_PATH%\Configuration.xml" (
-    FOR /F "delims=" %%t IN ('findstr /r /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
+    FOR /F "delims=" %%t IN ('find /i "<objectBelonging>" "%V8_SRC_PATH%\Configuration.xml"') DO (
         call %~dp0ext2edt.cmd "%V8_SRC_PATH%" "%VALIDATE_PATH%"
         goto validate
     )
