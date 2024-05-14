@@ -81,7 +81,7 @@ IF not exist "%TEMP_CONF_PATH%" md "%TEMP_CONF_PATH%"
 
 call %REPO_PATH%\tools\1CFilesConverter\scripts\conf2xml.cmd "%V8_CONNECTION_STRING%" "%TEMP_CONF_PATH%"
 
-IF ERRORLEVEL == 0 (
+IF %ERRORLEVEL% equ 0 (
     IF exist "%TEMP_CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%TEMP_CONF_PATH%\ConfigDumpInfo.xml"
 
     echo [INFO] Clear destination folder: %CONF_PATH%
@@ -127,7 +127,7 @@ FOR %%j IN (%V8_EXTENSIONS%) DO (
     
     call %REPO_PATH%\tools\1CFilesConverter\scripts\ext2xml.cmd "%V8_CONNECTION_STRING%" "%TEMP_CONF_PATH%" "!EXT_NAME!"
 
-    IF ERRORLEVEL == 0 (
+    IF %ERRORLEVEL% equ 0 (
         IF exist "%TEMP_CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%TEMP_CONF_PATH%\ConfigDumpInfo.xml"
 
         echo [INFO] Clear destination folder "%EXT_PATH%\!EXT_NAME!"
