@@ -223,6 +223,12 @@ IF not defined RING_TOOL (
     goto finally
 )
 call %RING_TOOL% edt%V8_EDT_VERSION% workspace import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
+IF not ERRORLEVEL 0 (
+    set ERROR_CODE=%ERRORLEVEL%
+    goto finally
+)
+
+call %RING_TOOL% edt%V8_EDT_VERSION% workspace clean-up-source --workspace-location "%WS_PATH%" --project "%V8_DST_PATH%"
 set ERROR_CODE=%ERRORLEVEL%
 
 :finally
