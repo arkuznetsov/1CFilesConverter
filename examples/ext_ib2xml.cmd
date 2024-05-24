@@ -31,7 +31,7 @@ FOR /L %%i IN (1, 1, 10) DO (
 
 IF exist "%REPO_PATH%\.env" (
     FOR /F "usebackq tokens=*" %%a in ("%REPO_PATH%\.env") DO (
-        FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
+        FOR /F "tokens=1* delims==" %%b IN ("%%a") DO ( 
             set "%%b=%%c"
         )
     )
