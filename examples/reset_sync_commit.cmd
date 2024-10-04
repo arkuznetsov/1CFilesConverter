@@ -9,8 +9,12 @@ IF defined ARG set V8_CONF_TO_RESET=%ARG:"=%
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-set RELATIVE_SRC_CF_PATH=cf
-set RELATIVE_SRC_CFE_PATH=cfe
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set RELATIVE_CFE_PATH=cfe
+)
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
@@ -28,7 +32,7 @@ FOR /L %%i IN (1, 1, 10) DO (
 )
 :script
 
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CF_PATH%" /C "cmd /c echo @path"`) DO (
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CF_PATH%" /C "cmd /c echo @path"`) DO (
     set CONF_PATH=%%i
     set CONF_PATH=!CONF_PATH:"=!
 )
@@ -37,7 +41,7 @@ IF /i "%V8_CONF_TO_RESET%" equ "main" IF not defined CONF_PATH (
     exit /b 1
 )
 
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CFE_PATH%" /C "cmd /c echo @path"`) DO (
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CFE_PATH%" /C "cmd /c echo @path"`) DO (
     set EXT_PATH=%%i
     set EXT_PATH=!EXT_PATH:"=!
 )

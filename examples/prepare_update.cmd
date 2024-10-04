@@ -24,7 +24,6 @@ set V8_COMMIT_DATE=%V8_COMMIT_YEAR%-%V8_COMMIT_MONTH%-%V8_COMMIT_DAY% %V8_COMMIT
 
 set V8_VERSION=8.3.23.2040
 set V8_EXPORT_TOOL=ibcmd
-set V8_CONF_XML_CLEAN_DST=1
 set V8_SKIP_ENV=1
 
 set V8_SUPPORT_INFO={6,0,0,0,1,0}
@@ -34,8 +33,20 @@ set V8_UPDATE_BRANCH=develop
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-set RELATIVE_SRC_CF_PATH=cf
-set RELATIVE_SRC_CFE_PATH=cfe
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+    set CONVERT_SCRIPT_NAME=conf2edt.cmd
+    set V8_CONF_ROOT_PATH=%CONF_PATH%\src\Configuration\Configuration.mdo
+    set V8_DROP_CONFIG_DUMP=0
+    set V8_DROP_SUPPORT=0
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set RELATIVE_CFE_PATH=cfe
+    set CONVERT_SCRIPT_NAME=conf2xml.cmd
+    set V8_CONF_ROOT_PATH=%CONF_PATH%\Configuration.xml
+    set V8_DROP_CONFIG_DUMP=1
+    IF not defined V8_DROP_SUPPORT set V8_DROP_SUPPORT=1
+)
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
@@ -64,7 +75,7 @@ IF exist "%REPO_PATH%\.env" (
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%\%V8_VENDOR_BRANCH%" /M "1cv8.cf" /C "cmd /c echo @path"`) DO set V8_VENDOR_CF=%%i
 set V8_VENDOR_CF=%V8_VENDOR_CF:"=%
 
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CF_PATH%" /C "cmd /c echo @path"`) DO set CONF_PATH=%%i
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CF_PATH%" /C "cmd /c echo @path"`) DO set CONF_PATH=%%i
 set CONF_PATH=%CONF_PATH:"=%
 
 cd %REPO_PATH%
@@ -73,13 +84,13 @@ git pull
 
 IF defined V8_EXPORT_TOOL set V8_CONVERT_TOOL=%V8_EXPORT_TOOL%
 
-call %REPO_PATH%\tools\1CFilesConverter\scripts\conf2xml.cmd "%V8_VENDOR_CF%" "%CONF_PATH%"
+call %REPO_PATH%\tools\1CFilesConverter\scripts\%CONVERT_SCRIPT_NAME% "%V8_VENDOR_CF%" "%CONF_PATH%"
 
-IF exist "%CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%CONF_PATH%\ConfigDumpInfo.xml"
+IF "%V8_DROP_CONFIG_DUMP%" equ "1" IF exist "%TEMP_CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%TEMP_CONF_PATH%\ConfigDumpInfo.xml"
 
-IF exist "%CONF_PATH%\Ext\ParentConfigurations.bin" echo %V8_SUPPORT_INFO% > "%CONF_PATH%\Ext\ParentConfigurations.bin"
+IF "%V8_DROP_SUPPORT%" equ "1" IF exist "%CONF_PATH%\Ext\ParentConfigurations.bin" echo %V8_SUPPORT_INFO% > "%CONF_PATH%\Ext\ParentConfigurations.bin"
 
-for /f "tokens=*" %%i in ('findstr /r /i "version.*[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*.*/version" "%CONF_PATH%\Configuration.xml"') do (
+for /f "tokens=*" %%i in ('findstr /r /i "version.*[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*.*/version" "%V8_CONF_ROOT_PATH%"') do (
     set V8_BASE1C_VERSION=%%i
     set V8_BASE1C_VERSION=!V8_BASE1C_VERSION:^<Version^>=!
     set V8_BASE1C_VERSION=!V8_BASE1C_VERSION:^</Version^>=!

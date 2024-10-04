@@ -12,8 +12,12 @@ IF not defined V8_BRANCH set V8_BRANCH=local
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-set RELATIVE_SRC_CF_PATH=cf
-set RELATIVE_SRC_CFE_PATH=cfe
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set RELATIVE_CFE_PATH=cfe
+)
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
@@ -39,17 +43,6 @@ IF exist "%REPO_PATH%\.env" (
     )
 )
 
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CF_PATH%" /C "cmd /c echo @path"`) DO (
-    set CONF_PATH=%%i
-    set CONF_PATH=!CONF_PATH:"=!
-    echo [INFO] Found main configuration folder "!CONF_PATH!"
-)
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CFE_PATH%" /C "cmd /c echo @path"`) DO (
-    set EXT_PATH=%%i
-    set EXT_PATH=!EXT_PATH:"=!
-    echo [INFO] Found extensions root folder "!EXT_PATH!"
-)
-
 set FILE_NAME=%~n0
 set V8_IB_NAME=%FILE_NAME:~7%
 IF not defined V8_IB_NAME (
@@ -59,10 +52,25 @@ IF not defined V8_IB_NAME (
 
 IF exist "%REPO_PATH%\%V8_IB_NAME%.env" (
     FOR /F "usebackq tokens=*" %%a in ("%REPO_PATH%\%V8_IB_NAME%.env") DO (
-        FOR /F "tokens=1* delims==" %%b IN ("%%a") DO ( 
+        FOR /F "tokens=1* delims==" %%b IN ("%%a") DO (
             set "%%b=%%c"
         )
     )
+)
+
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CF_PATH%" /C "cmd /c echo @path"`) DO (
+    set CONF_PATH=%%i
+    set CONF_PATH=!CONF_PATH:"=!
+    echo [INFO] Found main configuration folder "!CONF_PATH!"
+)
+IF defined RELATIVE_CFE_PATH (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CFE_PATH%" /C "cmd /c echo @path"`) DO (
+        set EXT_PATH=%%i
+        set EXT_PATH=!EXT_PATH:"=!
+        echo [INFO] Found extensions root folder "!EXT_PATH!"
+    )
+) ELSE (
+    set EXT_PATH=%SRC_PATH%
 )
 
 IF defined V8_IMPORT_TOOL set V8_CONVERT_TOOL=%V8_IMPORT_TOOL%
@@ -104,11 +112,13 @@ IF not defined V8_EXTENSIONS (
         set EXT_NAME=%%i
         set EXT_NAME=!EXT_NAME:%EXT_PATH%\=!
         set EXT_NAME=!EXT_NAME:"=!
-        echo [INFO] Found extension "!EXT_NAME!"
-        IF not defined V8_EXTENSIONS (
-            set V8_EXTENSIONS=!EXT_NAME!
-        ) ELSE (
-            set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
+        IF not !EXT_NAME! equ %RELATIVE_CF_PATH% (
+            echo [INFO] Found extension "!EXT_NAME!"
+            IF not defined V8_EXTENSIONS (
+                set V8_EXTENSIONS=!EXT_NAME!
+            ) ELSE (
+                set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
+            )
         )
     )
 )
@@ -186,10 +196,10 @@ FOR %%j IN (%V8_EXTENSIONS%) DO (
     IF "!EXT_CHANGED!" equ "1" (
         echo.
         echo ======
-        echo Import extension "%%j"
+        echo Import extension "!EXT_NAME!"
         echo ======
-        call %REPO_PATH%\tools\1CFilesConverter\scripts\ext2ib.cmd "%EXT_PATH%\%%j" "%V8_CONNECTION_STRING%" "%%j"
-        IF ERRORLEVEL 0 echo %V8_IB_NAME%:%ACTUAL_COMMIT%> "%EXT_PATH%\%%j\SYNC_COMMIT"
+        call %REPO_PATH%\tools\1CFilesConverter\scripts\ext2ib.cmd "%EXT_PATH%\!EXT_NAME!" "%V8_CONNECTION_STRING%" "!EXT_NAME!"
+        IF ERRORLEVEL 0 echo %V8_IB_NAME%:%ACTUAL_COMMIT%> "%EXT_PATH%\!EXT_NAME!\SYNC_COMMIT"
         IF not defined EXT_UPDATE_DB (
             set EXT_UPDATE_DB=!EXT_NAME!
         ) ELSE (

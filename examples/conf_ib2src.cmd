@@ -8,8 +8,15 @@ chcp 65001 > nul
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-set RELATIVE_SRC_CF_PATH=cf
-set RELATIVE_SRC_CFE_PATH=cfe
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+    set CONVERT_SCRIPT_NAME=conf2edt.cmd
+    set V8_DROP_CONFIG_DUMP=0
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set CONVERT_SCRIPT_NAME=conf2xml.cmd
+    IF not defined V8_DROP_CONFIG_DUMP set V8_DROP_CONFIG_DUMP=1
+)
 
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\%~n0
 
@@ -37,16 +44,16 @@ IF exist "%REPO_PATH%\.env" (
     )
 )
 
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CF_PATH%" /C "cmd /c echo @path"`) DO (
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CF_PATH%" /C "cmd /c echo @path"`) DO (
     set CONF_PATH=%%i
     set CONF_PATH=!CONF_PATH:"=!
     echo [INFO] Found main configuration folder "!CONF_PATH!"
 )
 
-IF exist "%V8_DST_PATH%" IF "%V8_CONF_XML_CLEAN_DST%" equ "1" (
+IF exist "%V8_DST_PATH%" IF "%V8_CONF_CLEAN_DST%" equ "1" (
     del /f /s /q "%V8_DST_PATH%\*.*" > nul
     rd /S /Q "%V8_DST_PATH%"
-    set V8_CONF_XML_CLEAN_DST=0
+    set V8_CONF_CLEAN_DST=0
 )
 
 IF defined V8_EXPORT_TOOL set V8_CONVERT_TOOL=%V8_EXPORT_TOOL%
@@ -66,13 +73,13 @@ IF exist "%TEMP_CONF_PATH%" (
 )
 IF not exist "%TEMP_CONF_PATH%" md "%TEMP_CONF_PATH%"
 
-call %REPO_PATH%\tools\1CFilesConverter\scripts\conf2xml.cmd "%V8_CONNECTION_STRING%" "%TEMP_CONF_PATH%"
+call %REPO_PATH%\tools\1CFilesConverter\scripts\%CONVERT_SCRIPT_NAME% "%V8_CONNECTION_STRING%" "%TEMP_CONF_PATH%"
 
 IF %ERRORLEVEL% equ 0 (
-    IF exist "%TEMP_CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%TEMP_CONF_PATH%\ConfigDumpInfo.xml"
+    IF "%V8_DROP_CONFIG_DUMP%" equ "1" IF exist "%TEMP_CONF_PATH%\ConfigDumpInfo.xml" del /Q /F "%TEMP_CONF_PATH%\ConfigDumpInfo.xml"
 
     echo [INFO] Clear destination folder: %CONF_PATH%
-    IF exist "%CONF_PATH%" IF "%V8_CONF_XML_CLEAN_DST%" equ "1" (
+    IF exist "%CONF_PATH%" IF "%V8_CONF_CLEAN_DST%" equ "1" (
         del /f /s /q "%CONF_PATH%\*.*" > nul
         rd /S /Q "%CONF_PATH%"
     )
@@ -88,7 +95,7 @@ IF %ERRORLEVEL% equ 0 (
                 set PATH_TO_RESTORE=%%b
                 set PATH_TO_RESTORE=!PATH_TO_RESTORE:/=\!
                 set RESTORE_FILE=0
-                FOR %%i IN (%V8_FILES_TO_KEEP%) DO IF "!PATH_TO_RESTORE!" equ "%RELATIVE_SRC_PATH%\%RELATIVE_SRC_CF_PATH%\%%i" set RESTORE_FILE=1
+                FOR %%i IN (%V8_FILES_TO_KEEP%) DO IF "!PATH_TO_RESTORE!" equ "%RELATIVE_SRC_PATH%\%RELATIVE_CF_PATH%\%%i" set RESTORE_FILE=1
                 IF "!RESTORE_FILE!" equ "1" (
                     echo [INFO] Restoring special file "!PATH_TO_RESTORE!"
                     git checkout HEAD "!PATH_TO_RESTORE!" > nul 2>&1

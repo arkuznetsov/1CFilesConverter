@@ -9,12 +9,16 @@ echo START: %date% %time%
 set ARG=%1
 IF defined ARG set ARG=%ARG:"=%
 set V8_UPDATE_DB=0
-IF /i "%ARG%"=="apply" set V8_UPDATE_DB=1
+IF /i "%ARG%" equ "apply" set V8_UPDATE_DB=1
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-set RELATIVE_SRC_CF_PATH=cf
-set RELATIVE_SRC_CFE_PATH=cfe
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set RELATIVE_CFE_PATH=cfe
+)
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
@@ -40,15 +44,19 @@ IF exist "%REPO_PATH%\.env" (
     )
 )
 
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CFE_PATH%" /C "cmd /c echo @path"`) DO (
-    set EXT_PATH=%%i
-    set EXT_PATH=!EXT_PATH:"=!
-    echo [INFO] Found extensions root folder "!EXT_PATH!"
+IF defined RELATIVE_CFE_PATH (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CFE_PATH%" /C "cmd /c echo @path"`) DO (
+        set EXT_PATH=%%i
+        set EXT_PATH=!EXT_PATH:"=!
+        echo [INFO] Found extensions root folder "!EXT_PATH!"
+    )
+) ELSE (
+    set EXT_PATH=%SRC_PATH%
 )
 set FILE_NAME=%~n0
-set V8_EXT_NAME=%FILE_NAME:~11%
+set EXT_NAME=%FILE_NAME:~11%
 IF not defined V8_IB_NAME (
-    echo [ERROR] Extension name is not defined ^(rename script to upd_ib_^<Extension name^>.cmd^)
+    echo [ERROR] Extension name is not defined ^(rename script to ext_src2ib_^<Extension name^>.cmd^)
     exit /b 1
 ) 
 
@@ -64,8 +72,8 @@ IF /i "%V8_CONVERT_TOOL%" equ "designer" set V8_CONNECTION_STRING=/S%V8_SRV_ADDR
 
 set EXT_CHANGED=0
 set SYNC_COMMIT=commit not found
-IF exist "%EXT_PATH%\%V8_EXT_NAME%\SYNC_COMMIT" (
-    FOR /f "tokens=*" %%a in (%EXT_PATH%\%V8_EXT_NAME%\SYNC_COMMIT) do (
+IF exist "%EXT_PATH%\%EXT_NAME%\SYNC_COMMIT" (
+    FOR /f "tokens=*" %%a in (%EXT_PATH%\%EXT_NAME%\SYNC_COMMIT) do (
         FOR /F "tokens=1,2 delims=:" %%b IN ("%%a") DO (
             IF "%%b" equ "%V8_IB_NAME%" (
                 set SYNC_COMMIT=%%c
@@ -73,16 +81,16 @@ IF exist "%EXT_PATH%\%V8_EXT_NAME%\SYNC_COMMIT" (
             )
         )
     )
-    echo [INFO] Extension "!V8_EXT_NAME!" last synchronized commit: "!SYNC_COMMIT!"
+    echo [INFO] Extension "!EXT_NAME!" last synchronized commit: "!SYNC_COMMIT!"
     IF "!SYNC_COMMIT!" equ "commit not found" (
         set EXT_CHANGED=1
     ) ELSE IF "!SYNC_COMMIT!" neq "%ACTUAL_COMMIT%" (
-        set "GIT_COMMAND=git diff --name-only !SYNC_COMMIT! %ACTUAL_COMMIT% -- "%EXT_PATH%\!V8_EXT_NAME!""
+        set "GIT_COMMAND=git diff --name-only !SYNC_COMMIT! %ACTUAL_COMMIT% -- "%EXT_PATH%\!EXT_NAME!""
         FOR /f "tokens=1 delims=" %%a in (' "!GIT_COMMAND!" ') do (
             set EXT_CHANGED=1
         )
     )
-    set "GIT_COMMAND=git status --short -- "%EXT_PATH%\!V8_EXT_NAME!""
+    set "GIT_COMMAND=git status --short -- "%EXT_PATH%\!EXT_NAME!""
     FOR /f "tokens=1 delims=" %%a in (' "!GIT_COMMAND!" ') do (
         set EXT_CHANGED=1
     )
@@ -92,10 +100,10 @@ IF exist "%EXT_PATH%\%V8_EXT_NAME%\SYNC_COMMIT" (
 IF "%EXT_CHANGED%" equ "1" (
     echo.
     echo ======
-    echo Import extension "%V8_EXT_NAME%"
+    echo Import extension "%EXT_NAME%"
     echo ======
-    call %REPO_PATH%\tools\1CFilesConverter\scripts\ext2ib.cmd "%EXT_PATH%\%V8_EXT_NAME%" "%V8_CONNECTION_STRING%" "%V8_EXT_NAME%"
-    IF ERRORLEVEL 0 echo %V8_IB_NAME%:%ACTUAL_COMMIT%> "%EXT_PATH%\%V8_EXT_NAME%\SYNC_COMMIT"
+    call %REPO_PATH%\tools\1CFilesConverter\scripts\ext2ib.cmd "%EXT_PATH%\%EXT_NAME%" "%V8_CONNECTION_STRING%" "%EXT_NAME%"
+    IF ERRORLEVEL 0 echo %V8_IB_NAME%:%ACTUAL_COMMIT%> "%EXT_PATH%\%EXT_NAME%\SYNC_COMMIT"
 ) ELSE (
     echo [INFO] Extension "!EXT_NAME!" wasn't changed since last synchronized commit
 )

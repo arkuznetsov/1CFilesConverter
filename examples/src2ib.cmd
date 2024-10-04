@@ -9,12 +9,16 @@ echo START: %date% %time%
 set ARG=%1
 IF defined ARG set ARG=%ARG:"=%
 set V8_UPDATE_DB=0
-IF /i "%ARG%"=="apply" set V8_UPDATE_DB=1
+IF /i "%ARG%" equ "apply" set V8_UPDATE_DB=1
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-set RELATIVE_SRC_CF_PATH=cf
-set RELATIVE_SRC_CFE_PATH=cfe
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set RELATIVE_CFE_PATH=cfe
+)
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
@@ -40,16 +44,21 @@ IF exist "%REPO_PATH%\.env" (
     )
 )
 
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CF_PATH%" /C "cmd /c echo @path"`) DO (
+FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CF_PATH%" /C "cmd /c echo @path"`) DO (
     set CONF_PATH=%%i
     set CONF_PATH=!CONF_PATH:"=!
     echo [INFO] Found main configuration folder "!CONF_PATH!"
 )
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_SRC_CFE_PATH%" /C "cmd /c echo @path"`) DO (
-    set EXT_PATH=%%i
-    set EXT_PATH=!EXT_PATH:"=!
-    echo [INFO] Found extensions root folder "!EXT_PATH!"
+IF defined RELATIVE_CFE_PATH (
+    FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CFE_PATH%" /C "cmd /c echo @path"`) DO (
+        set EXT_PATH=%%i
+        set EXT_PATH=!EXT_PATH:"=!
+        echo [INFO] Found extensions root folder "!EXT_PATH!"
+    )
+) ELSE (
+    set EXT_PATH=%SRC_PATH%
 )
+
 set "GIT_COMMAND=git rev-parse HEAD"
 FOR /f "tokens=1 delims=" %%a in (' "!GIT_COMMAND!" ') do (
     set ACTUAL_COMMIT=%%a
@@ -60,11 +69,13 @@ IF not defined V8_EXTENSIONS (
         set EXT_NAME=%%i
         set EXT_NAME=!EXT_NAME:%EXT_PATH%\=!
         set EXT_NAME=!EXT_NAME:"=!
-        echo [INFO] Found extension "!EXT_NAME!"
-        IF not defined V8_EXTENSIONS (
-            set V8_EXTENSIONS=!EXT_NAME!
-        ) ELSE (
-            set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
+        IF not !EXT_NAME! equ %RELATIVE_CF_PATH% (
+            echo [INFO] Found extension "!EXT_NAME!"
+            IF not defined V8_EXTENSIONS (
+                set V8_EXTENSIONS=!EXT_NAME!
+            ) ELSE (
+                set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
+            )
         )
     )
 )
