@@ -37,7 +37,7 @@ md "%OUT_PATH%\data\xml\ext"
 
 IF exist "%~dp0.env" (
     FOR /F "usebackq tokens=*" %%a in ("%~dp0.env") DO (
-      FOR /F "tokens=1,2 delims==" %%b IN ("%%a") DO (
+      FOR /F "tokens=1* delims==" %%b IN ("%%a") DO ( 
         set "%%b=%%c"
       )
     )
