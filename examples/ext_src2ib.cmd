@@ -13,12 +13,6 @@ IF /i "%ARG%" equ "apply" set V8_UPDATE_DB=1
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-IF /i "%V8_SRC_TYPE%" equ "edt" (
-    set RELATIVE_CF_PATH=main
-) ELSE (
-    set RELATIVE_CF_PATH=cf
-    set RELATIVE_CFE_PATH=cfe
-)
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
@@ -42,6 +36,13 @@ IF exist "%REPO_PATH%\.env" (
             set "%%b=%%c"
         )
     )
+)
+
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set RELATIVE_CFE_PATH=cfe
 )
 
 IF defined RELATIVE_CFE_PATH (

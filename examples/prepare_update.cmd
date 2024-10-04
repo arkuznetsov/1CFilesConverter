@@ -33,20 +33,6 @@ set V8_UPDATE_BRANCH=develop
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-IF /i "%V8_SRC_TYPE%" equ "edt" (
-    set RELATIVE_CF_PATH=main
-    set CONVERT_SCRIPT_NAME=conf2edt.cmd
-    set V8_CONF_ROOT_PATH=%CONF_PATH%\src\Configuration\Configuration.mdo
-    set V8_DROP_CONFIG_DUMP=0
-    set V8_DROP_SUPPORT=0
-) ELSE (
-    set RELATIVE_CF_PATH=cf
-    set RELATIVE_CFE_PATH=cfe
-    set CONVERT_SCRIPT_NAME=conf2xml.cmd
-    set V8_CONF_ROOT_PATH=%CONF_PATH%\Configuration.xml
-    set V8_DROP_CONFIG_DUMP=1
-    IF not defined V8_DROP_SUPPORT set V8_DROP_SUPPORT=1
-)
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%" /M "%RELATIVE_SRC_PATH%" /C "cmd /c echo @path"`) DO set SRC_PATH=%%i
 IF not defined SRC_PATH (
@@ -70,6 +56,21 @@ IF exist "%REPO_PATH%\.env" (
             set "%%b=%%c"
         )
     )
+)
+
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+    set CONVERT_SCRIPT_NAME=conf2edt.cmd
+    set V8_CONF_ROOT_PATH=%CONF_PATH%\src\Configuration\Configuration.mdo
+    set V8_DROP_CONFIG_DUMP=0
+    set V8_DROP_SUPPORT=0
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set RELATIVE_CFE_PATH=cfe
+    set CONVERT_SCRIPT_NAME=conf2xml.cmd
+    set V8_CONF_ROOT_PATH=%CONF_PATH%\Configuration.xml
+    set V8_DROP_CONFIG_DUMP=1
+    IF not defined V8_DROP_SUPPORT set V8_DROP_SUPPORT=1
 )
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%RELATIVE_REPO_PATH%\%V8_VENDOR_BRANCH%" /M "1cv8.cf" /C "cmd /c echo @path"`) DO set V8_VENDOR_CF=%%i

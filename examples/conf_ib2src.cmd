@@ -8,15 +8,6 @@ chcp 65001 > nul
 
 set RELATIVE_REPO_PATH=%~dp0..\..
 set RELATIVE_SRC_PATH=src
-IF /i "%V8_SRC_TYPE%" equ "edt" (
-    set RELATIVE_CF_PATH=main
-    set CONVERT_SCRIPT_NAME=conf2edt.cmd
-    set V8_DROP_CONFIG_DUMP=0
-) ELSE (
-    set RELATIVE_CF_PATH=cf
-    set CONVERT_SCRIPT_NAME=conf2xml.cmd
-    IF not defined V8_DROP_CONFIG_DUMP set V8_DROP_CONFIG_DUMP=1
-)
 
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\%~n0
 
@@ -42,6 +33,16 @@ IF exist "%REPO_PATH%\.env" (
             set "%%b=%%c"
         )
     )
+)
+
+IF /i "%V8_SRC_TYPE%" equ "edt" (
+    set RELATIVE_CF_PATH=main
+    set CONVERT_SCRIPT_NAME=conf2edt.cmd
+    set V8_DROP_CONFIG_DUMP=0
+) ELSE (
+    set RELATIVE_CF_PATH=cf
+    set CONVERT_SCRIPT_NAME=conf2xml.cmd
+    IF not defined V8_DROP_CONFIG_DUMP set V8_DROP_CONFIG_DUMP=1
 )
 
 FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%SRC_PATH%" /M "%RELATIVE_CF_PATH%" /C "cmd /c echo @path"`) DO (
