@@ -353,7 +353,7 @@ commit.cmd "Username" "user@example.com" "2023-11-23 12:00:00" "Сообщени
 
 Переменные среды:
 
-- `SONAR_SCANNER` - путь к утилите `sonar-scanner` (по умолчанию ищется в переменной среды `PATH` и по пути `C:\Program Files\sonar-scanner\bin\sonar-scanner.bat`)
+- `SONAR_SCANNER` - путь к утилите `sonar-scanner` (по умолчанию ищется в переменной среды `PATH` и по пути `%PROGRAMW6432%\sonar-scanner\bin\sonar-scanner.bat`)
 - `SONAR_SCANNER_DATE` - дата выполнения проверки
 - `SONAR_HOST_URL` - адрес сервера SonarQube
 - `SONAR_TOKEN` - токен доступа к серверу SonarQube

@@ -61,13 +61,13 @@ set V8_CONNECTION_STRING="/S%V8_DB_SRV_ADDR%\%V8_IB_NAME%"
 IF /i "%V8_CONVERT_TOOL%" equ "designer" set V8_CONNECTION_STRING="/S%V8_SRV_ADDR%\%V8_IB_NAME%"
 
 IF not "%V8_CONVERT_TOOL%" equ "designer" IF not "%V8_CONVERT_TOOL%" equ "ibcmd" set V8_CONVERT_TOOL=designer
-IF not defined V8_TOOL set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF not defined V8_TOOL set V8_TOOL="%PROGRAMW6432%\1cv8\%V8_VERSION%\bin\1cv8.exe"
 IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
     echo [ERROR] Could not find 1C:Designer with path %V8_TOOL%
     set ERROR_CODE=1
     goto finally
 )
-IF not defined IBCMD_TOOL set IBCMD_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\ibcmd.exe"
+IF not defined IBCMD_TOOL set IBCMD_TOOL="%PROGRAMW6432%\1cv8\%V8_VERSION%\bin\ibcmd.exe"
 IF "%V8_CONVERT_TOOL%" equ "ibcmd" IF not exist %IBCMD_TOOL% (
     echo [ERROR] Could not find ibcmd tool with path %IBCMD_TOOL%
     set ERROR_CODE=1

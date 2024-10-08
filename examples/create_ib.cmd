@@ -40,14 +40,14 @@ IF /i "%V8_SRC_TYPE%" equ "edt" (
 
 SET QUERY="RESTORE DATABASE [%V8_IB_NAME%] FROM  DISK = N'D:\SQL.Template\%V8_IB_TEMPLATE%.bak' WITH  FILE = 1,  MOVE N'Temlate_ERP_2_5_12' TO N'D:\SQL.Data\%V8_IB_NAME%.mdf', MOVE N'Temlate_ERP_2_5_12_log' TO N'D:\SQL.Log\%V8_IB_NAME%_log.ldf',  NOUNLOAD,  REPLACE,  STATS = 5"
 
-IF not defined V8_TOOL set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF not defined V8_TOOL set V8_TOOL="%PROGRAMW6432%\1cv8\%V8_VERSION%\bin\1cv8.exe"
 
 echo START: %date% %time%
 
 ECHO "Create database %V8_IB_NAME% "
 sqlcmd -S %V8_DB_SRV_ADDR% -U %V8_DB_SRV_USR%  -P %V8_DB_SRV_PWD% -d master -Q %QUERY%
 
-timeout 10
+timeout /t 10 /nobreak
 
 ECHO "[INFO] CREATE INFOBASE ON %V8_SRV_ADDR%:%V8_SRV_CLUSTER_PORT% WITH NAME %V8_IB_NAME%"
 %V8_TOOL% CREATEINFOBASE Srvr="%V8_SRV_ADDR%:%V8_SRV_CLUSTER_PORT%";Ref="%V8_IB_NAME%";DBMS="mssqlserver";DBSrvr="%V8_DB_SRV_ADDR%";DB="%V8_IB_NAME%";DBUID="%V8_DB_SRV_USR%";DBPwd="%V8_DB_SRV_PWD%";LicDstr="Y";CrSQLDB="N";SchJobDn="Y";
