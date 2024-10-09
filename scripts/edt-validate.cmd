@@ -36,10 +36,6 @@ IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 echo [INFO] Using 1C:Enterprise, version %V8_VERSION%
 echo [INFO] Using temporary folder "%V8_TEMP%"
 
-IF defined V8_EDT_VERSION (
-    set V8_EDT_VERSION=@%V8_EDT_VERSION:@=%
-)
-
 set LOCAL_TEMP=%V8_TEMP%\%~n0
 IF "%VALIDATE_PATH%" equ "" (
     set VALIDATE_PATH=%LOCAL_TEMP%\tmp_edt
@@ -135,12 +131,32 @@ IF not defined RING_TOOL (
         set RING_TOOL="%%i"
     )
 )
-IF not defined RING_TOOL (
-    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "RING_TOOL" variable with full specified path 
+IF not defined EDTCLI_TOOL (
+    IF defined V8_EDT_VERSION (
+        IF %V8_EDT_VERSION:~0,4% lss 2024 goto checktool
+        set EDT_MASK="%PROGRAMW6432%\1C\1CE\components\1c-edt-%V8_EDT_VERSION%*"
+    ) ELSE (
+        set EDT_MASK="%PROGRAMW6432%\1C\1CE\components\1c-edt-*"
+    )
+    FOR /F "tokens=*" %%d IN ('"dir /B /S !EDT_MASK! | findstr /r /i ".*1c-edt-[0-9]*\.[0-9]*\.[0-9].*""') DO (
+        IF exist "%%d\1cedtcli.exe" set EDTCLI_TOOL="%%d\1cedtcli.exe"
+    )
+)
+
+:checktool
+
+IF not defined RING_TOOL IF not defined EDTCLI_TOOL (
+    echo [ERROR] Can't find "ring" or "edtcli" tool. Add path to "ring.bat" to "PATH" environment variable, or set "RING_TOOL" variable with full specified path to "ring.bat", or set "EDTCLI_TOOL" variable with full specified path to "1cedtcli.exe".
     set ERROR_CODE=1
     goto finally
 )
-call %RING_TOOL% edt%V8_EDT_VERSION% workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%" 
+IF defined EDTCLI_TOOL (
+    echo [INFO] Start validate using "edt cli"
+    call %EDTCLI_TOOL% -data "%WS_PATH%" -command validate --project-list "%VALIDATE_PATH%" --file "%REPORT_FILE%" 
+) ELSE (
+    echo [INFO] Start convalidate using "ring"
+    call %RING_TOOL% edt@%V8_EDT_VERSION% workspace validate --project-list "%VALIDATE_PATH%" --workspace-location "%WS_PATH%" --file "%REPORT_FILE%"
+)
 set ERROR_CODE=%ERRORLEVEL%
 
 :finally
