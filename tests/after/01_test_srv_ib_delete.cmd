@@ -4,7 +4,7 @@ set TEST_NAME="Delete test server infobase..."
 set TEST_OUT_PATH=%TEST_IB%
 set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=
-set V8_PATH=C:\Program Files\1cv8\%V8_VERSION%\bin
+set V8_PATH=%PROGRAMW6432%\1cv8\%V8_VERSION%\bin
 set RAC_TOOL="%V8_PATH%\rac.exe"
 
 echo ===
@@ -81,4 +81,4 @@ for /f "tokens=2 delims==:" %%i in (' "%tasks_ragent%" ') do (
    if "!cur_ragent_pid_isnew!" equ "1" taskkill /PID !cur_ragent_pid! /T /F
 )
 
-timeout /T 10
+timeout /t 10 /nobreak

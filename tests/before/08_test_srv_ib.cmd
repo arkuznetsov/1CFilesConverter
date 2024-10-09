@@ -4,7 +4,7 @@ set TEST_NAME="Prepare test server infobase..."
 set TEST_OUT_PATH=%TEST_IB%
 set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=
-set V8_PATH=C:\Program Files\1cv8\%V8_VERSION%\bin
+set V8_PATH=%PROGRAMW6432%\1cv8\%V8_VERSION%\bin
 set IBCMD_TOOL="%V8_PATH%\ibcmd.exe"
 set RAC_TOOL="%V8_PATH%\rac.exe"
 
@@ -26,6 +26,8 @@ set pids_ragent=%pids_ragent: =%
 
 start /D "%V8_PATH%" ragent.exe -agent -regport %V8_SRV_REG_PORT% -port %V8_SRV_AGENT_PORT% -range %V8_SRV_PORT_RANGE% -d "%V8_TEMP%\srvinfo%V8_SRV_REG_PORT%"
 
+timeout /t 10 /nobreak
+
 echo [INFO] Starting RAS service
 
 set "tasks_ras=tasklist /fi "imagename eq ras.exe" /fo "list" | findstr "PID""
@@ -39,6 +41,8 @@ for /f "tokens=2 delims==:" %%i in (' "%tasks_ras%" ') do (
 set pids_ras=%pids_ras: =%
 
 start /D "%V8_PATH%" ras.exe cluster --port=%V8_RAS_PORT% %V8_SRV_ADDR%:%V8_SRV_AGENT_PORT%
+
+timeout /t 10 /nobreak
 
 echo [INFO] Looking for 1C cluster
 

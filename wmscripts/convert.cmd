@@ -17,7 +17,7 @@ set CONVERT_VERSION=UNKNOWN
 IF exist "%~dp0..\VERSION" FOR /F "usebackq tokens=* delims=" %%i IN ("%~dp0..\VERSION") DO set CONVERT_VERSION=%%i
 echo 1C files converter v.%CONVERT_VERSION%
 echo ===
-echo Running conversion of files
+echo [INFO] Running conversion of files
 
 set ERROR_CODE=0
 
@@ -29,9 +29,9 @@ IF not defined CONVERT_SCRIPT (
 )
 IF not exist "%CONVERT_SCRIPT%" (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%~dp0.." /M "scripts" /C "cmd /c echo @path"`) DO set CONVERT_SCRIPT_PATH=%%i
-    echo [WARN] Script file "%CONVERT_SCRIPT%" doesn't exist ^(parameter 4^). Trying to find in "!CONVERT_SCRIPT_PATH!" directory.
     set CONVERT_SCRIPT_PATH=!CONVERT_SCRIPT_PATH:"=!
-    set CONVERT_SCRIPT=!CONVERT_SCRIPT_PATH!\%WCONVERT_SCRIPT%.cmd
+    echo [WARN] Script file "%CONVERT_SCRIPT%" doesn't exist ^(parameter 1^). Trying to find in "!CONVERT_SCRIPT_PATH!" directory.
+    set CONVERT_SCRIPT=!CONVERT_SCRIPT_PATH!\%CONVERT_SCRIPT%.cmd
 )
 IF not exist "%CONVERT_SCRIPT%" (
     echo [ERROR] Script file "%CONVERT_SCRIPT%" doesn't exist ^(parameter 1^).
@@ -57,6 +57,7 @@ IF not defined CONVERT_DST_PATH (
 )
 IF not exist "%CONVERT_DST_PATH%" md "%CONVERT_DST_PATH%"
 
+set V8_DP_CLEAN_DST=0
 FOR /F "tokens=*" %%a in ('more') do (
     set CURRENT_FILE=%%a
     set CURRENT_FILE=!CURRENT_FILE:^/=^\!

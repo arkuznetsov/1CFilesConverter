@@ -30,21 +30,17 @@ IF exist "%cd%\.env" IF "%V8_SKIP_ENV%" neq "1" (
     )
 )
 
-IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
+IF not defined V8_VERSION set V8_VERSION=8.3.23.2040
 IF not defined V8_TEMP set V8_TEMP=%TEMP%\1c
 
 echo [INFO] Using 1C:Enterprise, version %V8_VERSION%
 echo [INFO] Using temporary folder "%V8_TEMP%"
 
-IF not defined V8_TOOL set V8_TOOL="C:\Program Files\1cv8\%V8_VERSION%\bin\1cv8.exe"
+IF not defined V8_TOOL set V8_TOOL="%PROGRAMW6432%\1cv8\%V8_VERSION%\bin\1cv8.exe"
 IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
     echo Could not find 1C:Designer with path %V8_TOOL%
     set ERROR_CODE=1
     goto finally
-)
-
-IF defined V8_EDT_VERSION (
-    set V8_EDT_VERSION=@%V8_EDT_VERSION:@=%
 )
 
 echo [INFO] Start conversion using "designer"
@@ -101,7 +97,7 @@ IF %ERROR_CODE% neq 0 (
 echo [INFO] Clear temporary files...
 IF exist "%LOCAL_TEMP%" rd /S /Q "%LOCAL_TEMP%"
 md "%LOCAL_TEMP%"
-IF exist "%V8_DST_PATH%" IF "%V8_DP_EDT_CLEAN_DST%" equ "1" (
+IF exist "%V8_DST_PATH%" IF "%V8_DP_CLEAN_DST%" equ "1" (
     del /f /s /q "%V8_DST_PATH%\*.*" > nul
     rd /S /Q "%V8_DST_PATH%"
 )
@@ -113,7 +109,9 @@ IF "%V8_BASE_IB%" equ "" (
     md "%IB_PATH%"
     echo [INFO] Creating temporary file infobase "%IB_PATH%"...
     set V8_BASE_IB_CONNECTION=File="%IB_PATH%";
+    set V8_DESIGNER_LOG=%LOCAL_TEMP%\v8_designer_output.log
     %V8_TOOL% CREATEINFOBASE !V8_BASE_IB_CONNECTION! /DisableStartupDialogs /Out "!V8_DESIGNER_LOG!"
+    FOR /F "tokens=* delims=" %%i IN (!V8_DESIGNER_LOG!) DO IF "%%i" neq "" echo [WARN] %%i
     goto prepare_ib
 )
 IF /i "%V8_BASE_IB:~0,2%" equ "/F" (
@@ -217,18 +215,42 @@ IF not defined RING_TOOL (
         set RING_TOOL="%%i"
     )
 )
-IF not defined RING_TOOL (
-    echo [ERROR] Can't find "ring" tool. Add path to "ring.bat" to "PATH" environment variable, or set "RING_TOOL" variable with full specified path 
+IF not defined EDTCLI_TOOL (
+    IF defined V8_EDT_VERSION (
+        IF %V8_EDT_VERSION:~0,4% lss 2024 goto checktool
+        set EDT_MASK="%PROGRAMW6432%\1C\1CE\components\1c-edt-%V8_EDT_VERSION%*"
+    ) ELSE (
+        set EDT_MASK="%PROGRAMW6432%\1C\1CE\components\1c-edt-*"
+    )
+    FOR /F "tokens=*" %%d IN ('"dir /B /S !EDT_MASK! | findstr /r /i ".*1c-edt-[0-9]*\.[0-9]*\.[0-9].*""') DO (
+        IF exist "%%d\1cedtcli.exe" set EDTCLI_TOOL="%%d\1cedtcli.exe"
+    )
+)
+
+:checktool
+
+IF not defined RING_TOOL IF not defined EDTCLI_TOOL (
+    echo [ERROR] Can't find "ring" or "edtcli" tool. Add path to "ring.bat" to "PATH" environment variable, or set "RING_TOOL" variable with full specified path to "ring.bat", or set "EDTCLI_TOOL" variable with full specified path to "1cedtcli.exe".
     set ERROR_CODE=1
     goto finally
 )
-call %RING_TOOL% edt%V8_EDT_VERSION% workspace import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
+IF defined EDTCLI_TOOL (
+    echo [INFO] Start conversion using "edt cli"
+    call %EDTCLI_TOOL% -data "%WS_PATH%" -command import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --version "%V8_VERSION%"
+) ELSE (
+    echo [INFO] Start conversion using "ring"
+    call %RING_TOOL% edt@%V8_EDT_VERSION% workspace import --project "%V8_DST_PATH%" --configuration-files "%XML_PATH%" --workspace-location "%WS_PATH%" --version "%V8_VERSION%"
+)
 IF not ERRORLEVEL 0 (
     set ERROR_CODE=%ERRORLEVEL%
     goto finally
 )
 
-call %RING_TOOL% edt%V8_EDT_VERSION% workspace clean-up-source --workspace-location "%WS_PATH%" --project "%V8_DST_PATH%"
+IF defined EDTCLI_TOOL (
+    call %EDTCLI_TOOL% -data "%WS_PATH%" -command clean-up-source --project "%V8_DST_PATH%"
+) ELSE (
+    call %RING_TOOL% edt@%V8_EDT_VERSION% workspace clean-up-source --workspace-location "%WS_PATH%" --project "%V8_DST_PATH%"
+)
 set ERROR_CODE=%ERRORLEVEL%
 
 :finally

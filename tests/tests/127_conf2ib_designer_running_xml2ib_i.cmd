@@ -4,7 +4,8 @@ set TEST_NAME="Conf XML -> load to server infobase (ibcmd) with designer running
 set TEST_OUT_PATH=%OUT_PATH%\%~n0
 set TEST_OUT_PATH=%TEST_OUT_PATH: =_%
 set TEST_CHECK_PATH=%TEST_OUT_PATH%\Catalogs\Контрагенты.xml
-set V8_PATH=C:\Program Files\1cv8\%V8_VERSION%\bin
+set V8_PATH=%PROGRAMW6432%\1cv8\%V8_VERSION%\bin
+set RAC_TOOL="%V8_PATH%\rac.exe"
 set V8_CONVERT_TOOL=ibcmd
 
 echo ===
@@ -78,7 +79,7 @@ for /f "tokens=2 delims==:" %%i in (' "%tasks_1c%" ') do (
 set pids_1c=%pids_1c: =%
 
 start /D "%V8_PATH%" 1cv8.exe DESIGNER /IBConnectionString Srvr="%V8_SRV_ADDR%";Ref="%TMP_IB_NAME%"; /DisableStartupDialogs
-timeout /T 5
+timeout /t 5 /nobreak
 
 call %SCRIPTS_PATH%\conf2ib.cmd "%TEST_XML_CF%" "/S%V8_DB_SRV_ADDR%\%TMP_IB_NAME%"
 

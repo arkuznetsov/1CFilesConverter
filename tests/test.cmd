@@ -19,12 +19,11 @@ set BEFORE_TEST_PATH=%~dp0before
 set TEST_PATH=%~dp0tests
 set AFTER_TEST_PATH=%~dp0after
 set FIXTURES_PATH=%~dp0fixtures
-FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%~dp0.." /M "out" /C "cmd /c echo @path"`) DO set OUT_PATH=%%i
-set OUT_PATH=%OUT_PATH:"=%
 
 echo [INFO] Clear output files...
 
-IF exist "%OUT_PATH%" rd /S /Q "%OUT_PATH%"
+set OUT_PATH=%SCRIPTS_PATH:\scripts=\out%
+rd /S /Q "%OUT_PATH%"
 md "%OUT_PATH%"
 
 echo [INFO] Prepare working directories...
@@ -43,7 +42,7 @@ IF exist "%~dp0.env" (
     )
 )
 
-IF not defined V8_VERSION set V8_VERSION=8.3.20.2290
+IF not defined V8_VERSION set V8_VERSION=8.3.23.2040
 IF not defined V8_TEMP set V8_TEMP=%OUT_PATH%\tmp
 
 md "%V8_TEMP%"

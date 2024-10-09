@@ -54,7 +54,7 @@ set ARG=%3
 IF defined ARG set ARG=%ARG:"=%
 IF "%ARG%" neq "" set WATCH_FILES=%ARG%
 IF not defined WATCH_FILES (
-    echo [ERROR] Missed parameter 4 - "files extension to watch for"
+    echo [ERROR] Missed parameter 3 - "files extension to watch for"
     set ERROR_CODE=1
 )
 IF "%WATCH_FILES%" equ "1cdpr" (
@@ -69,13 +69,13 @@ set ARG=%4
 IF defined ARG set ARG=%ARG:"=%
 IF "%ARG%" neq "" set WATCH_SCRIPT=%ARG%
 IF not defined WATCH_SCRIPT (
-    echo [ERROR] Missed parameter 2 - "path to triggered script file (could be 1C converter script name or full path to script file)"
+    echo [ERROR] Missed parameter 4 - "path to triggered script file (could be 1C converter script name or full path to script file)"
     set ERROR_CODE=1
 )
 IF not exist "%WATCH_SCRIPT%" (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%~dp0.." /M "scripts" /C "cmd /c echo @path"`) DO set WATCH_SCRIPT_PATH=%%i
-    echo [WARN] Script file "%WATCH_SCRIPT%" doesn't exist ^(parameter 4^). Trying to find in "!WATCH_SCRIPT_PATH!" directory.
     set WATCH_SCRIPT_PATH=!WATCH_SCRIPT_PATH:"=!
+    echo [WARN] Script file "%WATCH_SCRIPT%" doesn't exist ^(parameter 4^). Trying to find in "!WATCH_SCRIPT_PATH!" directory.
     set WATCH_SCRIPT=!WATCH_SCRIPT_PATH!\%WATCH_SCRIPT%.cmd
 )
 IF not exist "%WATCH_SCRIPT%" (

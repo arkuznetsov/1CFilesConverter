@@ -21,7 +21,7 @@ call %SCRIPTS_PATH%\..\wmscripts\settrigger.cmd "Test_dp2xml" "%TEST_OUT_PATH%" 
 copy /D /Y "%TEST_BINARY%\*.epf" /B "%TEST_OUT_PATH%\ext"
 copy /D /Y "%TEST_BINARY%\*.erf" /B "%TEST_OUT_PATH%\ext"
 
-timeout /T 10
+timeout /t 10 /nobreak
 
 watchman trigger-del "%TEST_OUT_PATH%" Test_dp2xml
 watchman watch-del "%TEST_OUT_PATH%"
