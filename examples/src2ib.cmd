@@ -89,8 +89,6 @@ IF defined V8_EXTENSIONS (
     IF "%V8_CONVERT_TOOL%" equ "designer" (
         set EXT_LIST_FILE=%~dp0v8_ext_list.txt
         %V8_TOOL% DESIGNER /IBConnectionString !V8_IB_CONNECTION! /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs  /DisableStartupMessages /Out "!EXT_LIST_FILE!" /DumpDBCfgList -AllExtensions
-        echo [INFO] V8_CONVERT_TOOL: !V8_CONVERT_TOOL!
-        echo [INFO] V8_IB_CONNECTION: !V8_IB_CONNECTION!
         FOR /F "tokens=* delims=" %%i IN (!EXT_LIST_FILE!) DO (
             set EXT_NAME=%%i
             set EXT_NAME=!EXT_NAME: =!
