@@ -100,7 +100,7 @@ IF defined RELATIVE_CFE_PATH (
 )
 
 IF defined V8_EXTENSIONS (
-    FOR %%j IN (%V8_EXTENSIONS%) DO echo [INFO] Found extension: %%j
+    FOR %%j IN (%V8_EXTENSIONS%) DO echo [INFO] Found extension in environment settings: %%j
 ) ELSE (
     IF "%V8_EXT_LOOKUP%" equ "folder" (
         echo [INFO] Found extensions root folder "%EXT_PATH%"
@@ -108,7 +108,7 @@ IF defined V8_EXTENSIONS (
             set EXT_NAME=%%i
             set EXT_NAME=!EXT_NAME:%EXT_PATH%\=!
             set EXT_NAME=!EXT_NAME:"=!
-            echo [INFO] Found extension "!EXT_NAME!"
+            echo [INFO] Found extension folder "!EXT_NAME!"
             IF not !EXT_NAME! equ %RELATIVE_CF_PATH% (
                 IF defined V8_EXTENSIONS (
                     set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
@@ -127,7 +127,7 @@ IF defined V8_EXTENSIONS (
             set EXT_NAME=!EXT_NAME: =!
             set EXT_NAME=!EXT_NAME:"=!
             IF /i "!EXT_NAME!" equ "%%i" (
-                echo [INFO] Found extension: !EXT_NAME!
+                echo [INFO] Found extension in infobase: !EXT_NAME!
                 IF defined V8_EXTENSIONS (
                     set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
                 ) ELSE (
@@ -146,7 +146,7 @@ IF defined V8_EXTENSIONS (
                 set EXT_NAME=%%j
                 set EXT_NAME=!EXT_NAME: =!
                 set EXT_NAME=!EXT_NAME:"=!
-                echo [INFO] Found extension: !EXT_NAME!
+                echo [INFO] Found extension in infobase: !EXT_NAME!
                 IF defined V8_EXTENSIONS (
                     set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
                 ) ELSE (
