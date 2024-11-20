@@ -75,11 +75,11 @@ IF defined RELATIVE_CFE_PATH (
 )
 
 IF defined V8_IMPORT_TOOL set V8_CONVERT_TOOL=%V8_IMPORT_TOOL%
+IF not "%V8_CONVERT_TOOL%" equ "designer" IF not "%V8_CONVERT_TOOL%" equ "ibcmd" set V8_CONVERT_TOOL=designer
 
 set V8_CONNECTION_STRING="/S%V8_DB_SRV_ADDR%\%V8_IB_NAME%"
 IF /i "%V8_CONVERT_TOOL%" equ "designer" set V8_CONNECTION_STRING="/S%V8_SRV_ADDR%\%V8_IB_NAME%"
 
-IF not "%V8_CONVERT_TOOL%" equ "designer" IF not "%V8_CONVERT_TOOL%" equ "ibcmd" set V8_CONVERT_TOOL=designer
 IF not defined V8_TOOL set V8_TOOL="%PROGRAMW6432%\1cv8\%V8_VERSION%\bin\1cv8.exe"
 IF "%V8_CONVERT_TOOL%" equ "designer" IF not exist %V8_TOOL% (
     echo [ERROR] Could not find 1C:Designer with path %V8_TOOL%

@@ -56,7 +56,7 @@ IF defined RELATIVE_CFE_PATH (
 )
 set FILE_NAME=%~n0
 set EXT_NAME=%FILE_NAME:~11%
-IF not defined V8_IB_NAME (
+IF not defined EXT_NAME (
     echo [ERROR] Extension name is not defined ^(rename script to ext_src2ib_^<Extension name^>.cmd^)
     exit /b 1
 ) 

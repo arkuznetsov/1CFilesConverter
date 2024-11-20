@@ -44,7 +44,7 @@ IF /i "%V8_SRC_TYPE%" equ "edt" (
     set RELATIVE_CF_PATH=cf
     set RELATIVE_CFE_PATH=cfe
     set RELATIVE_SRC_CFE_PATH=%RELATIVE_SRC_PATH%\%RELATIVE_CFE_PATH%
-    set CONVERT_SCRIPT_NAME=ext2edt.cmd
+    set CONVERT_SCRIPT_NAME=ext2xml.cmd
     IF not defined V8_DROP_CONFIG_DUMP set V8_DROP_CONFIG_DUMP=1
 )
 
@@ -59,7 +59,7 @@ IF defined RELATIVE_CFE_PATH (
 )
 set FILE_NAME=%~n0
 set EXT_NAME=%FILE_NAME:~11%
-IF not defined V8_IB_NAME (
+IF not defined EXT_NAME (
     echo [ERROR] Extension name is not defined ^(rename script to upd_ib_^<Extension name^>.cmd^)
     exit /b 1
 ) 

@@ -35,7 +35,7 @@ IF exist "%REPO_PATH%\.env" (
 
 set FILE_NAME=%~n0
 set V8_EXT_NAME=%FILE_NAME:~10%
-IF not defined V8_IB_NAME (
+IF not defined V8_EXT_NAME (
     echo [ERROR] Extension name is not defined ^(rename script to apply_ext_^<Extension name^>.cmd^)
     exit /b 1
 ) 
