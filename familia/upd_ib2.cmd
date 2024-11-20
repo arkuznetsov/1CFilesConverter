@@ -144,6 +144,8 @@ IF defined V8_EXTENSIONS (
     del /f /s /q "!EXT_LIST_FILE!" > nul
 )
 
+set EXT_ALL_UPD_RESULT=0
+set EXT_ALL_UPD_MESSAGE=
 FOR %%i IN (%V8_EXTENSIONS%) DO (
     echo.
     echo [INFO] Обновление конфигурации расширения "%%i" базы данных
@@ -160,10 +162,14 @@ FOR %%i IN (%V8_EXTENSIONS%) DO (
     del /f /s /q "!UPD_RESULT_FILE!" > nul
     del /f /s /q "!UPD_MSG_FILE!" > nul
     IF "!EXT_UPD_RESULT!" neq "0" (
-        set ERROR_CODE=!EXT_UPD_RESULT!
-        set ERROR_MESSAGE=Ошибка обновления конфигурации расширения "%%i" базы данных: !EXT_UPD_MSG!
-        goto unlock
+        set EXT_ALL_UPD_RESULT=1
+        set EXT_ALL_UPD_MESSAGE=!EXT_ALL_UPD_MESSAGE! !EXT_UPD_MSG!
     )
+)
+IF "!EXT_ALL_UPD_RESULT!" neq "0" (
+    set ERROR_CODE=!EXT_ALL_UPD_RESULT!
+    set ERROR_MESSAGE=Ошибка обновления расширений информационной базы: !EXT_ALL_UPD_MESSAGE!
+    goto unlock
 )
 
 :unlock
