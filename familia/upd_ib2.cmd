@@ -120,7 +120,7 @@ call %VRUNNER_TOOL% updatedb --v8version "%V8_VERSION%" --ibconnection "/S%V8_IB
 IF "%ERRORLEVEL%" neq "0" (
     set ERROR_CODE=%ERRORLEVEL%
     set ERROR_MESSAGE=Ошибка обновления основной конфигурации базы данных
-    goto finally
+    goto unlock
 )
 
 IF defined V8_EXTENSIONS (
@@ -147,18 +147,30 @@ IF defined V8_EXTENSIONS (
 FOR %%i IN (%V8_EXTENSIONS%) DO (
     echo.
     echo [INFO] Обновление конфигурации расширения "%%i" базы данных
-    call %VRUNNER_TOOL% designer --v8version "%V8_VERSION%" --ibconnection "/S%V8_IB_SRV%\%V8_IB_NAME%" %V8_IB_CREDENTIALS% --uccode "%V8_LOCK_CODE%" --additional "/UpdateDBCfg -Extension "%%i""
-    IF "%ERRORLEVEL%" neq "0" (
-        set ERROR_CODE=%ERRORLEVEL%
-        set ERROR_MESSAGE=Ошибка обновления конфигурации расширения "%%i" базы данных
-        goto finally
+    set UPD_RESULT_FILE=%~dp0v8_upd_result.txt
+    set UPD_MSG_FILE=%~dp0v8_upd_msg.txt
+    call %VRUNNER_TOOL% designer --v8version "%V8_VERSION%" --ibconnection "/S%V8_IB_SRV%\%V8_IB_NAME%" %V8_IB_CREDENTIALS% --uccode "%V8_LOCK_CODE%" --additional "/DumpResult ""!UPD_RESULT_FILE!"" /Out ""!UPD_MSG_FILE!"" /UpdateDBCfg -Extension "%%i""
+    FOR /F "delims=" %%j IN ('type "!UPD_RESULT_FILE!"^|((pause^&pause^&pause^)^>nul^&find /v ""^)') DO (
+        set EXT_UPD_RESULT=%%j
+    )
+    set EXT_UPD_MSG=
+    FOR /F "delims=" %%j IN ('type "!UPD_MSG_FILE!"^|((pause^&pause^&pause^)^>nul^&findstr "^^"^)') DO (
+        set EXT_UPD_MSG=!EXT_UPD_MSG! %%j
+    )
+    del /f /s /q "!UPD_RESULT_FILE!" > nul
+    del /f /s /q "!UPD_MSG_FILE!" > nul
+    IF "!EXT_UPD_RESULT!" neq "0" (
+        set ERROR_CODE=!EXT_UPD_RESULT!
+        set ERROR_MESSAGE=Ошибка обновления конфигурации расширения "%%i" базы данных: !EXT_UPD_MSG!
+        goto unlock
     )
 )
+
+:unlock
 
 echo.
 echo [INFO] Разрешение подключения новых сеансов
 call %VRUNNER_TOOL% session unlock --v8version "%V8_VERSION%" --ras "%V8_RAS_ADDR%:%V8_RAS_PORT%" --try 3 --db "%V8_IB_NAME%" --ibconnection "/S%V8_IB_SRV%\%V8_IB_NAME%" %V8_IB_CREDENTIALS% --uccode "%V8_LOCK_CODE%"
-echo errorlevel 5: %ERRORLEVEL% 
 IF "%ERRORLEVEL%" neq "0" (
     set ERROR_CODE=%ERRORLEVEL%
     set ERROR_MESSAGE=Ошибка разрешения подключения новых сеансов
