@@ -38,11 +38,6 @@ IF not defined V8_IB_SRV set V8_IB_SRV=localhost
 IF not defined NOTIFICATION_ON_SUCCESS set NOTIFICATION_ON_SUCCESS=1
 IF not defined NOTIFICATION_ON_ERROR set NOTIFICATION_ON_ERROR=1
 
-IF defined V8_LOG_FILE_NAME (
-    set V8_LOG_APPENDER=%~dp0%V8_LOG_FILE_NAME%
-    echo "START: %date% %time%" > log.txt
-)
-
 IF not defined VRUNNER_TOOL (
     FOR /F "usebackq tokens=1 delims=" %%i IN (`where vrunner`) DO (
         set VRUNNER_TOOL="%%i"
@@ -132,7 +127,7 @@ IF defined V8_EXTENSIONS (
     FOR %%j IN (%V8_EXTENSIONS%) DO echo [INFO] В параметрах найдено расширение: %%j
 ) ELSE (
     set EXT_LIST_FILE=%~dp0v8_ext_list.txt
-    %V8_TOOL% DESIGNER /IBConnectionString !V8_IB_CONNECTION! /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs  /DisableStartupMessages /Out "!EXT_LIST_FILE!" /DumpDBCfgList -AllExtensions
+    call %VRUNNER_TOOL% designer --v8version "%V8_VERSION%" --ibconnection "/S%V8_IB_SRV%\%V8_IB_NAME%" %V8_IB_CREDENTIALS% --uccode "%V8_LOCK_CODE%" --additional "/Out ""!EXT_LIST_FILE!"" /DumpDBCfgList -AllExtensions"
     FOR /F "tokens=* delims=" %%i IN (!EXT_LIST_FILE!) DO (
         set EXT_NAME=%%i
         set EXT_NAME=!EXT_NAME: =!
