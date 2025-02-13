@@ -109,26 +109,8 @@ FOR /f "tokens=1 delims=" %%a in (' "!GIT_COMMAND!" ') do (
     echo [INFO] Actual commit "!ACTUAL_COMMIT!"
 )
 
-IF defined V8_EXTENSIONS (
-    FOR %%j IN (%V8_EXTENSIONS%) DO echo [INFO] Found extension in environment settings: %%j
-) ELSE (
-    IF "%V8_EXT_LOOKUP%" equ "folder" (
-        echo [INFO] Found extensions root folder "%EXT_PATH%"
-        FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%EXT_PATH%" /C "cmd /c echo @path"`) DO (
-            set EXT_NAME=%%i
-            set EXT_NAME=!EXT_NAME:%EXT_PATH%\=!
-            set EXT_NAME=!EXT_NAME:"=!
-            echo [INFO] Found extension folder "!EXT_NAME!"
-            IF not !EXT_NAME! equ %RELATIVE_CF_PATH% (
-                IF defined V8_EXTENSIONS (
-                    set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
-                ) ELSE (
-                    set V8_EXTENSIONS=!EXT_NAME!
-                )
-            )
-        )
-        goto process_ext
-    )
+IF "%V8_EXTENSIONS%" equ "ib" (
+    set V8_EXTENSIONS=
     IF "%V8_CONVERT_TOOL%" equ "designer" (
         set EXT_LIST_FILE=%~dp0v8_ext_list.txt
         %V8_TOOL% DESIGNER /IBConnectionString !V8_IB_CONNECTION! /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs  /DisableStartupMessages /Out "!EXT_LIST_FILE!" /DumpDBCfgList -AllExtensions
@@ -167,6 +149,12 @@ IF defined V8_EXTENSIONS (
         goto process_ext
     )
 )
+
+IF defined V8_EXTENSIONS (
+    FOR %%j IN (%V8_EXTENSIONS%) DO echo [INFO] Found extension in environment settings: %%j
+)
+
+:process_all
 
 set V8_CONNECTION_STRING=/S%V8_DB_SRV_ADDR%\%V8_IB_NAME%
 IF /i "%V8_CONVERT_TOOL%" equ "designer" set V8_CONNECTION_STRING=/S%V8_SRV_ADDR%\%V8_IB_NAME%

@@ -66,65 +66,6 @@ FOR /f "tokens=1 delims=" %%a in (' "!GIT_COMMAND!" ') do (
     echo [INFO] Actual commit "!ACTUAL_COMMIT!"
 )
 
-IF defined V8_EXTENSIONS (
-    FOR %%j IN (%V8_EXTENSIONS%) DO echo [INFO] Found extension in environment settings: %%j
-) ELSE (
-    IF "%V8_EXT_LOOKUP%" equ "folder" (
-        echo [INFO] Found extensions root folder "%EXT_PATH%"
-        FOR /F "usebackq tokens=1 delims=" %%i IN (`FORFILES /P "%EXT_PATH%" /C "cmd /c echo @path"`) DO (
-            set EXT_NAME=%%i
-            set EXT_NAME=!EXT_NAME:%EXT_PATH%\=!
-            set EXT_NAME=!EXT_NAME:"=!
-            echo [INFO] Found extension folder "!EXT_NAME!"
-            IF not !EXT_NAME! equ %RELATIVE_CF_PATH% (
-                IF defined V8_EXTENSIONS (
-                    set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
-                ) ELSE (
-                    set V8_EXTENSIONS=!EXT_NAME!
-                )
-            )
-        )
-        goto process_ext
-    )
-    IF "%V8_CONVERT_TOOL%" equ "designer" (
-        set EXT_LIST_FILE=%~dp0v8_ext_list.txt
-        %V8_TOOL% DESIGNER /IBConnectionString !V8_IB_CONNECTION! /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs  /DisableStartupMessages /Out "!EXT_LIST_FILE!" /DumpDBCfgList -AllExtensions
-        FOR /F "tokens=* delims=" %%i IN (!EXT_LIST_FILE!) DO (
-            set EXT_NAME=%%i
-            set EXT_NAME=!EXT_NAME: =!
-            set EXT_NAME=!EXT_NAME:"=!
-            IF /i "!EXT_NAME!" equ "%%i" (
-                echo [INFO] Found extension in infobase: !EXT_NAME!
-                IF defined V8_EXTENSIONS (
-                    set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
-                ) ELSE (
-                    set V8_EXTENSIONS=!EXT_NAME!
-                )
-            )
-        )
-        del /f /s /q "!EXT_LIST_FILE!" > nul
-        goto process_ext
-    ) ELSE (
-        set "COMMAND_EXT_LIST=%IBCMD_TOOL% infobase config extension list --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_DB_SRV_ADDR% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%""
-        FOR /f "tokens=1,2 delims==:" %%i IN (' "!COMMAND_EXT_LIST!" ') DO (
-            set PARAM_NAME=%%i
-            set PARAM_NAME=!PARAM_NAME: =!
-            IF "!PARAM_NAME!" equ "name" (
-                set EXT_NAME=%%j
-                set EXT_NAME=!EXT_NAME: =!
-                set EXT_NAME=!EXT_NAME:"=!
-                echo [INFO] Found extension in infobase: !EXT_NAME!
-                IF defined V8_EXTENSIONS (
-                    set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
-                ) ELSE (
-                    set V8_EXTENSIONS=!EXT_NAME!
-                )
-            )
-        )
-        goto process_ext
-    )
-)
-
 IF defined V8_IMPORT_TOOL set V8_CONVERT_TOOL=%V8_IMPORT_TOOL%
 
 set V8_CONNECTION_STRING="/S%V8_DB_SRV_ADDR%\%V8_IB_NAME%"
@@ -196,6 +137,53 @@ IF "%CONF_CHANGED%" equ "1" IF "%V8_UPDATE_DB%" equ "1" (
         %IBCMD_TOOL% infobase config apply --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_DB_SRV_ADDR% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%" --dynamic=force --session-terminate=force --force
     )
 )
+
+IF "%V8_EXTENSIONS%" equ "ib" (
+    set V8_EXTENSIONS=
+    IF "%V8_CONVERT_TOOL%" equ "designer" (
+        set EXT_LIST_FILE=%~dp0v8_ext_list.txt
+        %V8_TOOL% DESIGNER /IBConnectionString !V8_IB_CONNECTION! /N"%V8_IB_USER%" /P"%V8_IB_PWD%" /DisableStartupDialogs  /DisableStartupMessages /Out "!EXT_LIST_FILE!" /DumpDBCfgList -AllExtensions
+        FOR /F "tokens=* delims=" %%i IN (!EXT_LIST_FILE!) DO (
+            set EXT_NAME=%%i
+            set EXT_NAME=!EXT_NAME: =!
+            set EXT_NAME=!EXT_NAME:"=!
+            IF /i "!EXT_NAME!" equ "%%i" (
+                echo [INFO] Found extension in infobase: !EXT_NAME!
+                IF defined V8_EXTENSIONS (
+                    set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
+                ) ELSE (
+                    set V8_EXTENSIONS=!EXT_NAME!
+                )
+            )
+        )
+        del /f /s /q "!EXT_LIST_FILE!" > nul
+        goto process_ext
+    ) ELSE (
+        set "COMMAND_EXT_LIST=%IBCMD_TOOL% infobase config extension list --dbms=%V8_DB_SRV_DBMS% --db-server=%V8_DB_SRV_ADDR% --db-name="%V8_IB_NAME%" --db-user="%V8_DB_SRV_USR%" --db-pwd="%V8_DB_SRV_PWD%" --user="%V8_IB_USER%" --password="%V8_IB_PWD%""
+        FOR /f "tokens=1,2 delims==:" %%i IN (' "!COMMAND_EXT_LIST!" ') DO (
+            set PARAM_NAME=%%i
+            set PARAM_NAME=!PARAM_NAME: =!
+            IF "!PARAM_NAME!" equ "name" (
+                set EXT_NAME=%%j
+                set EXT_NAME=!EXT_NAME: =!
+                set EXT_NAME=!EXT_NAME:"=!
+                echo [INFO] Found extension in infobase: !EXT_NAME!
+                IF defined V8_EXTENSIONS (
+                    set V8_EXTENSIONS=!V8_EXTENSIONS! !EXT_NAME!
+                ) ELSE (
+                    set V8_EXTENSIONS=!EXT_NAME!
+                )
+            )
+        )
+        goto process_ext
+    )
+)
+
+IF defined V8_EXTENSIONS (
+    FOR %%j IN (%V8_EXTENSIONS%) DO echo [INFO] Found extension in environment settings: %%j
+)
+
+:process_ext
 
 FOR %%j IN (%V8_EXTENSIONS%) DO (
     set EXT_NAME=%%j
