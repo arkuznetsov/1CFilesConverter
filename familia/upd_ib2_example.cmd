@@ -1,5 +1,7 @@
 @ECHO OFF
 
+chcp %V8_ENCODING% > nul
+
 set V8_UPDATE_SCRIPT=upd_ib2.cmd
 set V8_UPDATE_SETTINGS=upd_ib2.env
 set V8_UPDATE_LOG=log_tmb_ib.txt
